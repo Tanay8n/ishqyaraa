@@ -77,7 +77,19 @@ export default function ProfilePage() {
           <div className="h-36 sm:h-48 bg-gradient-to-r from-[#9e1b22] via-[#ea580c] to-[#d97706] relative">
             <div className="absolute inset-0 bg-black/10" />
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/30">
+              <button
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("open-settings", { detail: { tab: "userInfo" } })
+                  );
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/30 transition-all cursor-pointer shadow-xs active:scale-95"
+                title="Account Settings"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span>Settings</span>
+              </button>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 hidden sm:inline-block">
                 শারদীয়া 2026 Profile
               </span>
             </div>

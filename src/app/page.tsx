@@ -532,13 +532,6 @@ export default function PartnerFinderPage() {
                     <Heart className="w-7 h-7 sm:w-8 sm:h-8 fill-white group-hover:scale-110 transition-transform" />
                   </button>
                 </div>
-
-                {/* Bottom Deck Indicator info */}
-                <div className="flex items-center justify-center px-2 text-xs text-stone-400 mt-1">
-                  <span className="font-semibold">
-                    {(deckIndex % profiles.length) + 1} of {profiles.length}
-                  </span>
-                </div>
               </div>
             </div>
           );

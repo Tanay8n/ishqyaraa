@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -16,8 +16,10 @@ import {
   Search,
   ChevronRight,
   Flame,
+  Settings,
 } from "lucide-react";
 import { USER_CURRENT_PROFILE } from "@/lib/data";
+import { SettingsModal, type SettingsOption } from "./SettingsModal";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -35,6 +37,26 @@ interface NavItem {
 export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
   const pathname = usePathname();
   const [showNotificationToast, setShowNotificationToast] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsOption, setSettingsOption] = useState<SettingsOption>("menu");
+
+  // Listen for open-settings custom event from other components
+  useEffect(() => {
+    const handleOpenSettings = (e: Event) => {
+      const customEvent = e as CustomEvent<{ option?: SettingsOption; tab?: SettingsOption }>;
+      const targetOption = customEvent.detail?.option || customEvent.detail?.tab || "menu";
+      setSettingsOption(targetOption);
+      setIsSettingsOpen(true);
+    };
+
+    window.addEventListener("open-settings", handleOpenSettings);
+    return () => window.removeEventListener("open-settings", handleOpenSettings);
+  }, []);
+
+  const openSettings = (option: SettingsOption = "menu") => {
+    setSettingsOption(option);
+    setIsSettingsOpen(true);
+  };
 
   const navItems: NavItem[] = [
     { label: "Find Partners", href: "/", icon: Compass },
@@ -134,38 +156,76 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
           </nav>
         </div>
 
-        {/* User Mini Card at Bottom */}
-        <div className="pt-4 border-t border-[#e7dfd5] space-y-3">
-          <Link
-            href="/profile"
-            className="flex items-center gap-3 p-2 rounded-xl hover:bg-stone-200/50 transition-colors group"
-          >
-            <div className="relative">
-              <img
-                src={USER_CURRENT_PROFILE.avatar}
-                alt={USER_CURRENT_PROFILE.name}
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-[#9e1b22]/30"
-              />
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#faf7f2] rounded-full" />
-            </div>
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-900 truncate">
-                  {USER_CURRENT_PROFILE.name}
-                </span>
-                <span className="text-[10px] text-[#9e1b22] font-semibold">21</span>
+        {/* User Mini Card at Bottom with Settings Trigger */}
+        <div className="pt-4 border-t border-[#e7dfd5] space-y-2">
+          <div className="flex items-center justify-between gap-1">
+            <Link
+              href="/profile"
+              className="flex-1 flex items-center gap-3 p-2 rounded-xl hover:bg-stone-200/50 transition-colors group min-w-0"
+            >
+              <div className="relative shrink-0">
+                <img
+                  src={USER_CURRENT_PROFILE.avatar}
+                  alt={USER_CURRENT_PROFILE.name}
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-[#9e1b22]/30"
+                />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#faf7f2] rounded-full" />
               </div>
-              <p className="text-[11px] text-stone-500 truncate">
-                {USER_CURRENT_PROFILE.area}
-              </p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-900 truncate">
+                    {USER_CURRENT_PROFILE.name}
+                  </span>
+                  <span className="text-[10px] text-[#9e1b22] font-semibold">21</span>
+                </div>
+                <p className="text-[11px] text-stone-500 truncate">
+                  {USER_CURRENT_PROFILE.area}
+                </p>
+              </div>
+            </Link>
+
+            <button
+              onClick={() => openSettings("menu")}
+              className="p-2.5 rounded-xl text-stone-500 hover:text-[#9e1b22] hover:bg-stone-200/60 transition-all cursor-pointer"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings className="w-4 h-4 hover:rotate-45 transition-transform duration-300" />
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col min-w-0 ${hideMobileNav ? "pb-0 md:pb-6 h-dvh overflow-hidden md:h-auto md:overflow-visible" : "pb-28 md:pb-6"}`}>
+        {/* Desktop Top Header Bar with Right Top Corner Settings Button */}
+        <header className="hidden md:flex items-center justify-between sticky top-0 z-30 bg-[#faf7f2]/90 backdrop-blur-md border-b border-[#e7dfd5]/80 px-6 lg:px-8 py-3.5">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
+                Kolkata Sharodiya 2026
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-semibold text-stone-700">
+                Pandal Companion & Live Match
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Right Top Corner Settings Button */}
+            <button
+              onClick={() => openSettings("menu")}
+              id="top-settings-btn-desktop"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold text-stone-700 bg-white hover:bg-stone-50 hover:text-[#9e1b22] border border-[#e7dfd5] shadow-xs hover:shadow-sm hover:border-stone-300 transition-all cursor-pointer group active:scale-95"
+              aria-label="Settings"
+            >
+              <Settings className="w-4 h-4 text-stone-500 group-hover:text-[#9e1b22] group-hover:rotate-45 transition-transform duration-300" />
+              <span>Settings</span>
+            </button>
+          </div>
+        </header>
+
         {/* Mobile Top Header (Hidden in full-bleed mobile views like active chat) */}
         {!hideMobileNav && (
           <div className="md:hidden sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e7dfd5] px-4 py-3 flex items-center justify-between">
@@ -187,16 +247,15 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
               >
                 <Heart className="w-4 h-4 text-[#9e1b22]" />
               </Link>
-              <Link
-                href="/profile"
-                className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-[#9e1b22]"
+              {/* Right Top Corner Settings Button on Mobile */}
+              <button
+                onClick={() => openSettings("menu")}
+                id="top-settings-btn-mobile"
+                className="p-1.5 rounded-xl text-stone-700 bg-white hover:bg-stone-100 hover:text-[#9e1b22] border border-[#e7dfd5] shadow-xs transition-colors"
+                aria-label="Open Settings"
               >
-                <img
-                  src={USER_CURRENT_PROFILE.avatar}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </Link>
+                <Settings className="w-4 h-4" />
+              </button>
             </div>
           </div>
         )}
@@ -206,6 +265,13 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
           {children}
         </main>
       </div>
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        initialOption={settingsOption}
+      />
 
       {/* Mobile Floating Capsule Navigation Bar */}
       {!hideMobileNav && (
