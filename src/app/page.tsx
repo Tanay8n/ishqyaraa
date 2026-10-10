@@ -22,6 +22,8 @@ import {
   Code2,
   LogOut,
   Trash2,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { type Profile } from "@/lib/data";
@@ -50,7 +52,7 @@ export default function PartnerFinderPage() {
   const [isSavingAction, setIsSavingAction] = useState(false);
   const actionLockRef = useRef(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [settingsView, setSettingsView] = useState<"main" | "userinfo" | "privacy" | "about" | "delete">("main");
+  const [settingsView, setSettingsView] = useState<"main" | "userinfo" | "privacy" | "terms" | "about" | "delete">("main");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -1171,6 +1173,12 @@ export default function PartnerFinderPage() {
                     <ChevronRight className="w-4 h-4 text-stone-400" />
                   </button>
 
+                  <button type="button" onClick={() => setSettingsView("terms")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
+                    <FileText className="w-5 h-5 text-purple-700" />
+                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">Terms of Service</span><span className="block text-xs text-stone-500">Community rules and guidelines</span></span>
+                    <ChevronRight className="w-4 h-4 text-stone-400" />
+                  </button>
+
                   <button type="button" onClick={() => setSettingsView("about")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
                     <Code2 className="w-5 h-5 text-[#9e1b22]" />
                     <span className="flex-1"><span className="block text-sm font-bold text-stone-900">About Developers</span><span className="block text-xs text-stone-500">Meet the team behind IshqYara</span></span>
@@ -1222,7 +1230,30 @@ export default function PartnerFinderPage() {
                     <p>IshqYara uses your sign-in information to identify your account and provide access to the app.</p>
                     <p>We only request information needed for the features you choose to use. Your profile information should be shared thoughtfully, and you can contact the team for support or data-related requests.</p>
                     <p>Never share passwords, private messages, or sensitive personal information with other users.</p>
-                    <p className="text-xs text-stone-400">This is the initial app privacy notice and should be replaced with the team&apos;s final legal policy before public launch.</p>
+                  </div>
+                  <div className="pt-2">
+                    <Link href="/privacy" target="_blank" className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9e1b22] hover:underline">
+                      <span>View full public Privacy Policy page</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {settingsView === "terms" && (
+                <div className="p-5 space-y-4">
+                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
+                  <h3 className="text-xl font-black text-stone-900">Terms of Service</h3>
+                  <div className="space-y-3 text-sm leading-relaxed text-stone-600">
+                    <p>You must be at least 18 years old to use IshqYara.</p>
+                    <p>Treat all members with respect. Harassment, hateful conduct, spam, and non-consensual content will lead to immediate account removal.</p>
+                    <p>Profiles and photos must be authentic and represent your genuine identity.</p>
+                  </div>
+                  <div className="pt-2">
+                    <Link href="/terms" target="_blank" className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:underline">
+                      <span>View full public Terms of Service page</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
               )}

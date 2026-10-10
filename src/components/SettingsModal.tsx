@@ -20,6 +20,7 @@ import {
   GraduationCap,
   Mail,
   AlertCircle,
+  FileText,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
@@ -28,6 +29,7 @@ export type SettingsOption =
   | "userInfo"
   | "support"
   | "privacy"
+  | "terms"
   | "developers"
   | "logout";
 
@@ -161,6 +163,13 @@ export function SettingsModal({
       color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
     {
+      id: "terms" as SettingsOption,
+      label: "Terms of Service",
+      description: "Community guidelines, rules, and eligibility",
+      icon: FileText,
+      color: "bg-purple-50 text-purple-700 border-purple-200",
+    },
+    {
       id: "developers" as SettingsOption,
       label: "About Developers (developers linkdin id)",
       description: "LinkedIn profiles of the 4 platform creators",
@@ -215,6 +224,7 @@ export function SettingsModal({
                 {currentView === "userInfo" && "User Info"}
                 {currentView === "support" && "Support and Feedback"}
                 {currentView === "privacy" && "Privacy Policy"}
+                {currentView === "terms" && "Terms of Service"}
                 {currentView === "developers" && "About Developers"}
                 {currentView === "logout" && "Logout"}
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
@@ -584,6 +594,89 @@ export function SettingsModal({
                       Profile and conversation data are stored in the configured Supabase project. Account deletion requires the server-side secret configuration and removes associated account data when completed.
                     </p>
                   </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9e1b22] hover:underline"
+                  >
+                    <span>Read full public Privacy Policy page</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* TERMS OF SERVICE PAGE */}
+          {/* ======================================================== */}
+          {currentView === "terms" && (
+            <div className="space-y-3.5 text-stone-800 animate-in fade-in duration-200">
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-purple-700" />
+                    Community Terms & Guidelines
+                  </h3>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                    Rules
+                  </span>
+                </div>
+
+                <div className="space-y-2.5 text-xs text-stone-600 leading-relaxed">
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#9e1b22]" />
+                      1. Age Requirement (18+)
+                    </h4>
+                    <p>
+                      IshqYara is strictly for individuals aged 18 and older. Anyone under 18 is not permitted to register or use this platform.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                      2. Code of Conduct & Respect
+                    </h4>
+                    <p>
+                      Harassment, offensive behavior, hate speech, spam, and non-consensual content are strictly prohibited and will lead to an immediate ban.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                      3. Authentic Profiles & Photos
+                    </h4>
+                    <p>
+                      Users must upload authentic photos representing their true identity. Impersonation of other people or entities is forbidden.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      4. In-Person Safety
+                    </h4>
+                    <p>
+                      IshqYara facilitates connections for festivities. When meeting new buddies, always meet in public places and prioritize your safety.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:underline"
+                  >
+                    <span>Read full public Terms of Service page</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
             </div>

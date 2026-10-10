@@ -1,12 +1,19 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useAppUser } from "@/components/AppUserContext";
 import { LoginScreen } from "@/components/LoginScreen";
 import { OnboardingForm } from "@/components/OnboardingForm";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { status, dataError, matchesLoadError, logout } = useAppUser();
+  const pathname = usePathname();
+
+  // Allow public access to legal pages regardless of authentication status
+  if (pathname === "/privacy" || pathname === "/terms") {
+    return <>{children}</>;
+  }
 
   if (status === "loading") {
     return (

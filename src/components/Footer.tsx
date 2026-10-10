@@ -108,14 +108,14 @@ export function Footer() {
                 </span>
               </li>
               <li>
-                <span className="hover:text-amber-400 transition-colors cursor-pointer">
+                <Link href="/privacy" className="hover:text-amber-400 transition-colors">
                   Privacy Policy
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="hover:text-amber-400 transition-colors cursor-pointer">
+                <Link href="/terms" className="hover:text-amber-400 transition-colors">
                   Terms of Service
-                </span>
+                </Link>
               </li>
               <li>
                 <span className="hover:text-amber-400 transition-colors cursor-pointer">
