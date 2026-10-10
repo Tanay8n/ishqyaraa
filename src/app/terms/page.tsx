@@ -122,11 +122,32 @@ export default function TermsPage() {
               You can delete your account at any time directly through the app settings. IshqYara reserves the right to suspend or ban accounts that violate community safety or these Terms of Service.
             </p>
           </section>
+
+          {/* 6. Contact */}
+          <section className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/80 shadow-sm space-y-3">
+            <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#9e1b22]" />
+              6. Contact Information
+            </h2>
+            <p className="text-sm text-stone-600 leading-relaxed">
+              For any legal or terms inquiries, reach out to the IshqYara development team at{" "}
+              <a href="mailto:tanay8n@gmail.com" className="font-bold text-[#9e1b22] underline">
+                tanay8n@gmail.com
+              </a>.
+            </p>
+          </section>
         </div>
 
         {/* Footer info */}
-        <div className="pt-6 border-t border-stone-200 text-center text-xs text-stone-400">
+        <div className="pt-6 border-t border-stone-200 text-center text-xs text-stone-400 space-y-2">
           <p>© {new Date().getFullYear()} IshqYara (Puja Partner). All rights reserved.</p>
+          <div className="flex items-center justify-center gap-4 text-stone-500 font-semibold">
+            <Link href="/" className="hover:text-[#9e1b22] underline">Home</Link>
+            <span>•</span>
+            <Link href="/terms" className="hover:text-[#9e1b22] underline">Terms of Service</Link>
+            <span>•</span>
+            <Link href="/privacy" className="hover:text-[#9e1b22] underline">Privacy Policy</Link>
+          </div>
         </div>
       </div>
     </div>

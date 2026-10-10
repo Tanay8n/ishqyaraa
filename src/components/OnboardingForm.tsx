@@ -293,10 +293,21 @@ export function OnboardingForm() {
 
         {error && <p className="text-xs font-semibold text-rose-600">{error}</p>}
 
+        <p className="text-[11px] text-stone-500 text-center leading-relaxed">
+          By completing your profile, you acknowledge that your profile details will be visible to other members in accordance with our{" "}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-stone-700 underline hover:text-[#9e1b22]">
+            Privacy Policy
+          </a>{" "}
+          and{" "}
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-semibold text-stone-700 underline hover:text-[#9e1b22]">
+            Terms of Service
+          </a>.
+        </p>
+
         <button
           type="submit"
           disabled={saving || uploading}
-          className="w-full py-3 rounded-2xl font-bold text-white bg-gradient-to-r from-[#9e1b22] to-[#c22830] disabled:opacity-60"
+          className="w-full py-3 rounded-2xl font-bold text-white bg-gradient-to-r from-[#9e1b22] to-[#c22830] disabled:opacity-60 cursor-pointer"
         >
           {saving ? "Saving..." : "Save and start discovering 🪷"}
         </button>

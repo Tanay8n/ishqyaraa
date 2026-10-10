@@ -15,21 +15,11 @@ import {
   ChevronRight,
   Info,
   MessageCircle,
-  Settings,
-  User as UserIcon,
-  LifeBuoy,
-  ShieldCheck,
-  Code2,
-  LogOut,
-  Trash2,
-  FileText,
-  ExternalLink,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { type Profile } from "@/lib/data";
 import { useAppUser } from "@/components/AppUserContext";
-import { createClient } from "@/lib/supabase/client";
-import { authAvatarUrl, authDisplayName } from "@/lib/supabase/user";
+import { authAvatarUrl } from "@/lib/supabase/user";
 import { loadDiscoveryDeck, loadPublicProfile } from "@/lib/discovery";
 import { blockUser, likeUser, passUser, recordReport, rewindLastAction } from "@/lib/interactions";
 
@@ -39,7 +29,7 @@ type DragOffset = {
 };
 
 export default function PartnerFinderPage() {
-  const { user, publicProfile, uiProfile, logout } = useAppUser();
+  const { user, publicProfile, uiProfile } = useAppUser();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [deckIndex, setDeckIndex] = useState(0);
   const [matchedProfile, setMatchedProfile] =
@@ -51,11 +41,6 @@ export default function PartnerFinderPage() {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [isSavingAction, setIsSavingAction] = useState(false);
   const actionLockRef = useRef(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [settingsView, setSettingsView] = useState<"main" | "userinfo" | "privacy" | "terms" | "about" | "delete">("main");
-  const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const [deletingAccount, setDeletingAccount] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [dragOffset, setDragOffset] =
     useState<DragOffset>({ x: 0, y: 0 });
@@ -165,73 +150,7 @@ export default function PartnerFinderPage() {
     }, 2400);
   }, []);
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await logout();
-      setShowSettings(false);
-      setSettingsView("main");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      showToast("Could not log out. Please try again.");
-    }
-  }, [logout, showToast]);
 
-  const handleDeleteAccount = useCallback(async () => {
-    if (deleteConfirmation !== "DELETE" || !user) return;
-    setDeletingAccount(true);
-    setDeleteError(null);
-    try {
-      sessionStorage.setItem("ishqyara-delete-intent", JSON.stringify({ uid: user.id, confirmation: deleteConfirmation }));
-      const { error } = await createClient().auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=%2F%3FfinishAccountDeletion%3D1`,
-          queryParams: { prompt: "select_account" },
-        },
-      });
-      if (error) throw error;
-    } catch (error) {
-      sessionStorage.removeItem("ishqyara-delete-intent");
-      setDeleteError(error instanceof Error ? error.message : "Could not delete account.");
-      setDeletingAccount(false);
-    }
-  }, [deleteConfirmation, user]);
-
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("finishAccountDeletion") !== "1") return;
-    const rawIntent = sessionStorage.getItem("ishqyara-delete-intent");
-    sessionStorage.removeItem("ishqyara-delete-intent");
-    if (!rawIntent) return;
-    let intent: { uid?: string; confirmation?: string };
-    try { intent = JSON.parse(rawIntent); } catch { return; }
-    if (intent.uid !== user?.id || intent.confirmation !== "DELETE") {
-      queueMicrotask(() => {
-        setDeleteError("Account removal was cancelled because the signed-in Google account changed.");
-        setSettingsView("delete");
-        setShowSettings(true);
-      });
-      window.history.replaceState({}, "", window.location.pathname);
-      return;
-    }
-    queueMicrotask(() => setDeletingAccount(true));
-    void fetch("/api/account/delete", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirmation: intent.confirmation }),
-    }).then(async (response) => {
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.message || "Could not delete account.");
-      // The Auth account has already been deleted; clear this browser's local
-      // session without requiring a server-side sign-out for a deleted user.
-      await createClient().auth.signOut({ scope: "local" });
-      window.location.replace("/");
-    }).catch((error: unknown) => {
-      setDeleteError(error instanceof Error ? error.message : "Could not delete account.");
-      setDeletingAccount(false);
-      setSettingsView("delete");
-      setShowSettings(true);
-    }).finally(() => window.history.replaceState({}, "", window.location.pathname));
-  }, [user, logout]);
 
   /*
    * CONFETTI
@@ -768,19 +687,6 @@ export default function PartnerFinderPage() {
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#9e1b22]">IshqYara</p>
             <h1 className="text-xl sm:text-2xl font-black text-stone-900">Find your Puja person 🪷</h1>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSettingsView("main");
-              setShowSettings(true);
-            }}
-            className="w-11 h-11 rounded-full bg-white border border-stone-200 shadow-sm flex items-center justify-center text-stone-700 hover:text-[#9e1b22] hover:border-red-200 hover:bg-red-50 transition-all active:scale-95"
-            aria-label="Open Settings"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Toast Alert */}
@@ -1110,169 +1016,7 @@ export default function PartnerFinderPage() {
           </div>
         )}
 
-        {/* SETTINGS */}
-        {showSettings && (
-          <div
-            className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
-            onClick={() => {
-              setShowSettings(false);
-              setSettingsView("main");
-            }}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white w-full max-w-md rounded-[28px] border border-stone-200 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
-            >
-              <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
-                <div>
-                  <h2 className="text-lg font-black text-stone-900">Settings</h2>
-                  <p className="text-xs text-stone-400">Manage your IshqYara account</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowSettings(false);
-                    setSettingsView("main");
-                  }}
-                  className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-200"
-                  aria-label="Close settings"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
 
-              {settingsView === "main" && (
-                <div className="p-4 space-y-2">
-                  <div className="p-4 rounded-2xl bg-[#faf7f2] border border-[#e7dfd5] flex items-center gap-3 mb-3">
-                    {authAvatarUrl(user) ? (
-                      <img src={authAvatarUrl(user)} alt="Your profile" className="w-12 h-12 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-red-100 text-[#9e1b22] flex items-center justify-center font-black">
-                        {(authDisplayName(user) || user.email || "U").charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-stone-900 truncate">{authDisplayName(user) || "IshqYara User"}</p>
-                      <p className="text-xs text-stone-500 truncate">{user.email || "No email available"}</p>
-                    </div>
-                  </div>
-
-                  <button type="button" onClick={() => setSettingsView("userinfo")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
-                    <UserIcon className="w-5 h-5 text-[#9e1b22]" />
-                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">User Info</span><span className="block text-xs text-stone-500">Your signed-in account details</span></span>
-                  </button>
-
-                  <div className="w-full p-4 rounded-2xl bg-stone-50 flex items-center gap-3 text-left">
-                    <LifeBuoy className="w-5 h-5 text-[#9e1b22]" />
-                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">Support and Feedback</span><span className="block text-xs text-stone-500">No support destination is configured for this project.</span></span>
-                  </div>
-
-                  <button type="button" onClick={() => setSettingsView("privacy")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
-                    <ShieldCheck className="w-5 h-5 text-[#9e1b22]" />
-                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">Privacy Policy</span><span className="block text-xs text-stone-500">How IshqYara handles your information</span></span>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-
-                  <button type="button" onClick={() => setSettingsView("terms")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
-                    <FileText className="w-5 h-5 text-purple-700" />
-                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">Terms of Service</span><span className="block text-xs text-stone-500">Community rules and guidelines</span></span>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-
-                  <button type="button" onClick={() => setSettingsView("about")} className="w-full p-4 rounded-2xl hover:bg-stone-50 flex items-center gap-3 text-left transition-colors">
-                    <Code2 className="w-5 h-5 text-[#9e1b22]" />
-                    <span className="flex-1"><span className="block text-sm font-bold text-stone-900">About Developers</span><span className="block text-xs text-stone-500">Meet the team behind IshqYara</span></span>
-                    <ChevronRight className="w-4 h-4 text-stone-400" />
-                  </button>
-
-                  <div className="pt-2 mt-2 border-t border-stone-100">
-                    <button type="button" onClick={() => { setDeleteConfirmation(""); setDeleteError(null); setSettingsView("delete"); }} className="w-full p-4 rounded-2xl hover:bg-red-50 flex items-center gap-3 text-left text-rose-600 transition-colors">
-                      <Trash2 className="w-5 h-5" /><span className="text-sm font-bold">Delete account</span>
-                    </button>
-                    <button type="button" onClick={handleLogout} className="w-full p-4 rounded-2xl hover:bg-red-50 flex items-center gap-3 text-left text-rose-600 transition-colors">
-                      <LogOut className="w-5 h-5" />
-                      <span className="text-sm font-bold">Logout</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {settingsView === "userinfo" && (
-                <div className="p-5 space-y-4">
-                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
-                  <h3 className="text-xl font-black text-stone-900">User Info</h3>
-                  <div className="p-4 rounded-2xl bg-[#faf7f2] border border-[#e7dfd5] space-y-3">
-                    <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Name</p>
-                    <p className="text-sm font-bold text-stone-900">{authDisplayName(user) || "IshqYara User"}</p>
-                    <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Email</p>
-                    <p className="text-sm font-medium text-stone-700 break-all">{user.email || "No email available"}</p>
-                  </div>
-                </div>
-              )}
-
-              {settingsView === "delete" && (
-                <div className="p-5 space-y-4">
-                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
-                  <h3 className="text-xl font-black text-rose-700">Delete your account</h3>
-                  <p className="text-sm text-stone-600">This permanently removes your profile, private details, photos, interactions and match conversations, then deletes your sign-in account. Conversation history is removed for both participants. This cannot be undone.</p>
-                  <label className="block text-sm font-semibold text-stone-700">Type DELETE to continue<input value={deleteConfirmation} onChange={(event) => setDeleteConfirmation(event.target.value)} className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-2" autoComplete="off" /></label>
-                  {deleteError && <p role="alert" className="text-sm text-rose-700">{deleteError}</p>}
-                  <button type="button" onClick={handleDeleteAccount} disabled={deletingAccount || deleteConfirmation !== "DELETE"} className="w-full rounded-xl bg-rose-700 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">{deletingAccount ? "Deleting…" : "Reauthenticate and delete account"}</button>
-                  <p className="text-xs text-stone-500">Requires Supabase configuration and recent Google sign-in. If the server reports a failure, your account may require administrator follow-up.</p>
-                </div>
-              )}
-
-              {settingsView === "privacy" && (
-                <div className="p-5 space-y-4">
-                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
-                  <h3 className="text-xl font-black text-stone-900">Privacy Policy</h3>
-                  <div className="space-y-3 text-sm leading-relaxed text-stone-600">
-                    <p>IshqYara uses your sign-in information to identify your account and provide access to the app.</p>
-                    <p>We only request information needed for the features you choose to use. Your profile information should be shared thoughtfully, and you can contact the team for support or data-related requests.</p>
-                    <p>Never share passwords, private messages, or sensitive personal information with other users.</p>
-                  </div>
-                  <div className="pt-2">
-                    <Link href="/privacy" target="_blank" className="inline-flex items-center gap-1.5 text-xs font-bold text-[#9e1b22] hover:underline">
-                      <span>View full public Privacy Policy page</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-              {settingsView === "terms" && (
-                <div className="p-5 space-y-4">
-                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
-                  <h3 className="text-xl font-black text-stone-900">Terms of Service</h3>
-                  <div className="space-y-3 text-sm leading-relaxed text-stone-600">
-                    <p>You must be at least 18 years old to use IshqYara.</p>
-                    <p>Treat all members with respect. Harassment, hateful conduct, spam, and non-consensual content will lead to immediate account removal.</p>
-                    <p>Profiles and photos must be authentic and represent your genuine identity.</p>
-                  </div>
-                  <div className="pt-2">
-                    <Link href="/terms" target="_blank" className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:underline">
-                      <span>View full public Terms of Service page</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-              {settingsView === "about" && (
-                <div className="p-5 space-y-4">
-                  <button type="button" onClick={() => setSettingsView("main")} className="text-xs font-bold text-[#9e1b22]">← Back to Settings</button>
-                  <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#9e1b22] flex items-center justify-center"><Code2 className="w-7 h-7" /></div>
-                  <h3 className="text-xl font-black text-stone-900">About the Developers</h3>
-                  <p className="text-sm leading-relaxed text-stone-600">IshqYara is a student-built dating and Puja companion app designed to help college students connect around shared interests, intentions and Puja experiences.</p>
-                  <div className="p-4 rounded-2xl bg-[#faf7f2] border border-[#e7dfd5]">
-                    <p className="text-xs font-bold uppercase tracking-wider text-stone-400">Built by</p>
-                    <p className="mt-1 text-sm font-bold text-stone-900">The IshqYara student developer team</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* FULL PROFILE MODAL */}
         {showFullProfileModal &&

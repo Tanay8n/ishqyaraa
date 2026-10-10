@@ -10,10 +10,16 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://ishqyaraa-tanay8ns-projects.vercel.app"
+  ),
   title: "Puja Partner — Find Your People. Celebrate Together. 🪷",
   description:
     "The modern social platform for Durga Puja in Kolkata. Find compatible pandal-hopping partners, join verified groups, plan your routes, and celebrate together.",
   keywords: ["Durga Puja", "Puja Partner", "Kolkata", "Pandal Hopping", "Sharodiya", "Dating", "Friends", "Maddox Square"],
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
   openGraph: {
     title: "Puja Partner — Find Your People. Celebrate Together. 🪷",
     description: "Meet compatible people, find Puja buddies, join pandal-hopping groups, and make your Durga Puja unforgettable.",
