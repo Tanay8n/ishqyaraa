@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Compass,
@@ -70,9 +71,14 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
         <div className="space-y-6">
           {/* Logo & Sharodiya Badge */}
           <Link href="/" className="flex items-center gap-3 px-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9e1b22] to-[#c22830] flex items-center justify-center text-white shadow-md shadow-[#9e1b22]/20 group-hover:scale-105 transition-transform">
-              <span className="text-xl">🪷</span>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="IshqYara Logo"
+              width={40}
+              height={40}
+              priority
+              className="w-10 h-10 rounded-xl object-cover shadow-md shadow-[#9e1b22]/20 group-hover:scale-105 transition-transform"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-stone-900 tracking-tight">
@@ -189,9 +195,14 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
         {!hideMobileNav && (
           <div className="md:hidden sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e7dfd5] px-4 py-3 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9e1b22] to-[#c22830] flex items-center justify-center text-white">
-                <span className="text-base">🪷</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="IshqYara Logo"
+                width={32}
+                height={32}
+                priority
+                className="w-8 h-8 rounded-lg object-cover shadow-sm"
+              />
               <span className="font-bold text-stone-900 text-base">Puja Partner</span>
               <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[#fef3c7] text-[#92400e]">
                 শারদীয়া

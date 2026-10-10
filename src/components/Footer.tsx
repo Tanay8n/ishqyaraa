@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, ShieldCheck, Sparkles, MapPin } from "lucide-react";
 import { AlpanaMotif } from "./AlpanaDecor";
 
@@ -16,9 +17,13 @@ export function Footer() {
           {/* Brand info */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#9e1b22] to-[#c22830] flex items-center justify-center text-white shadow-md">
-                <span className="text-lg">🪷</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="IshqYara Logo"
+                width={36}
+                height={36}
+                className="w-9 h-9 rounded-xl object-cover shadow-md"
+              />
               <span className="text-xl font-bold text-white tracking-tight">
                 Puja Partner
               </span>

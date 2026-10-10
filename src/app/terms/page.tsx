@@ -131,8 +131,8 @@ export default function TermsPage() {
             </h2>
             <p className="text-sm text-stone-600 leading-relaxed">
               For any legal or terms inquiries, reach out to the IshqYara development team at{" "}
-              <a href="mailto:tanay8n@gmail.com" className="font-bold text-[#9e1b22] underline">
-                tanay8n@gmail.com
+              <a href="mailto:ishqyaraofficial@gmail.com" className="font-bold text-[#9e1b22] underline">
+                ishqyaraofficial@gmail.com
               </a>.
             </p>
           </section>

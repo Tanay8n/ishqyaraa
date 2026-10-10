@@ -75,12 +75,12 @@ export default function PrivacyPage() {
               <span className="font-semibold text-stone-700">Application:</span> IshqYara (Puja Partner)
             </div>
             <div>
-              <span className="font-semibold text-stone-700">Developer & Operator:</span> Tanay Mukherjee & IshqYara Team
+              <span className="font-semibold text-stone-700">Developer & Operator:</span>IshqYara Team
             </div>
             <div>
               <span className="font-semibold text-stone-700">Contact Email:</span>{" "}
-              <a href="mailto:tanay8n@gmail.com" className="text-[#9e1b22] underline font-medium">
-                tanay8n@gmail.com
+              <a href="mailto:ishqyaraofficial@gmail.com" className="text-[#9e1b22] underline font-medium">
+                ishqyaraofficial@gmail.com 
               </a>
             </div>
             <div>
@@ -300,8 +300,8 @@ export default function PrivacyPage() {
               </p>
               <p className="text-xs text-stone-600 pt-1">
                 <strong>Manual Deletion Request:</strong> Alternatively, you can email our team directly at{" "}
-                <a href="mailto:tanay8n@gmail.com" className="font-bold text-[#9e1b22] underline">
-                  tanay8n@gmail.com
+                <a href="mailto:ishqyaraofficial@gmail.com" className="font-bold text-[#9e1b22] underline">
+                  ishqyaraofficial@gmail.com
                 </a>{" "}
                 with the subject &quot;Account Deletion Request&quot; from your registered email, and your account will be manually wiped within 30 days.
               </p>
@@ -348,12 +348,12 @@ export default function PrivacyPage() {
               If you have any questions, inquiries, concerns regarding this Privacy Policy, your Google user data, or your privacy rights on IshqYara, please contact our designated privacy officer:
             </p>
             <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/70 text-xs text-stone-700 space-y-1">
-              <p><strong>Lead Developer:</strong> Tanay Mukherjee</p>
+              <p><strong>Lead Developer:</strong> IshqYara Team</p>
               <p><strong>Project:</strong> IshqYara (Puja Partner)</p>
               <p>
                 <strong>Email:</strong>{" "}
-                <a href="mailto:tanay8n@gmail.com" className="text-[#9e1b22] font-bold underline">
-                  tanay8n@gmail.com
+                <a href="mailto:ishqyaraofficial@gmail.com" className="text-[#9e1b22] font-bold underline">
+                  ishqyaraofficial@gmail.com
                 </a>
               </p>
               <p>

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { ShieldCheck } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
 export function LoginScreen() {
@@ -11,8 +12,15 @@ export function LoginScreen() {
     <div className="min-h-screen bg-[#faf7f2] flex flex-col justify-between p-4 sm:p-6">
       <div className="w-full max-w-sm mx-auto my-auto py-8">
         <div className="bg-white rounded-3xl border border-stone-200/90 p-7 sm:p-8 text-center shadow-xl">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-red-50 to-rose-100/70 text-[#9e1b22] flex items-center justify-center shadow-inner">
-            <Heart className="w-7 h-7 fill-current" />
+          <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-md shadow-[#9e1b22]/20">
+            <Image
+              src="/logo.png"
+              alt="IshqYara Logo"
+              width={64}
+              height={64}
+              priority
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="mt-4">
             <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60">

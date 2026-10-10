@@ -57,32 +57,32 @@ interface DeveloperItem {
 
 const DEVELOPERS: DeveloperItem[] = [
   {
-    name: "Tanay Mukherjee",
+    name: "Tanay Biswas",
     role: "Lead Full-Stack Developer",
-    linkedinId: "tanay8n",
-    linkedinUrl: "https://www.linkedin.com/in/tanay8n",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80",
+    linkedinId: "tanay-biswas-8n",
+    linkedinUrl: "https://www.linkedin.com/in/tanay-biswas-8n?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    avatar: "/team/tanay-biswas.jpg",
   },
   {
-    name: "Saptarshi Roy",
+    name: "Abir Mondal",
     role: "Frontend & UI/UX Engineer",
-    linkedinId: "saptarshi-roy-dev",
-    linkedinUrl: "https://www.linkedin.com/in/saptarshi-roy-dev",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+    linkedinId: "abir-mondal-1005913b4",
+    linkedinUrl: "https://www.linkedin.com/in/abir-mondal-1005913b4?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    avatar: "/team/abir-mondal.jpg",
   },
   {
-    name: "Aniket Das",
+    name: "Titas Biswas",
     role: "Backend & Cloud Architect",
-    linkedinId: "aniket-das-cloud",
-    linkedinUrl: "https://www.linkedin.com/in/aniket-das-cloud",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
+    linkedinId: "titas-biswas-84a85139a",
+    linkedinUrl: "https://www.linkedin.com/in/titas-biswas-84a85139a?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+    avatar: "/team/titas-biswas.jpg",
   },
   {
-    name: "Debalina Sen",
+    name: "Anushmita Chhetri",
     role: "Product Designer & Community",
-    linkedinId: "debalina-sen-design",
-    linkedinUrl: "https://www.linkedin.com/in/debalina-sen-design",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+    linkedinId: "anushmita-chhetri-b4125b3b4",
+    linkedinUrl: "https://www.linkedin.com/in/anushmita-chhetri-b4125b3b4?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+    avatar: "/team/anushmita-chhetri.jpg",
   },
 ];
 

@@ -20,10 +20,26 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
   openGraph: {
     title: "Puja Partner — Find Your People. Celebrate Together. 🪷",
     description: "Meet compatible people, find Puja buddies, join pandal-hopping groups, and make your Durga Puja unforgettable.",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1024,
+        height: 1024,
+        alt: "IshqYara — Puja Partner",
+      },
+    ],
   },
 };
 
