@@ -7,7 +7,6 @@ import {
   MessageCircle,
   MapPin,
   Sparkles,
-  CheckCheck,
   ChevronLeft,
   Search,
   Flame,
@@ -16,10 +15,12 @@ import {
   X,
   GraduationCap,
   CheckCircle2,
-  Heart,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { INITIAL_PROFILES, type Profile } from "@/lib/data";
+import { createClient } from "@/lib/supabase/client";
+import { useAppUser } from "@/components/AppUserContext";
+import { loadConversationMessages, loadMyConversations, type AppConversation } from "@/lib/conversations";
+import { markConversationRead, sendMessage } from "@/lib/interactions";
 
 interface ChatMessage {
   id: string;
@@ -28,74 +29,6 @@ interface ChatMessage {
   time: string;
 }
 
-const DEFAULT_MESSAGES: Record<string, ChatMessage[]> = {
-  "riya-20": [
-    {
-      id: "m1",
-      sender: "them",
-      text: "Hey Tanay! 🪷 So excited for Sharodiya! Are we still on for the Saptami night circuit around Maddox?",
-      time: "6:15 PM",
-    },
-    {
-      id: "m2",
-      sender: "me",
-      text: "100%! Planning to hit Ekdalia first at 6:30, then Singhi Park, and finish with rolls and lawn adda at Maddox.",
-      time: "6:20 PM",
-    },
-    {
-      id: "m3",
-      sender: "them",
-      text: "Perfect! I'll bring my vintage Fuji film camera to capture the dhunuchi dance lighting! 📸",
-      time: "6:22 PM",
-    },
-  ],
-  "sourav-22": [
-    {
-      id: "s1",
-      sender: "them",
-      text: "Bro, found a quiet bonedi bari in North Kolkata for Ashtami morning anjali. Zero queue at all!",
-      time: "Yesterday",
-    },
-    {
-      id: "s2",
-      sender: "me",
-      text: "That's clutch. Let's do that and then hit Sovabazar Rajbari.",
-      time: "Yesterday",
-    },
-  ],
-  "ananya-21": [
-    {
-      id: "a1",
-      sender: "them",
-      text: "Hey! Saw you love Tridhara & Chetla Agrani. Are you planning late night pandal hopping on Sasthi? 🪷",
-      time: "2 days ago",
-    },
-  ],
-  "debojyoti-23": [
-    {
-      id: "d1",
-      sender: "them",
-      text: "Dhunuchi dance battle at Bagbazar on Nabami! You down to come watch with me?",
-      time: "3 days ago",
-    },
-  ],
-  "sneha-20": [
-    {
-      id: "sn1",
-      sender: "them",
-      text: "Hey Tanay! What's your favorite bhog spot in South Kolkata?",
-      time: "Oct 2",
-    },
-  ],
-  "ishaan-21": [
-    {
-      id: "i1",
-      sender: "them",
-      text: "Suruchi Sangha's installation theme is unreal this year. We should coordinate a group visit!",
-      time: "Oct 1",
-    },
-  ],
-};
 
 const ICEBREAKER_SUGGESTIONS = [
   "🪷 Up for Saptami Maddox Square adda?",
@@ -107,39 +40,79 @@ const ICEBREAKER_SUGGESTIONS = [
 function MessagesInner() {
   const searchParams = useSearchParams();
   const partnerParam = searchParams.get("partner");
-
-  const [selectedPartnerId, setSelectedPartnerId] = useState<string>(
-    partnerParam && INITIAL_PROFILES.some((p) => p.id === partnerParam)
-      ? partnerParam
-      : "riya-20"
-  );
+  const matchParam = searchParams.get("matchId");
+  const { user, publicProfile } = useAppUser();
+  const [conversations, setConversations] = useState<AppConversation[]>([]);
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string>(partnerParam || "");
 
   // Responsive mobile view state: 'list' (conversation overview) or 'chat' (active room)
   const [mobileView, setMobileView] = useState<"list" | "chat">(
-    partnerParam ? "chat" : "list"
+    partnerParam || matchParam ? "chat" : "list"
   );
 
   const [inputText, setInputText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>(DEFAULT_MESSAGES);
-  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
+  const [messageError, setMessageError] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
   const [showLocationBanner, setShowLocationBanner] = useState(false);
   const [showPartnerProfile, setShowPartnerProfile] = useState(false);
   const [profilePhotoIndex, setProfilePhotoIndex] = useState(0);
 
   const chatScrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Sync when search parameter changes (e.g. user clicked "Chat Now" on Matches)
   useEffect(() => {
-    if (partnerParam && INITIAL_PROFILES.some((p) => p.id === partnerParam)) {
-      setSelectedPartnerId(partnerParam);
-      setMobileView("chat");
-    }
-  }, [partnerParam]);
+    if (!user) return;
+    let active = true;
+    const supabase = createClient();
+    const refresh = async () => {
+      try {
+        const values = await loadMyConversations(user.id, publicProfile);
+        if (active) { setConversations(values); setMessageError(null); }
+      } catch (error) {
+        if (active) setMessageError(error instanceof Error ? error.message : "Could not load conversations.");
+      }
+    };
+    void refresh();
+    const channel = supabase.channel(`conversation-list-${user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "conversation_members", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
+      .subscribe();
+    return () => { active = false; void supabase.removeChannel(channel); };
+  }, [user, publicProfile]);
 
-  const activePartner =
-    INITIAL_PROFILES.find((p) => p.id === selectedPartnerId) || INITIAL_PROFILES[0];
-  const activeChat = messages[selectedPartnerId] || [];
+  const selectedConversation = conversations.find((item) => item.matchId === matchParam || item.otherUid === partnerParam)
+    || conversations.find((item) => item.otherUid === selectedPartnerId)
+    || (!selectedPartnerId ? conversations[0] : undefined);
+  const activePartnerId = selectedConversation?.otherUid || selectedPartnerId;
+  const activeMatchId = selectedConversation?.matchId;
+  const activePartner = selectedConversation?.profile;
+  const activeChat = messages[activePartnerId] || [];
+
+  useEffect(() => {
+    if (!activeMatchId || !user) return;
+    let active = true;
+    const supabase = createClient();
+    const refresh = async () => {
+      try {
+        const rows = await loadConversationMessages(activeMatchId, user.id);
+        if (active) setMessages((current) => ({ ...current, [activePartnerId]: rows }));
+      } catch (error) {
+        if (active) setMessageError(error instanceof Error ? error.message : "Could not load messages.");
+      }
+    };
+    void refresh();
+    const channel = supabase.channel(`conversation-${activeMatchId}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${activeMatchId}` }, () => { void refresh(); })
+      .subscribe();
+    return () => { active = false; void supabase.removeChannel(channel); };
+  }, [activeMatchId, activePartnerId, user]);
+
+  useEffect(() => {
+    const matchId = selectedConversation?.matchId;
+    if (matchId && user && mobileView === "chat") {
+      markConversationRead(matchId).catch((error) => setMessageError(error instanceof Error ? error.message : "Could not update unread status."));
+    }
+  }, [selectedConversation?.matchId, user, mobileView]);
 
   // Direct container scroll to avoid whole-window scrolling jumps on mobile
   const scrollToBottom = (smooth = true) => {
@@ -161,59 +134,29 @@ function MessagesInner() {
     }
   }, [activeChat.length]);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
-    if (!text) return;
-
-    const newMessage: ChatMessage = {
-      id: `m-${Date.now()}`,
-      sender: "me",
-      text: text,
-      time: "Just now",
-    };
-
-    setMessages((prev) => ({
-      ...prev,
-      [selectedPartnerId]: [...(prev[selectedPartnerId] || []), newMessage],
-    }));
-
-    setInputText("");
-    setIsTyping(true);
-
-    // Realistic automated response simulation based on Kolkata Puja context
-    setTimeout(() => {
-      setIsTyping(false);
-      const contextualReplies = [
-        `Sounds fantastic! Let’s meet near the main gate around ${activePartner.pujaPreferences.timing.toLowerCase()}! 🪷`,
-        `Count me in! Also we have to grab rolls near ${activePartner.area}! 🍲`,
-        `Yay! Can't wait for ${activePartner.pujaPreferences.favoritePandalZone} circuit with you! ✨`,
-        `Done! I’ll ping you on WhatsApp once I reach the pandal entrance gate! 📍`,
-      ];
-      const randomReply =
-        contextualReplies[Math.floor(Math.random() * contextualReplies.length)];
-
-      const replyMessage: ChatMessage = {
-        id: `r-${Date.now()}`,
-        sender: "them",
-        text: randomReply,
-        time: "Just now",
-      };
-
-      setMessages((prev) => ({
-        ...prev,
-        [selectedPartnerId]: [...(prev[selectedPartnerId] || []), replyMessage],
-      }));
-    }, 1200);
+    if (!text || !user || !selectedConversation || isSending) return false;
+    setIsSending(true);
+    setMessageError(null);
+    try {
+      await sendMessage(selectedConversation.matchId, text);
+      setInputText("");
+      return true;
+    } catch (error) {
+      setMessageError(error instanceof Error ? error.message : "Could not send message.");
+      return false;
+    } finally { setIsSending(false); }
   };
 
   const handleShareMeetingPoint = () => {
-    handleSendMessage(`📍 Shared Meeting Point: Gate 2, near Maddox Square lawn • Sharodiya 2026`);
-    setShowLocationBanner(true);
-    setTimeout(() => setShowLocationBanner(false), 3000);
+    void handleSendMessage(`📍 Shared Meeting Point: Gate 2, near Maddox Square lawn • Sharodiya 2026`).then((sent) => {
+      if (sent) { setShowLocationBanner(true); setTimeout(() => setShowLocationBanner(false), 3000); }
+    });
   };
 
   // Filter conversations
-  const filteredProfiles = INITIAL_PROFILES.filter((profile) => {
+  const filteredProfiles = conversations.filter(({ profile }) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -224,9 +167,10 @@ function MessagesInner() {
     );
   });
 
-  const partnerPhotos = activePartner.photos && activePartner.photos.length > 0
-    ? activePartner.photos
-    : [activePartner.image];
+  if (!activePartner) {
+    return <AppShell><div className="max-w-xl mx-auto mt-16 rounded-3xl border border-stone-200 bg-white p-8 text-center"><MessageCircle className="mx-auto h-8 w-8 text-[#9e1b22]"/><h1 className="mt-3 text-lg font-bold text-stone-900">Your conversations live here</h1><p className="mt-2 text-sm text-stone-500">Chat becomes available after you have a mutual match.</p>{messageError && <p role="alert" className="mt-3 text-sm text-rose-700">{messageError}</p>}</div></AppShell>;
+  }
+  const partnerPhotos = activePartner.photos && activePartner.photos.length > 0 ? activePartner.photos : [activePartner.image];
 
   return (
     <AppShell hideMobileNav={mobileView === "chat"}>
@@ -263,7 +207,7 @@ function MessagesInner() {
                   <span className="text-base">💬</span>
                 </h2>
                 <p className="text-[11px] text-stone-500 font-medium">
-                  {INITIAL_PROFILES.length} pandal companion connections
+                  {conversations.length} mutual connections
                 </p>
               </div>
               <span className="text-[11px] font-bold text-[#9e1b22] bg-[#fbebee] px-2.5 py-1 rounded-full border border-red-200">
@@ -291,23 +235,23 @@ function MessagesInner() {
                 No matching connections found for &ldquo;{searchQuery}&rdquo;.
               </div>
             ) : (
-              filteredProfiles.map((profile) => {
-                const isSelected = profile.id === selectedPartnerId;
-                const chatHistory = messages[profile.id] || [];
+              filteredProfiles.map((conversation) => {
+                const profile = conversation.profile;
+                const isSelected = conversation.otherUid === selectedPartnerId;
+                const chatHistory = messages[conversation.otherUid] || [];
                 const lastMsg =
                   chatHistory.length > 0
                     ? chatHistory[chatHistory.length - 1]
                     : null;
-                const isRiya = profile.id === "riya-20";
 
                 return (
                   <button
-                    key={profile.id}
+                    key={conversation.matchId}
                     type="button"
                     onClick={() => {
-                      setSelectedPartnerId(profile.id);
+                      setSelectedPartnerId(conversation.otherUid);
                       setMobileView("chat");
-                      window.history.replaceState(null, "", `/messages?partner=${profile.id}`);
+                      window.history.replaceState(null, "", `/messages?matchId=${conversation.matchId}`);
                     }}
                     className={`w-full p-3.5 sm:p-4 flex items-center gap-3 text-left transition-all ${
                       isSelected
@@ -321,7 +265,6 @@ function MessagesInner() {
                         alt={profile.name}
                         className="w-12 h-12 rounded-2xl object-cover ring-2 ring-[#9e1b22]/20"
                       />
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -330,7 +273,7 @@ function MessagesInner() {
                           {profile.name}
                         </h4>
                         <span className="text-[10px] text-stone-400 font-medium shrink-0 ml-1">
-                          {lastMsg ? lastMsg.time : isRiya ? "6:22 PM" : "Yesterday"}
+                          {lastMsg ? lastMsg.time : "New match"}
                         </span>
                       </div>
 
@@ -392,7 +335,6 @@ function MessagesInner() {
                     alt={activePartner.name}
                     className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-cover ring-2 ring-[#9e1b22]/20 group-hover/partner:ring-[#9e1b22]/50 transition-all"
                   />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
 
                 <div className="min-w-0">
@@ -405,7 +347,7 @@ function MessagesInner() {
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-stone-500 truncate">
-                    <span className="text-emerald-600 font-medium">● Online</span>
+                    <span className="text-stone-500 font-medium">Matched</span>
                     <span>•</span>
                     <span className="truncate">{activePartner.area}</span>
                   </div>
@@ -487,23 +429,12 @@ function MessagesInner() {
                       }`}
                     >
                       <span>{msg.time}</span>
-                      {isMe && <CheckCheck className="w-3 h-3 text-white/80" />}
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            {/* Partner Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start items-center gap-2">
-                <div className="bg-white border border-stone-200 rounded-2xl rounded-bl-xs px-3.5 py-2.5 flex items-center gap-1 shadow-2xs">
-                  <span className="w-1.5 h-1.5 bg-[#9e1b22] rounded-full animate-bounce" />
-                  <span className="w-1.5 h-1.5 bg-[#9e1b22] rounded-full animate-bounce [animation-delay:0.15s]" />
-                  <span className="w-1.5 h-1.5 bg-[#9e1b22] rounded-full animate-bounce [animation-delay:0.3s]" />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Quick Icebreaker suggestions */}
@@ -525,6 +456,7 @@ function MessagesInner() {
           </div>
 
           {/* Chat Input Bar with 16px mobile font to prevent iOS zoom */}
+          {messageError && <p role="alert" className="px-4 py-2 text-xs text-rose-700 bg-rose-50 border-t border-rose-100">{messageError}</p>}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -541,7 +473,7 @@ function MessagesInner() {
             />
             <button
               type="submit"
-              disabled={!inputText.trim()}
+              disabled={!inputText.trim() || isSending}
               className="p-2.5 sm:px-4 sm:py-2.5 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] disabled:opacity-40 text-white transition-all shadow-sm active:scale-95 flex items-center gap-1.5 shrink-0 touch-manipulation"
               title="Send message"
             >

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   Heart,
   X,
@@ -23,7 +23,11 @@ interface ProfileCardProps {
   compact?: boolean;
 }
 
-export function ProfileCard({
+export function ProfileCard(props: ProfileCardProps) {
+  return <ProfileCardContent key={props.profile.id} {...props} />;
+}
+
+function ProfileCardContent({
   profile,
   onLike,
   onPass,
@@ -51,18 +55,6 @@ export function ProfileCard({
   const startPosRef = useRef({ x: 0, y: 0 });
   const isPointerDownRef = useRef(false);
   const isAnimatingRef = useRef(false);
-
-  // Reset state when profile changes
-  useEffect(() => {
-    setLiked(false);
-    setPassed(false);
-    setShowInfo(false);
-    setPhotoIndex(0);
-    setDragOffset({ x: 0, y: 0 });
-    setIsDragging(false);
-    setExitDirection(null);
-    isAnimatingRef.current = false;
-  }, [profile.id]);
 
   const triggerSwipe = (direction: "left" | "right") => {
     if (isAnimatingRef.current) return;

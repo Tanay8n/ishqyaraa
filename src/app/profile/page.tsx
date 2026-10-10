@@ -2,71 +2,94 @@
 
 import React, { useState } from "react";
 import {
-  User,
   MapPin,
   GraduationCap,
-  Sparkles,
   Edit3,
   Heart,
-  Camera,
   Flame,
-  Clock,
-  Utensils,
   CheckCircle2,
   X,
-  Check,
   Shield,
   Settings,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { USER_CURRENT_PROFILE } from "@/lib/data";
+import { useAppUser } from "@/components/AppUserContext";
+import type { ProfileDraft } from "@/lib/profile-store";
+import { DEFAULT_PUJA, INTENTION_OPTIONS, INTEREST_SUGGESTIONS, type Intention, type PujaPreferences } from "@/lib/schema";
 
 export default function ProfilePage() {
-  const [profileData, setProfileData] = useState(USER_CURRENT_PROFILE);
+  const { uiProfile: profileData, publicProfile, privateDob, saveProfile, matchCount } = useAppUser();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Edit form state
-  const [editName, setEditName] = useState(profileData.name);
-  const [editTagline, setEditTagline] = useState(profileData.tagline);
-  const [editCollege, setEditCollege] = useState(profileData.college);
-  const [editArea, setEditArea] = useState(profileData.area);
-  const [editBio, setEditBio] = useState(profileData.bio);
-  const [editPrompt1, setEditPrompt1] = useState(profileData.prompts[0]?.answer || "");
-  const [editPrompt2, setEditPrompt2] = useState(profileData.prompts[1]?.answer || "");
-  const [editPrompt3, setEditPrompt3] = useState(profileData.prompts[2]?.answer || "");
+  const [editName, setEditName] = useState("");
+  const [editTagline, setEditTagline] = useState("");
+  const [editCollege, setEditCollege] = useState("");
+  const [editArea, setEditArea] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editIntention, setEditIntention] = useState<Intention>("Friendship");
+  const [editLookingFor, setEditLookingFor] = useState<Intention[]>([]);
+  const [editInterests, setEditInterests] = useState<string[]>([]);
+  const [editPujaPreferences, setEditPujaPreferences] = useState<PujaPreferences>(DEFAULT_PUJA);
+  const [editPrompt1, setEditPrompt1] = useState("");
+  const [editPrompt2, setEditPrompt2] = useState("");
+  const [editPrompt3, setEditPrompt3] = useState("");
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const openEditor = () => {
+    if (!profileData || !publicProfile) return;
+    setEditName(profileData.name);
+    setEditTagline(publicProfile.tagline || "");
+    setEditCollege(profileData.college);
+    setEditArea(profileData.area);
+    setEditBio(profileData.bio);
+    setEditIntention(publicProfile.intention);
+    setEditLookingFor(publicProfile.lookingFor || []);
+    setEditInterests(publicProfile.interests || []);
+    setEditPujaPreferences(publicProfile.pujaPreferences || DEFAULT_PUJA);
+    setEditPrompt1(profileData.prompts[0]?.answer || "");
+    setEditPrompt2(profileData.prompts[1]?.answer || "");
+    setEditPrompt3(profileData.prompts[2]?.answer || "");
+    setSaveError(null);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfileData({
-      ...profileData,
-      name: editName,
-      tagline: editTagline,
+    if (!publicProfile || !privateDob) { setSaveError("Your private profile details are not available. Please refresh and try again."); return; }
+    if (!editLookingFor.length) { setSaveError("Choose at least one connection preference."); return; }
+    setIsSaving(true);
+    setSaveError(null);
+    const draft: ProfileDraft = {
+      displayName: editName,
+      dateOfBirth: privateDob,
       college: editCollege,
       area: editArea,
       bio: editBio,
+      tagline: editTagline,
+      intention: editIntention,
+      lookingFor: editLookingFor,
+      interests: editInterests,
+      photoURLs: publicProfile.photoURLs,
+      pujaPreferences: editPujaPreferences,
       prompts: [
-        {
-          question: "My quintessential Durga Puja ritual is...",
-          answer: editPrompt1,
-        },
-        {
-          question: "Best pandal bhog in town...",
-          answer: editPrompt2,
-        },
-        {
-          question: "Pujor gaan on loop...",
-          answer: editPrompt3,
-        },
+        { question: "My quintessential Durga Puja ritual is...", answer: editPrompt1 },
+        { question: "Best pandal bhog in town...", answer: editPrompt2 },
+        { question: "Pujor gaan on loop...", answer: editPrompt3 },
       ],
-    });
-
-    setSaveSuccess(true);
-    setTimeout(() => {
-      setSaveSuccess(false);
-      setEditModalOpen(false);
-    }, 1200);
+    };
+    try {
+      await saveProfile(draft);
+      setSaveSuccess(true);
+      setTimeout(() => { setSaveSuccess(false); setEditModalOpen(false); }, 1200);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Could not save your profile.");
+    } finally { setIsSaving(false); }
   };
+
+  if (!profileData || !publicProfile) return <AppShell><div className="p-10 text-center text-sm text-stone-500">Loading your profile…</div></AppShell>;
 
   return (
     <AppShell>
@@ -101,7 +124,7 @@ export default function ProfilePage() {
               {/* Avatar */}
               <div className="relative">
                 <img
-                  src={profileData.avatar}
+                  src={profileData.image}
                   alt={profileData.name}
                   className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-cover border-4 border-white shadow-lg ring-2 ring-[#9e1b22]/30"
                 />
@@ -112,7 +135,7 @@ export default function ProfilePage() {
 
               {/* Edit Profile Button */}
               <button
-                onClick={() => setEditModalOpen(true)}
+                onClick={openEditor}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#9e1b22] to-[#b8232b] shadow-sm hover:shadow-md hover:shadow-[#9e1b22]/20 transition-all self-start sm:self-auto active:scale-95"
               >
                 <Edit3 className="w-4 h-4" />
@@ -130,7 +153,7 @@ export default function ProfilePage() {
               </div>
 
               <p className="text-xs sm:text-sm font-semibold text-[#9e1b22]">
-                "{profileData.tagline}"
+                &ldquo;{publicProfile.tagline}&rdquo;
               </p>
 
               <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-stone-600 pt-1">
@@ -142,9 +165,9 @@ export default function ProfilePage() {
                   <GraduationCap className="w-3.5 h-3.5 text-stone-500" />
                   {profileData.college}
                 </span>
-                <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-                  <Shield className="w-3.5 h-3.5 text-emerald-600" />
-                  Google Verified Student
+                <span className={`flex items-center gap-1 font-semibold ${publicProfile.collegeVerified ? "text-emerald-700" : "text-stone-500"}`}>
+                  <Shield className={`w-3.5 h-3.5 ${publicProfile.collegeVerified ? "text-emerald-600" : "text-stone-400"}`} />
+                  {publicProfile.collegeVerified ? "College verified" : "Signed in with Google"}
                 </span>
               </div>
             </div>
@@ -157,7 +180,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <div className="text-xl font-extrabold text-[#9e1b22] leading-tight">
-                    {profileData.stats.matches}
+                    {matchCount}
                   </div>
                   <div className="text-[11px] text-stone-500 font-medium">Matches</div>
                 </div>
@@ -186,7 +209,7 @@ export default function ProfilePage() {
                 Connection Preferences
               </h3>
               <div className="flex flex-wrap gap-2">
-                {profileData.lookingFor.map((intent) => (
+                {publicProfile.lookingFor.map((intent) => (
                   <span
                     key={intent}
                     className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#fef3c7] text-[#92400e] border border-[#fde68a] flex items-center gap-1.5"
@@ -260,7 +283,7 @@ export default function ProfilePage() {
                     {prompt.question}
                   </div>
                   <p className="text-xs sm:text-sm text-stone-800 font-medium italic">
-                    "{prompt.answer}"
+                    &ldquo;{prompt.answer}&rdquo;
                   </p>
                 </div>
               ))}
@@ -300,6 +323,8 @@ export default function ProfilePage() {
                     Keep your Puja details fresh to find the best compatible partners.
                   </p>
                 </div>
+
+                {saveError && <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{saveError}</p>}
 
                 <div className="space-y-3 text-xs">
                   <div>
@@ -363,6 +388,48 @@ export default function ProfilePage() {
                     />
                   </div>
 
+                  <div className="space-y-3 border-t border-stone-100 pt-3">
+                    <div>
+                      <label htmlFor="edit-intention" className="block font-bold text-stone-700 mb-1">My connection intention</label>
+                      <select id="edit-intention" value={editIntention} onChange={(event) => setEditIntention(event.target.value as Intention)} className="w-full rounded-xl border border-stone-300 bg-[#faf7f2] px-3 py-2 text-stone-900">
+                        {INTENTION_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </select>
+                    </div>
+                    <fieldset>
+                      <legend className="mb-2 font-bold text-stone-700">I&apos;m looking for</legend>
+                      <div className="flex flex-wrap gap-2">
+                        {INTENTION_OPTIONS.map((option) => {
+                          const selected = editLookingFor.includes(option);
+                          return <button key={option} type="button" aria-pressed={selected} onClick={() => setEditLookingFor((current) => selected ? current.filter((item) => item !== option) : [...current, option])} className={`rounded-full border px-3 py-1.5 font-semibold ${selected ? "border-[#9e1b22] bg-red-50 text-[#9e1b22]" : "border-stone-300 bg-white text-stone-600"}`}>{option}</button>;
+                        })}
+                      </div>
+                    </fieldset>
+                    <fieldset>
+                      <legend className="mb-2 font-bold text-stone-700">Interests</legend>
+                      <div className="flex flex-wrap gap-2">
+                        {INTEREST_SUGGESTIONS.map((interest) => {
+                          const selected = editInterests.includes(interest);
+                          return <button key={interest} type="button" aria-pressed={selected} onClick={() => setEditInterests((current) => selected ? current.filter((item) => item !== interest) : current.length < 12 ? [...current, interest] : current)} className={`rounded-full border px-3 py-1.5 font-semibold ${selected ? "border-amber-400 bg-amber-50 text-amber-900" : "border-stone-300 bg-white text-stone-600"}`}>{interest}</button>;
+                        })}
+                      </div>
+                    </fieldset>
+                    <fieldset className="space-y-2">
+                      <legend className="font-bold text-stone-700">Puja preferences</legend>
+                      {([
+                        ["crowdComfort", "Crowd comfort", ["Loved Midnight Rush", "Quiet Afternoon Adda", "Balanced Explorer"]],
+                        ["favoritePandalZone", "Favorite pandal zone", ["North Kolkata Heritage", "South Kolkata Theme", "Salt Lake & New Town", "Suburban Megastars"]],
+                        ["foodPriority", "Food priority", ["Puchka & Rolls First", "Moghlai & Biryani Feast", "Bhog & Sweet Craver"]],
+                        ["timing", "Puja timing", ["All-Nighter (11 PM - 6 AM)", "Sunset to Midnight (5 PM - 12 AM)", "Early Bird"]],
+                      ] as const).map(([key, label, options]) => (
+                        <label key={key} className="block font-semibold text-stone-600">{label}
+                          <select value={editPujaPreferences[key]} onChange={(event) => setEditPujaPreferences((current) => ({ ...current, [key]: event.target.value }))} className="mt-1 w-full rounded-xl border border-stone-300 bg-[#faf7f2] px-3 py-2 text-stone-900">
+                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        </label>
+                      ))}
+                    </fieldset>
+                  </div>
+
                   {/* Prompts editing */}
                   <div className="space-y-2 pt-2 border-t border-stone-100">
                     <span className="font-bold text-stone-800 text-[11px] uppercase tracking-wider">
@@ -417,9 +484,10 @@ export default function ProfilePage() {
                   </button>
                   <button
                     type="submit"
+                    disabled={isSaving}
                     className="px-6 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-[#9e1b22] to-[#c22830]"
                   >
-                    Save Changes 🪷
+                    {isSaving ? "Saving…" : "Save Changes 🪷"}
                   </button>
                 </div>
               </form>

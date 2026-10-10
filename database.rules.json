@@ -1,0 +1,104 @@
+{
+  "rules": {
+    "publicProfiles": {
+      ".read": "auth != null",
+      ".indexOn": ["createdAt"],
+      "$uid": {
+        ".write": false,
+        ".validate": "newData.hasChildren(['displayName', 'age', 'college', 'profileComplete', 'updatedAt']) && newData.child('age').isNumber() && newData.child('age').val() >= 18 && newData.child('age').val() <= 80 && newData.child('displayName').isString() && newData.child('displayName').val().length > 0 && newData.child('displayName').val().length <= 80 && !newData.hasChild('email') && !newData.hasChild('dateOfBirth') && (!newData.hasChild('collegeVerified') || newData.child('collegeVerified').val() === false || (data.exists() && data.child('collegeVerified').val() === true))"
+      }
+    },
+    "privateProfiles": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false,
+        ".validate": "newData.hasChild('dateOfBirth') && newData.child('dateOfBirth').isString() && newData.child('dateOfBirth').val().length === 10"
+      }
+    },
+    "likes": {
+      "$fromUid": {
+        ".read": "auth != null && auth.uid === $fromUid",
+        "$toUid": {
+          ".write": false,
+          ".validate": "!newData.exists() || (newData.hasChild('createdAt') && newData.child('createdAt').isNumber())"
+        }
+      }
+    },
+    "incomingLikes": {
+      "$toUid": {
+        ".read": "auth != null && auth.uid === $toUid",
+        "$fromUid": {
+          ".write": false,
+          ".validate": "!newData.exists() || (newData.hasChild('createdAt') && newData.child('createdAt').isNumber())"
+        }
+      }
+    },
+    "passes": {
+      "$fromUid": {
+        ".read": "auth != null && auth.uid === $fromUid",
+        "$toUid": {
+          ".write": false
+        }
+      }
+    },
+    "lastActions": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+    "matches": {
+      "$matchId": {
+        ".read": "auth != null && data.child('participantIds').child(auth.uid).exists()",
+        ".write": false,
+        ".validate": "newData.hasChildren(['uidLow', 'uidHigh', 'participantIds', 'status', 'createdAt'])"
+      }
+    },
+    "userMatches": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$matchId": {
+          ".write": false,
+          ".validate": "!newData.exists() || (newData.hasChild('otherUserUid') && newData.child('otherUserUid').isString() && root.child('matches').child($matchId).exists() && root.child('matches').child($matchId).child('participantIds').child($uid).exists())"
+        }
+      }
+    },
+    "messages": {
+      "$matchId": {
+        ".read": "auth != null && root.child('matches').child($matchId).child('participantIds').child(auth.uid).exists() && root.child('matches').child($matchId).child('status').val() === 'active' && !root.child('blocks').child(auth.uid).child(root.child('matches').child($matchId).child('uidLow').val()).exists() && !root.child('blocks').child(auth.uid).child(root.child('matches').child($matchId).child('uidHigh').val()).exists() && !root.child('blockedBy').child(auth.uid).child(root.child('matches').child($matchId).child('uidLow').val()).exists() && !root.child('blockedBy').child(auth.uid).child(root.child('matches').child($matchId).child('uidHigh').val()).exists()",
+        ".indexOn": ["createdAt"],
+        "$messageId": {
+          ".write": false
+        }
+      }
+    },
+    "blocks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$blockedUid": {
+          ".write": "auth != null && auth.uid === $uid && $uid !== $blockedUid"
+        }
+      }
+    },
+    "blockedBy": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$blockerUid": {
+          ".write": false
+        }
+      }
+    },
+    "reports": {
+      ".read": false,
+      "$reportId": {
+        ".write": "auth != null && !data.exists() && newData.child('reporterUid').val() === auth.uid && newData.child('reportedUid').isString() && newData.child('reportedUid').val() !== auth.uid && newData.child('reason').isString() && newData.child('reason').val().length > 0 && newData.child('reason').val().length <= 500 && newData.child('createdAt').isNumber()"
+      }
+    },
+    "presence": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    }
+  }
+}

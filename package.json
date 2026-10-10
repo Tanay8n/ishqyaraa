@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:unit": "node --experimental-strip-types --test tests/schema.test.mjs tests/supabase-profile.test.mjs",
+    "test:rules": "firebase emulators:exec --only database --project demo-ishqyaraa-rules \"node --test tests/database.rules.test.mjs\""
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "lucide-react": "^1.52.0",
@@ -17,7 +21,11 @@
     "react-dom": "19.2.8",
     "tailwind-merge": "^3.7.0"
   },
+  "overrides": {
+    "@grpc/grpc-js": "^1.13.6"
+  },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
@@ -25,6 +33,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "firebase": "^12.19.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

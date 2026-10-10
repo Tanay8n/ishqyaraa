@@ -1,20 +1,46 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
   MessageCircle,
   MapPin,
   CheckCircle2,
-  GraduationCap,
   Flame,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { INITIAL_PROFILES } from "@/lib/data";
+import { useAppUser } from "@/components/AppUserContext";
+import { createClient } from "@/lib/supabase/client";
+import { loadMyConversations } from "@/lib/conversations";
+import type { Profile } from "@/lib/data";
+
+type MatchCardProfile = Profile & { matchId: string };
 
 export default function MatchesPage() {
-  const matches = INITIAL_PROFILES.slice(0, 4);
+  const { user, publicProfile } = useAppUser();
+  const [matches, setMatches] = useState<MatchCardProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const supabase = createClient();
+    const refresh = async () => {
+      try {
+        const records = await loadMyConversations(user.id, publicProfile);
+        if (!cancelled) { setMatches(records.map((item) => ({ ...item.profile, matchId: item.matchId }))); setError(null); setLoading(false); }
+      } catch (reason) {
+        if (!cancelled) { setError(reason instanceof Error ? reason.message : "Could not load matches."); setLoading(false); }
+      }
+    };
+    void refresh();
+    const channel = supabase.channel(`matches-${user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "conversation_members", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
+      .subscribe();
+    return () => { cancelled = true; void supabase.removeChannel(channel); };
+  }, [user, publicProfile]);
 
   return (
     <AppShell>
@@ -35,6 +61,9 @@ export default function MatchesPage() {
         </div>
 
         {/* Tinder-style Match Portrait Grid */}
+        {loading && <p className="py-16 text-center text-sm text-stone-500">Loading your matches…</p>}
+        {error && <p role="alert" className="py-8 text-center text-sm text-rose-700">{error}</p>}
+        {!loading && !error && matches.length === 0 && <div className="rounded-3xl border border-stone-200 bg-white p-10 text-center text-sm text-stone-500">Your mutual matches will appear here when someone you like likes you back.</div>}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 max-w-sm sm:max-w-none mx-auto">
           {matches.map((profile) => (
             <div
@@ -84,13 +113,13 @@ export default function MatchesPage() {
                 </div>
 
                 <p className="text-xs text-stone-200 font-normal line-clamp-1 italic">
-                  "{profile.bio}"
+                  &ldquo;{profile.bio}&rdquo;
                 </p>
 
                 {/* Direct Action Link */}
                 <div className="pt-1.5">
                   <Link
-                    href={`/messages?partner=${profile.id}`}
+                    href={`/messages?matchId=${profile.matchId}`}
                     className="w-full py-2 px-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#9e1b22] to-[#e11d48] hover:from-[#83161c] hover:to-[#9e1b22] flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />

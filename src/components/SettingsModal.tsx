@@ -8,7 +8,6 @@ import {
   User,
   MessageSquare,
   Shield,
-  Code2,
   LogOut,
   ChevronRight,
   ChevronLeft,
@@ -20,12 +19,9 @@ import {
   MapPin,
   GraduationCap,
   Mail,
-  Phone,
-  Sparkles,
-  CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { USER_CURRENT_PROFILE } from "@/lib/data";
+import { useAppUser } from "@/components/AppUserContext";
 
 export type SettingsOption =
   | "menu"
@@ -93,6 +89,7 @@ export function SettingsModal({
   onClose,
   initialOption = "menu",
 }: SettingsModalProps) {
+  const { uiProfile, publicProfile, user, logout } = useAppUser();
   const [currentView, setCurrentView] = useState<SettingsOption>(initialOption);
 
   // Copy state for developers' LinkedIn IDs
@@ -108,6 +105,7 @@ export function SettingsModal({
 
   // Logout confirmation state
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -127,32 +125,38 @@ export function SettingsModal({
     }, 3200);
   };
 
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
     setIsLoggingOut(true);
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 1500);
+    setLogoutError(null);
+    try {
+      await logout();
+      onClose();
+    } catch (error) {
+      setLogoutError(error instanceof Error ? error.message : "Could not sign out. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const menuItems = [
     {
       id: "userInfo" as SettingsOption,
       label: "User Info",
-      description: "Profile summary, contact details & companion ID",
+      description: "Profile summary and account details",
       icon: User,
       color: "bg-blue-50 text-blue-700 border-blue-200",
     },
     {
       id: "support" as SettingsOption,
       label: "Support and Feedback",
-      description: "Share feedback, report bugs & emergency helplines",
+      description: "Share feedback and view safety information",
       icon: MessageSquare,
       color: "bg-amber-50 text-amber-700 border-amber-200",
     },
     {
       id: "privacy" as SettingsOption,
       label: "Privacy Policy",
-      description: "Location safety, verification rules & encrypted chats",
+      description: "How profile and account data are handled",
       icon: Shield,
       color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
@@ -300,8 +304,8 @@ export function SettingsModal({
               <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-4">
                 <div className="relative shrink-0">
                   <img
-                    src={USER_CURRENT_PROFILE.avatar}
-                    alt={USER_CURRENT_PROFILE.name}
+                    src={uiProfile?.image || ""}
+                    alt={uiProfile?.name || "Your profile"}
                     className="w-20 h-20 rounded-2xl object-cover ring-2 ring-[#9e1b22]/30 shadow-md"
                   />
                   <span
@@ -316,26 +320,25 @@ export function SettingsModal({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                     <div>
                       <h3 className="text-lg font-bold text-stone-900">
-                        {USER_CURRENT_PROFILE.name}, {USER_CURRENT_PROFILE.age}
+                        {uiProfile?.name || "Your profile"}{uiProfile?.age ? `, ${uiProfile.age}` : ""}
                       </h3>
                       <p className="text-xs text-stone-500 font-medium">
-                        {USER_CURRENT_PROFILE.tagline}
+                        {publicProfile?.tagline || "Complete your profile to add a tagline."}
                       </p>
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 self-center sm:self-auto">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      Verified
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-700 border border-stone-200 self-center sm:self-auto">
+                      {user?.app_metadata?.provider === "google" ? "Google sign-in" : "Signed in"}
                     </span>
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start text-xs text-stone-600">
                     <span className="flex items-center gap-1 bg-stone-100 px-2.5 py-1 rounded-lg">
                       <MapPin className="w-3 h-3 text-[#9e1b22]" />
-                      {USER_CURRENT_PROFILE.area}
+                      {uiProfile?.area || "Area not added"}
                     </span>
                     <span className="flex items-center gap-1 bg-stone-100 px-2.5 py-1 rounded-lg">
                       <GraduationCap className="w-3 h-3 text-[#ea580c]" />
-                      {USER_CURRENT_PROFILE.college}
+                      {uiProfile?.college || "College not added"}
                     </span>
                   </div>
                 </div>
@@ -354,17 +357,7 @@ export function SettingsModal({
                     </label>
                     <div className="flex items-center gap-2 text-stone-800 text-xs font-semibold truncate">
                       <Mail className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                      <span className="truncate">tanayff@gmail.com</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/80">
-                    <label className="text-[11px] font-bold text-stone-500 block mb-0.5">
-                      Contact / Phone
-                    </label>
-                    <div className="flex items-center gap-2 text-stone-800 text-xs font-semibold">
-                      <Phone className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                      <span>+91 98300 24680</span>
+                      <span className="truncate">{user?.email || "Email unavailable"}</span>
                     </div>
                   </div>
 
@@ -374,19 +367,10 @@ export function SettingsModal({
                     </label>
                     <div className="flex items-center gap-2 text-stone-800 text-xs font-semibold">
                       <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                      <span>South Kolkata (Ballygunge)</span>
+                      <span>{uiProfile?.area || "Area not added"}</span>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/80">
-                    <label className="text-[11px] font-bold text-stone-500 block mb-0.5">
-                      Companion ID
-                    </label>
-                    <div className="flex items-center gap-2 text-stone-800 text-xs font-semibold">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span className="font-mono text-[#9e1b22]">PP-KOL-2026-8942</span>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-stone-100">
@@ -431,10 +415,10 @@ export function SettingsModal({
                       🪷
                     </div>
                     <h4 className="text-base font-bold text-emerald-900">
-                      Feedback Received!
+                      Feedback was not sent
                     </h4>
                     <p className="text-xs text-emerald-700 max-w-sm mx-auto">
-                      Thank you for sharing your thoughts. Our team will review your message promptly.
+                      Feedback delivery is not configured in this app. Your message stayed in this page and was not submitted.
                     </p>
                   </div>
                 ) : (
@@ -455,7 +439,7 @@ export function SettingsModal({
                           <button
                             type="button"
                             key={cat.id}
-                            onClick={() => setFeedbackCategory(cat.id as any)}
+                            onClick={() => setFeedbackCategory(cat.id as "feature" | "bug" | "pandal" | "safety" | "general")}
                             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                               feedbackCategory === cat.id
                                 ? "bg-[#9e1b22] text-white shadow-xs"
@@ -536,7 +520,7 @@ export function SettingsModal({
                     <span className="font-bold text-stone-900">1090 / 112</span>
                   </div>
                   <div className="bg-white p-2.5 rounded-xl border border-amber-200/60">
-                    <span className="text-stone-500 block text-[10px]">Women's Safety</span>
+                    <span className="text-stone-500 block text-[10px]">Women&apos;s Safety</span>
                     <span className="font-bold text-stone-900">1091</span>
                   </div>
                 </div>
@@ -556,7 +540,7 @@ export function SettingsModal({
                     Sharodiya Community Privacy Guidelines
                   </h3>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Active
+                    Overview
                   </span>
                 </div>
 
@@ -564,33 +548,30 @@ export function SettingsModal({
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
                     <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#9e1b22]" />
-                      1. Location & Pandal Zone Masking
+                      1. Location Information
                     </h4>
                     <p>
-                      Your exact GPS coordinates are never broadcast. Only broad neighborhood
-                      zones (e.g. South Kolkata, Salt Lake) are shown to protect your physical safety.
+                      The profile asks for a broad area. Do not enter an exact address or live location.
                     </p>
                   </div>
 
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
                     <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#ea580c]" />
-                      2. Verified Profiles Only
+                      2. College Information
                     </h4>
                     <p>
-                      Profiles undergo selfie and ID verification to eliminate impersonation. Bad
-                      actors or non-consensual photography result in permanent account bans.
+                      College names are user-provided and are not verified by this app. Google sign-in confirms an account, not student status.
                     </p>
                   </div>
 
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60">
                     <h4 className="font-bold text-stone-900 mb-0.5 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#d97706]" />
-                      3. Encrypted Chats
+                      3. Messages
                     </h4>
                     <p>
-                      All 1-on-1 messages and pandal hopping plans are encrypted in transit. You can
-                      block or unmatch any profile with a single tap.
+                      Messages are available to conversation participants under database access policies. They are not end-to-end encrypted. You can block a profile in discovery.
                     </p>
                   </div>
 
@@ -600,8 +581,7 @@ export function SettingsModal({
                       4. Data Privacy & Account Deletion
                     </h4>
                     <p>
-                      We never sell user data. You can delete your account and all associated match
-                      records permanently at any time.
+                      Profile and conversation data are stored in the configured Supabase project. Account deletion requires the server-side secret configuration and removes associated account data when completed.
                     </p>
                   </div>
                 </div>
@@ -704,14 +684,13 @@ export function SettingsModal({
                     Log Out of Puja Partner?
                   </h3>
                   <p className="text-xs text-stone-500 max-w-sm mx-auto mt-1">
-                    You will need to sign in again to access your live matches and pandal hopping
-                    groups.
+                    You will need to sign in again to access your profile, matches, and chats.
                   </p>
                 </div>
 
                 {isLoggingOut ? (
                   <div className="p-4 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold animate-pulse">
-                    Logging you out safely... Shubho Sharodiya! 🪷
+                    Signing you out…
                   </div>
                 ) : (
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -730,6 +709,7 @@ export function SettingsModal({
                     </button>
                   </div>
                 )}
+                {logoutError && <p role="alert" className="text-xs text-rose-700">{logoutError}</p>}
               </div>
             </div>
           )}
