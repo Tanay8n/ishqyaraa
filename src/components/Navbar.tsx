@@ -33,7 +33,7 @@ export function Navbar() {
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="text-xl font-bold tracking-tight text-stone-900 group-hover:text-[#9e1b22] transition-colors">
-                  Puja Partner
+                  IshqYara
                 </span>
                 <span className="text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
                   শারদীয়া

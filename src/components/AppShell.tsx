@@ -51,7 +51,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
   };
 
   const navItems: NavItem[] = [
-    { label: "Find Partners", href: "/", icon: Compass },
+    { label: "Find", href: "/", icon: Compass },
     { label: "Matches", href: "/matches", icon: Heart, count: matchCount },
     { label: "Messages", href: "/messages", icon: MessageCircle, count: unreadTotal },
     { label: "Profile", href: "/profile", icon: User },
@@ -82,10 +82,10 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-stone-900 tracking-tight">
-                  Puja Partner
+                  IshqYara
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
-                  শারদীয়া
+                  শারদীয়া - Edition
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 font-medium">
