@@ -2,7 +2,7 @@ import type { Profile } from "@/lib/data";
 
 export const MAX_MESSAGE_LENGTH = 2000;
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-export const MAX_PHOTOS = 4;
+export const MAX_PHOTOS = 6;
 export const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export type Intention = Profile["intention"];
@@ -146,7 +146,7 @@ export const INTEREST_SUGGESTIONS = [
 ];
 
 export const PROMPT_QUESTIONS = [
-  "My quintessential Durga Puja ritual is...",
-  "Best pandal bhog in town...",
-  "Pujor gaan on loop...",
+  "My perfect puja date would be",
+  "This puja i'm looking for someone who...",
+  "Pandal hopping with me means...",
 ];

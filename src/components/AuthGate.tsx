@@ -10,8 +10,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const { status, dataError, matchesLoadError, logout } = useAppUser();
   const pathname = usePathname();
 
-  // Allow public access to legal pages regardless of authentication status
-  if (pathname === "/privacy" || pathname === "/terms") {
+  // Allow public access to legal pages and onboarding regardless of authentication status
+  if (pathname === "/privacy" || pathname === "/terms" || pathname === "/onboarding") {
     return <>{children}</>;
   }
 

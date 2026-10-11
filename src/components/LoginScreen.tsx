@@ -24,7 +24,7 @@ export function LoginScreen() {
           </div>
           <div className="mt-4">
             <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60">
-              শারদীয়া • Kolkata
+              Dil se, Ishq Tak.
             </span>
           </div>
           <h1 className="mt-3 text-2xl font-black text-stone-900 tracking-tight">
@@ -76,13 +76,13 @@ export function LoginScreen() {
             .
           </div>
 
-          <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 py-1.5 px-2.5 rounded-xl border border-emerald-200/60">
+          {/* <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 py-1.5 px-2.5 rounded-xl border border-emerald-200/60">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             <span>Google OAuth 2.0 & Row-Level Data Security</span>
-          </div>
+          </div> */}
         </div>
       </div>
-
+ 
       {/* Prominent Footer */}
       <footer className="w-full max-w-sm mx-auto text-center py-4">
         <nav aria-label="Legal navigation" className="flex items-center justify-center gap-4 text-xs font-semibold text-stone-600">
