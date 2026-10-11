@@ -203,7 +203,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
                 priority
                 className="w-8 h-8 rounded-lg object-cover shadow-sm"
               />
-              <span className="font-bold text-stone-900 text-base">Puja Partner</span>
+              <span className="font-bold text-stone-900 text-base">IshqYara</span>
               <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[#fef3c7] text-[#92400e]">
                 শারদীয়া
               </span>
