@@ -107,6 +107,12 @@ export function SelfieVerificationModal({
     if (!capturedPhoto) return;
     setVerifying(true);
 
+    // Call server to persist verification in database
+    void fetch("/api/account/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    }).catch(() => {});
+
     // Simulate pose matching and verification check
     setTimeout(() => {
       setVerifying(false);
