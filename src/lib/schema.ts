@@ -114,7 +114,10 @@ export function toUiProfile(
             answer: prompt.answer,
           }))
       : [],
-    verified: Boolean(record.collegeVerified),
+    verified: Boolean(
+      record.collegeVerified ||
+      (typeof window !== "undefined" && window.localStorage.getItem(`ishqyara_verified_${uid}`) === "true")
+    ),
     distanceKm: 0,
   };
 }

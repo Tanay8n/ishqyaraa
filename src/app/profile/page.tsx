@@ -37,9 +37,12 @@ import {
   type PujaPreferences,
 } from "@/lib/schema";
 
+import { SelfieVerificationModal } from "@/components/SelfieVerificationModal";
+
 export default function ProfilePage() {
-  const { uiProfile: profileData, publicProfile, privateDob, saveProfile, matchCount, user } = useAppUser();
+  const { uiProfile: profileData, publicProfile, privateDob, saveProfile, refreshProfile, matchCount, user } = useAppUser();
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [showSelfieModal, setShowSelfieModal] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -461,10 +464,21 @@ export default function ProfilePage() {
                   <GraduationCap className="w-3.5 h-3.5 text-stone-500" />
                   {profileData.college}
                 </span>
-                <span className={`flex items-center gap-1 font-semibold ${publicProfile.collegeVerified ? "text-emerald-700" : "text-stone-500"}`}>
-                  <Shield className={`w-3.5 h-3.5 ${publicProfile.collegeVerified ? "text-emerald-600" : "text-stone-400"}`} />
-                  {publicProfile.collegeVerified ? "College verified" : "Signed in with Google"}
-                </span>
+                {profileData?.verified || publicProfile.collegeVerified ? (
+                  <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Selfie & College Verified 🪷
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowSelfieModal(true)}
+                    className="flex items-center gap-1 font-semibold text-[#9e1b22] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200 transition-all cursor-pointer"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    Verify with Selfie 🪷
+                  </button>
+                )}
               </div>
             </div>
 
@@ -720,9 +734,54 @@ export default function ProfilePage() {
                               </span>
                             )}
 
-                            {/* Overlay Controls */}
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1">
-                              <div className="flex items-center justify-between">
+                            {/* Permanent mobile & desktop touch action buttons */}
+                            <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
+                              <button
+                                type="button"
+                                title="Remove photo"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveSlotPhoto(index);
+                                }}
+                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                              >
+                                <X className="w-3 h-3 stroke-[2.5]" />
+                              </button>
+                            </div>
+
+                            <div className="absolute bottom-1.5 right-1.5 z-20 flex items-center gap-1">
+                              <button
+                                type="button"
+                                title="Change photo"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  triggerSlotPick(index);
+                                }}
+                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 hover:bg-[#9e1b22] hover:text-white text-stone-800 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                              >
+                                <Camera className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                              </button>
+                            </div>
+
+                            {index > 0 && (
+                              <div className="absolute bottom-1.5 left-1.5 z-20 flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  title="Make this your main profile picture"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetMainPic(index);
+                                  }}
+                                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 hover:bg-amber-50 text-amber-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                                >
+                                  <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-500/20" />
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Desktop extended hover controls (reordering) */}
+                            <div className="hidden sm:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex-col justify-between p-1 pointer-events-none">
+                              <div className="flex items-center justify-between pointer-events-auto">
                                 {index > 0 ? (
                                   <button
                                     type="button"
@@ -732,9 +791,7 @@ export default function ProfilePage() {
                                   >
                                     <Star className="w-3 h-3" />
                                   </button>
-                                ) : (
-                                  <span />
-                                )}
+                                ) : <span />}
                                 <button
                                   type="button"
                                   title="Remove"
@@ -748,13 +805,13 @@ export default function ProfilePage() {
                               <button
                                 type="button"
                                 onClick={() => triggerSlotPick(index)}
-                                className="mx-auto px-2 py-0.5 bg-white rounded-full text-[9px] font-bold text-stone-900 shadow-sm flex items-center gap-1 cursor-pointer"
+                                className="mx-auto px-2 py-0.5 bg-white rounded-full text-[9px] font-bold text-stone-900 shadow-sm flex items-center gap-1 cursor-pointer pointer-events-auto"
                               >
                                 <Camera className="w-2.5 h-2.5 text-[#9e1b22]" />
                                 <span>Change</span>
                               </button>
 
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between pointer-events-auto">
                                 <button
                                   type="button"
                                   disabled={index === 0}
@@ -1045,6 +1102,17 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
+      )}
+      {/* Selfie Verification Modal */}
+      {user && (
+        <SelfieVerificationModal
+          userId={user.id}
+          isOpen={showSelfieModal}
+          onClose={() => setShowSelfieModal(false)}
+          onVerified={() => {
+            void refreshProfile();
+          }}
+        />
       )}
     </AppShell>
   );

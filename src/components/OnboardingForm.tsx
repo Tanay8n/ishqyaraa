@@ -1037,10 +1037,54 @@ export function OnboardingForm() {
                             </div>
                           )}
 
-                          {/* Overlay Controls */}
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5">
-                            {/* Top row actions: Reorder & Delete */}
-                            <div className="flex items-center justify-between">
+                          {/* Permanent mobile & desktop touch action buttons */}
+                          <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
+                            <button
+                              type="button"
+                              title="Remove photo"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemovePhoto(index);
+                              }}
+                              className="w-6 h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                            >
+                              <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                            </button>
+                          </div>
+
+                          <div className="absolute bottom-1.5 right-1.5 z-20 flex items-center gap-1">
+                            <button
+                              type="button"
+                              title="Update / Replace photo"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                triggerPhotoPick(index);
+                              }}
+                              className="w-6 h-6 rounded-full bg-white/95 hover:bg-[#9e1b22] hover:text-white text-stone-800 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                            >
+                              <Camera className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {index > 0 && (
+                            <div className="absolute bottom-1.5 left-1.5 z-20 flex items-center gap-1">
+                              <button
+                                type="button"
+                                title="Make this your main profile picture"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSetAsProfilePic(index);
+                                }}
+                                className="w-6 h-6 rounded-full bg-white/95 hover:bg-amber-50 text-amber-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                              >
+                                <Star className="w-3 h-3 fill-amber-500/20" />
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Desktop extended hover controls (reordering) */}
+                          <div className="hidden sm:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex-col justify-between p-1.5 pointer-events-none">
+                            <div className="flex items-center justify-between pointer-events-auto">
                               {index > 0 ? (
                                 <button
                                   type="button"
@@ -1050,9 +1094,7 @@ export function OnboardingForm() {
                                 >
                                   <Star className="w-3.5 h-3.5" />
                                 </button>
-                              ) : (
-                                <span />
-                              )}
+                              ) : <span />}
                               <button
                                 type="button"
                                 title="Remove photo"
@@ -1063,20 +1105,18 @@ export function OnboardingForm() {
                               </button>
                             </div>
 
-                            {/* Center: Update / Replace photo button */}
-                            <div className="flex justify-center">
+                            <div className="flex justify-center pointer-events-auto">
                               <button
                                 type="button"
                                 onClick={() => triggerPhotoPick(index)}
                                 className="px-2.5 py-1 bg-white/95 text-stone-900 rounded-full text-[10px] font-bold shadow-md hover:bg-white flex items-center gap-1 cursor-pointer"
                               >
                                 <Camera className="w-3 h-3 text-[#9e1b22]" />
-                                <span>Update</span>
+                                <span>Change</span>
                               </button>
                             </div>
 
-                            {/* Bottom row actions: Move left/right */}
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between pointer-events-auto">
                               <button
                                 type="button"
                                 disabled={index === 0}
@@ -1097,16 +1137,6 @@ export function OnboardingForm() {
                               </button>
                             </div>
                           </div>
-
-                          {/* Replace corner button */}
-                          <button
-                            type="button"
-                            title="Update photo"
-                            onClick={() => triggerPhotoPick(index)}
-                            className="absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-white/90 text-stone-800 hover:bg-[#9e1b22] hover:text-white shadow-md flex items-center justify-center transition-colors cursor-pointer group-hover:hidden"
-                          >
-                            <RefreshCw className="w-3 h-3" />
-                          </button>
                         </div>
                       );
                     }
