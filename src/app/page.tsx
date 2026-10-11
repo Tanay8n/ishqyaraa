@@ -22,7 +22,6 @@ import {
   Send,
   MessageSquareQuote,
   Camera,
-  Search,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { type Profile } from "@/lib/data";
@@ -94,7 +93,6 @@ export default function PartnerFinderPage() {
   // Filters State
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [selectedIntent, setSelectedIntent] = useState<string>("all");
-  const [collegeQuery, setCollegeQuery] = useState<string>("");
   const [showFiltersModal, setShowFiltersModal] = useState(false);
 
   // Like with Note / Comment Modal (Hinge style)
@@ -211,24 +209,19 @@ export default function PartnerFinderPage() {
       if (selectedIntent !== "all") {
         if (p.intention !== selectedIntent) return false;
       }
-      if (collegeQuery.trim()) {
-        const query = collegeQuery.toLowerCase().trim();
-        if (!p.college?.toLowerCase().includes(query)) return false;
-      }
       return true;
     });
-  }, [profiles, selectedZone, selectedIntent, collegeQuery]);
+  }, [profiles, selectedZone, selectedIntent]);
 
   const activeFilterCount =
     (selectedZone !== "all" ? 1 : 0) +
-    (selectedIntent !== "all" ? 1 : 0) +
-    (collegeQuery.trim() ? 1 : 0);
+    (selectedIntent !== "all" ? 1 : 0);
 
   // Reset deck on filter change
   useEffect(() => {
     setDeckIndex(0);
     setPhotoIndex(0);
-  }, [selectedZone, selectedIntent, collegeQuery]);
+  }, [selectedZone, selectedIntent]);
 
   const currentProfile: Profile | null = filteredProfiles[deckIndex] ?? null;
   const nextProfile: Profile | null =
@@ -640,69 +633,7 @@ export default function PartnerFinderPage() {
           </div>
         </div>
 
-        {/* Quick Filter Chips Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar text-xs">
-          {/* Quick Zone Chips */}
-          {KOLKATA_ZONES.slice(0, 4).map((zone) => {
-            const isActive = selectedZone === zone.id;
-            return (
-              <button
-                key={zone.id}
-                type="button"
-                onClick={() => setSelectedZone(zone.id)}
-                className={`px-3 py-1.5 rounded-full whitespace-nowrap font-bold transition-all shrink-0 border ${
-                  isActive
-                    ? "bg-[#9e1b22] text-white border-[#9e1b22] shadow-xs"
-                    : "bg-white text-stone-600 border-stone-200 hover:border-stone-300"
-                }`}
-              >
-                {zone.label}
-              </button>
-            );
-          })}
 
-          {/* Quick Intent: Dating */}
-          <button
-            type="button"
-            onClick={() => setSelectedIntent(selectedIntent === "Dating" ? "all" : "Dating")}
-            className={`px-3 py-1.5 rounded-full whitespace-nowrap font-bold transition-all shrink-0 border ${
-              selectedIntent === "Dating"
-                ? "bg-[#9e1b22] text-white border-[#9e1b22] shadow-xs"
-                : "bg-white text-stone-600 border-stone-200 hover:border-stone-300"
-            }`}
-          >
-            Dating ❤️
-          </button>
-
-          {/* Quick Intent: Puja Buddy */}
-          <button
-            type="button"
-            onClick={() => setSelectedIntent(selectedIntent === "Puja Buddy" ? "all" : "Puja Buddy")}
-            className={`px-3 py-1.5 rounded-full whitespace-nowrap font-bold transition-all shrink-0 border ${
-              selectedIntent === "Puja Buddy"
-                ? "bg-[#9e1b22] text-white border-[#9e1b22] shadow-xs"
-                : "bg-white text-stone-600 border-stone-200 hover:border-stone-300"
-            }`}
-          >
-            Puja Buddy 🪷
-          </button>
-
-          {/* Reset button if filters are active */}
-          {activeFilterCount > 0 && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedZone("all");
-                setSelectedIntent("all");
-                setCollegeQuery("");
-              }}
-              className="px-3 py-1.5 rounded-full whitespace-nowrap font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-all shrink-0 flex items-center gap-1"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset</span>
-            </button>
-          )}
-        </div>
 
         {/* Toast Alert */}
         {toastMessage && (
@@ -759,7 +690,6 @@ export default function PartnerFinderPage() {
                 onClick={() => {
                   setSelectedZone("all");
                   setSelectedIntent("all");
-                  setCollegeQuery("");
                 }}
                 className="mt-2 px-5 py-2 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
               >
@@ -1278,39 +1208,6 @@ export default function PartnerFinderPage() {
                   </div>
                 </div>
 
-                {/* College Search */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-stone-400">
-                    Search by College / University
-                  </label>
-                  <div className="relative">
-                    <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={collegeQuery}
-                      onChange={(e) => setCollegeQuery(e.target.value)}
-                      placeholder="e.g. Jadavpur, Presidency, St. Xavier's…"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-stone-50 border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#9e1b22]/20 focus:border-[#9e1b22] text-xs text-stone-900"
-                    />
-                  </div>
-
-                  {/* College suggestions */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {["Jadavpur", "Presidency", "St. Xavier's", "Calcutta University", "Heritage", "IEM"].map(
-                      (col) => (
-                        <button
-                          key={col}
-                          type="button"
-                          onClick={() => setCollegeQuery(col)}
-                          className="px-2.5 py-1 rounded-xl text-[11px] bg-stone-100 hover:bg-stone-200 text-stone-600 font-medium"
-                        >
-                          {col}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
                 {/* Filter Modal Action Buttons */}
                 <div className="pt-3 border-t border-stone-100 flex items-center gap-3">
                   <button
@@ -1318,7 +1215,6 @@ export default function PartnerFinderPage() {
                     onClick={() => {
                       setSelectedZone("all");
                       setSelectedIntent("all");
-                      setCollegeQuery("");
                       setShowFiltersModal(false);
                     }}
                     className="flex-1 py-3 rounded-2xl font-bold text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all"
