@@ -93,6 +93,7 @@ export default function PartnerFinderPage() {
   // Filters State
   const [selectedZone, setSelectedZone] = useState<string>("all");
   const [selectedIntent, setSelectedIntent] = useState<string>("all");
+  const [selectedGender, setSelectedGender] = useState<string>("all");
   const [showFiltersModal, setShowFiltersModal] = useState(false);
 
   // Like with Note / Comment Modal (Hinge style)
@@ -209,19 +210,27 @@ export default function PartnerFinderPage() {
       if (selectedIntent !== "all") {
         if (p.intention !== selectedIntent) return false;
       }
+      if (selectedGender !== "all" && selectedGender !== "Everyone") {
+        const profileGender = (p as any).gender || (p.pujaPreferences as any)?.gender;
+        if (profileGender) {
+          if (selectedGender === "Men" && profileGender !== "Man") return false;
+          if (selectedGender === "Women" && profileGender !== "Woman") return false;
+        }
+      }
       return true;
     });
-  }, [profiles, selectedZone, selectedIntent]);
+  }, [profiles, selectedZone, selectedIntent, selectedGender]);
 
   const activeFilterCount =
     (selectedZone !== "all" ? 1 : 0) +
-    (selectedIntent !== "all" ? 1 : 0);
+    (selectedIntent !== "all" ? 1 : 0) +
+    (selectedGender !== "all" && selectedGender !== "Everyone" ? 1 : 0);
 
   // Reset deck on filter change
   useEffect(() => {
     setDeckIndex(0);
     setPhotoIndex(0);
-  }, [selectedZone, selectedIntent]);
+  }, [selectedZone, selectedIntent, selectedGender]);
 
   const currentProfile: Profile | null = filteredProfiles[deckIndex] ?? null;
   const nextProfile: Profile | null =
@@ -690,6 +699,7 @@ export default function PartnerFinderPage() {
                 onClick={() => {
                   setSelectedZone("all");
                   setSelectedIntent("all");
+                  setSelectedGender("all");
                 }}
                 className="mt-2 px-5 py-2 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
               >
@@ -1208,6 +1218,38 @@ export default function PartnerFinderPage() {
                   </div>
                 </div>
 
+                {/* Who are you interested in seeing? */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-stone-400">
+                    Who are you interested in seeing?
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: "all", label: "Everyone 🌟" },
+                      { id: "Women", label: "Women 👩" },
+                      { id: "Men", label: "Men 👨" },
+                    ].map((opt) => {
+                      const isSel =
+                        selectedGender === opt.id ||
+                        (opt.id === "all" && selectedGender === "Everyone");
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setSelectedGender(opt.id)}
+                          className={`p-2.5 rounded-2xl text-xs font-bold text-center border transition-all ${
+                            isSel
+                              ? "bg-red-50 text-[#9e1b22] border-[#9e1b22]"
+                              : "bg-[#faf7f2] text-stone-700 border-stone-200 hover:border-stone-300"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Filter Modal Action Buttons */}
                 <div className="pt-3 border-t border-stone-100 flex items-center gap-3">
                   <button
@@ -1215,6 +1257,7 @@ export default function PartnerFinderPage() {
                     onClick={() => {
                       setSelectedZone("all");
                       setSelectedIntent("all");
+                      setSelectedGender("all");
                       setShowFiltersModal(false);
                     }}
                     className="flex-1 py-3 rounded-2xl font-bold text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all"

@@ -29,6 +29,8 @@ import { resolvePhotoURLs, uploadProfilePhoto } from "@/lib/photos";
 import type { ProfileDraft } from "@/lib/profile-store";
 import {
   DEFAULT_PUJA,
+  GENDER_OPTIONS,
+  INTERESTED_IN_OPTIONS,
   INTENTION_OPTIONS,
   INTEREST_SUGGESTIONS,
   MAX_PHOTOS,
@@ -58,6 +60,8 @@ export default function ProfilePage() {
   const [editCollege, setEditCollege] = useState("");
   const [editArea, setEditArea] = useState("");
   const [editBio, setEditBio] = useState("");
+  const [editGender, setEditGender] = useState<string>("Man");
+  const [editInterestedIn, setEditInterestedIn] = useState<string>("Women");
   const [editIntention, setEditIntention] = useState<Intention>("Friendship");
   const [editLookingFor, setEditLookingFor] = useState<Intention[]>([]);
   const [editInterests, setEditInterests] = useState<string[]>([]);
@@ -107,10 +111,13 @@ export default function ProfilePage() {
     setEditCollege(profileData.college);
     setEditArea(profileData.area);
     setEditBio(profileData.bio);
+    const pref = publicProfile.pujaPreferences || DEFAULT_PUJA;
+    setEditGender((pref as any).gender || "Man");
+    setEditInterestedIn((pref as any).interestedIn || "Women");
     setEditIntention(publicProfile.intention);
     setEditLookingFor(publicProfile.lookingFor || [publicProfile.intention]);
     setEditInterests(publicProfile.interests || []);
-    setEditPujaPreferences(publicProfile.pujaPreferences || DEFAULT_PUJA);
+    setEditPujaPreferences(pref);
     setEditPrompt1(profileData.prompts[0]?.answer || publicProfile.prompts[0]?.answer || "");
     setEditPrompt2(profileData.prompts[1]?.answer || publicProfile.prompts[1]?.answer || "");
     setEditPrompt3(profileData.prompts[2]?.answer || publicProfile.prompts[2]?.answer || "");
@@ -312,13 +319,24 @@ export default function ProfilePage() {
       lookingFor: editLookingFor,
       interests: editInterests,
       photoURLs: editPhotoURLs,
-      pujaPreferences: editPujaPreferences,
+      pujaPreferences: {
+        ...editPujaPreferences,
+        gender: editGender,
+        interestedIn: editInterestedIn,
+      },
       prompts: [
         { question: PROMPT_QUESTIONS[0], answer: editPrompt1.trim() },
         { question: PROMPT_QUESTIONS[1], answer: editPrompt2.trim() },
         { question: PROMPT_QUESTIONS[2], answer: editPrompt3.trim() },
       ],
     };
+
+    if (user) {
+      try {
+        localStorage.setItem(`ishqyara_gender_${user.id}`, editGender);
+        localStorage.setItem(`ishqyara_interested_in_${user.id}`, editInterestedIn);
+      } catch {}
+    }
 
     try {
       await saveProfile(draft);
@@ -463,6 +481,9 @@ export default function ProfilePage() {
                 <span className="flex items-center gap-1">
                   <GraduationCap className="w-3.5 h-3.5 text-stone-500" />
                   {profileData.college}
+                </span>
+                <span className="flex items-center gap-1 font-semibold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full">
+                  Seeing: {(publicProfile.pujaPreferences as any)?.interestedIn || "Women"}
                 </span>
                 {profileData?.verified || publicProfile.collegeVerified ? (
                   <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -947,6 +968,58 @@ export default function ProfilePage() {
                       onChange={(e) => setEditBio(e.target.value)}
                       className="w-full px-3 py-2 bg-[#faf7f2] rounded-xl border border-stone-300 text-stone-900"
                     />
+                  </div>
+
+                  {/* Who are you interested in seeing? */}
+                  <div>
+                    <label className="block font-bold text-stone-700 mb-1">
+                      Who are you interested in seeing?
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {INTERESTED_IN_OPTIONS.map((option) => {
+                        const isSelected = editInterestedIn === option;
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => setEditInterestedIn(option)}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
+                              isSelected
+                                ? "border-[#9e1b22] bg-red-50 text-[#9e1b22] ring-2 ring-[#9e1b22]"
+                                : "border-stone-300 bg-[#faf7f2] text-stone-700 hover:border-stone-400"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Gender */}
+                  <div>
+                    <label className="block font-bold text-stone-700 mb-1">
+                      Your Gender
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {GENDER_OPTIONS.map((option) => {
+                        const isSelected = editGender === option;
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            onClick={() => setEditGender(option)}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
+                              isSelected
+                                ? "border-[#9e1b22] bg-red-50 text-[#9e1b22] ring-2 ring-[#9e1b22]"
+                                : "border-stone-300 bg-[#faf7f2] text-stone-700 hover:border-stone-400"
+                            }`}
+                          >
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
                   {/* Looking For / Connection Preferences */}

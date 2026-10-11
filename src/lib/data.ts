@@ -7,6 +7,8 @@ export interface Profile {
   image: string;
   photos?: string[];
   bio: string;
+  gender?: "Man" | "Woman" | "Non-binary / More" | string;
+  interestedIn?: "Men" | "Women" | "Everyone" | string;
   intention: "Dating" | "Friendship" | "Food Buddy" | "Puja Buddy" | "Photography Buddy";
   compatibility: number;
   interests: string[];
@@ -15,6 +17,8 @@ export interface Profile {
     favoritePandalZone: "North Kolkata Heritage" | "South Kolkata Theme" | "Salt Lake & New Town" | "Suburban Megastars";
     foodPriority: "Puchka & Rolls First" | "Moghlai & Biryani Feast" | "Bhog & Sweet Craver";
     timing: "All-Nighter (11 PM - 6 AM)" | "Sunset to Midnight (5 PM - 12 AM)" | "Early Bird";
+    gender?: string;
+    interestedIn?: string;
   };
   prompts: {
     question: string;

@@ -37,7 +37,7 @@ import {
 } from "@/lib/schema";
 
 const GENDER_OPTIONS = ["Man", "Woman", "Non-binary / More"] as const;
-const INTERESTED_IN_OPTIONS = ["Women", "Men", "Everyone"] as const;
+const INTERESTED_IN_OPTIONS = ["Men", "Women", "Everyone"] as const;
 
 export function OnboardingForm() {
   const { user, publicProfile, privateDob, saveProfile } = useAppUser();
@@ -63,9 +63,13 @@ export function OnboardingForm() {
   const [birthYear, setBirthYear] = useState(parsedDob.year);
 
   // Gender & Preferences
-  const [gender, setGender] = useState<string>("Man");
+  const [gender, setGender] = useState<string>(
+    (publicProfile?.pujaPreferences as any)?.gender || "Man"
+  );
   const [showGenderOnProfile, setShowGenderOnProfile] = useState(true);
-  const [interestedIn, setInterestedIn] = useState<string>("Women");
+  const [interestedIn, setInterestedIn] = useState<string>(
+    (publicProfile?.pujaPreferences as any)?.interestedIn || "Women"
+  );
 
   // IshqYara essentials
   const [college, setCollege] = useState(publicProfile?.college || "");
@@ -366,6 +370,8 @@ export function OnboardingForm() {
           favoritePandalZone,
           foodPriority,
           timing,
+          gender,
+          interestedIn,
         },
         prompts: [
           { question: PROMPT_QUESTIONS[0], answer: prompt1.trim() },
@@ -667,7 +673,7 @@ export function OnboardingForm() {
               {/* Interested In */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
-                  Interested In <span className="text-[#9e1b22]">*</span>
+                  Who are you interested in seeing? <span className="text-[#9e1b22]">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {INTERESTED_IN_OPTIONS.map((option) => {

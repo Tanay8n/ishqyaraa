@@ -27,6 +27,12 @@ export async function loadDiscoveryDeck(me: PublicProfileRecord): Promise<Profil
       if (uid === user.id || !record.profileComplete || record.age < 18) return false;
       if (!record.displayName.trim() || !record.college.trim() || !record.photoURLs.length || !record.lookingFor.length) return false;
       if (!record.lookingFor.includes(me.intention) || !me.lookingFor.includes(record.intention)) return false;
+      const myInterestedIn = (me.pujaPreferences as any)?.interestedIn;
+      const otherGender = (record.pujaPreferences as any)?.gender;
+      if (myInterestedIn && myInterestedIn !== "Everyone" && otherGender) {
+        if (myInterestedIn === "Men" && otherGender !== "Man") return false;
+        if (myInterestedIn === "Women" && otherGender !== "Woman") return false;
+      }
       return !liked.has(uid) && !passed.has(uid) && !excluded.has(uid);
     });
 

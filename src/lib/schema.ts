@@ -114,6 +114,8 @@ export function toUiProfile(
             answer: prompt.answer,
           }))
       : [],
+    gender: (preferences as any).gender || (record.pujaPreferences as any)?.gender || undefined,
+    interestedIn: (preferences as any).interestedIn || (record.pujaPreferences as any)?.interestedIn || undefined,
     verified: Boolean(
       record.collegeVerified ||
       (typeof window !== "undefined" && window.localStorage.getItem(`ishqyara_verified_${uid}`) === "true")
@@ -127,7 +129,12 @@ export const DEFAULT_PUJA: PujaPreferences = {
   favoritePandalZone: "South Kolkata Theme",
   foodPriority: "Puchka & Rolls First",
   timing: "Sunset to Midnight (5 PM - 12 AM)",
+  gender: "Man",
+  interestedIn: "Women",
 };
+
+export const GENDER_OPTIONS = ["Man", "Woman", "Non-binary / More"] as const;
+export const INTERESTED_IN_OPTIONS = ["Men", "Women", "Everyone"] as const;
 
 export const INTENTION_OPTIONS: Intention[] = [
   "Dating",
