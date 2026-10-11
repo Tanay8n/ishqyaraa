@@ -276,6 +276,11 @@ export default function PartnerFinderPage() {
   const handleLike = useCallback(
     async (profile: Profile) => {
       if (!user || actionLockRef.current) return;
+      if (!uiProfile?.verified) {
+        setShowSelfieModal(true);
+        showToast("Selfie verification required! Please verify to send likes 🪷");
+        return;
+      }
       actionLockRef.current = true;
       setIsSavingAction(true);
       try {
@@ -309,7 +314,7 @@ export default function PartnerFinderPage() {
         setIsSavingAction(false);
       }
     },
-    [user, showToast, triggerConfetti]
+    [user, uiProfile?.verified, showToast, triggerConfetti]
   );
 
   const handlePass = useCallback(
@@ -359,6 +364,13 @@ export default function PartnerFinderPage() {
   const triggerSwipe = useCallback(
     (direction: "left" | "right") => {
       if (!currentProfile || isAnimatingRef.current) return;
+      if (direction === "right" && !uiProfile?.verified) {
+        setShowSelfieModal(true);
+        showToast("Selfie verification required! Please verify to send likes 🪷");
+        setDragOffset({ x: 0, y: 0 });
+        dragOffsetRef.current = { x: 0, y: 0 };
+        return;
+      }
       isAnimatingRef.current = true;
       setExitDirection(direction);
       setShowSafetyMenu(false);
@@ -376,12 +388,17 @@ export default function PartnerFinderPage() {
         swipeTimeoutRef.current = null;
       }, 300);
     },
-    [currentProfile, handleLike, handlePass]
+    [currentProfile, handleLike, handlePass, uiProfile?.verified, showToast]
   );
 
   // Submit Note with Like
   const handleSendNoteAndLike = async () => {
     if (!noteModalProfile || !user || isSubmittingNote) return;
+    if (!uiProfile?.verified) {
+      setShowSelfieModal(true);
+      showToast("Selfie verification required! Please verify to send notes & likes 🪷");
+      return;
+    }
     setIsSubmittingNote(true);
     try {
       const target = noteModalProfile;
@@ -642,6 +659,31 @@ export default function PartnerFinderPage() {
           </div>
         </div>
 
+        {/* Unverified Safety Notice Banner */}
+        {uiProfile && !uiProfile.verified && (
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-3 shadow-xs animate-in fade-in duration-300">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 shrink-0">
+                <Camera className="w-4 h-4 text-[#9e1b22]" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-stone-900">Verification Required to Like</p>
+                <p className="text-[11px] text-stone-600 line-clamp-1">
+                  Complete a quick selfie to unlock sending likes, notes & matching with Kolkata students 🪷
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSelfieModal(true)}
+              className="px-3 py-1.5 rounded-xl bg-[#9e1b22] hover:bg-[#85161c] text-white text-xs font-bold shrink-0 shadow-sm transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Verify Now</span>
+            </button>
+          </div>
+        )}
+
 
 
         {/* Toast Alert */}
@@ -844,13 +886,23 @@ export default function PartnerFinderPage() {
 
                 {/* LIKE Stamp */}
                 {connectOpacity > 0 && (
-                  <div
-                    style={{ opacity: connectOpacity }}
-                    className="absolute top-16 left-6 z-30 pointer-events-none transform -rotate-[16deg] border-[5px] border-emerald-400 bg-emerald-950/60 text-emerald-400 px-4 py-1.5 rounded-2xl font-black text-3xl sm:text-4xl tracking-widest uppercase shadow-2xl backdrop-blur-xs flex items-center gap-2 ring-2 ring-emerald-400/40 animate-in fade-in duration-75"
-                  >
-                    <Heart className="w-8 h-8 fill-emerald-400 text-emerald-400" />
-                    <span>LIKE</span>
-                  </div>
+                  uiProfile?.verified ? (
+                    <div
+                      style={{ opacity: connectOpacity }}
+                      className="absolute top-16 left-6 z-30 pointer-events-none transform -rotate-[16deg] border-[5px] border-emerald-400 bg-emerald-950/60 text-emerald-400 px-4 py-1.5 rounded-2xl font-black text-3xl sm:text-4xl tracking-widest uppercase shadow-2xl backdrop-blur-xs flex items-center gap-2 ring-2 ring-emerald-400/40 animate-in fade-in duration-75"
+                    >
+                      <Heart className="w-8 h-8 fill-emerald-400 text-emerald-400" />
+                      <span>LIKE</span>
+                    </div>
+                  ) : (
+                    <div
+                      style={{ opacity: connectOpacity }}
+                      className="absolute top-16 left-6 z-30 pointer-events-none transform -rotate-[16deg] border-[5px] border-amber-400 bg-amber-950/80 text-amber-300 px-4 py-1.5 rounded-2xl font-black text-xl sm:text-2xl tracking-widest uppercase shadow-2xl backdrop-blur-xs flex items-center gap-2 ring-2 ring-amber-400/40 animate-in fade-in duration-75"
+                    >
+                      <Camera className="w-6 h-6 text-amber-300" />
+                      <span>VERIFY TO LIKE 🪷</span>
+                    </div>
+                  )
                 )}
 
                 {/* NOPE Stamp */}
@@ -1006,12 +1058,17 @@ export default function PartnerFinderPage() {
                 <button
                   type="button"
                   onClick={() => {
+                    if (!uiProfile?.verified) {
+                      setShowSelfieModal(true);
+                      showToast("Selfie verification required! Please verify to send notes & likes 🪷");
+                      return;
+                    }
                     setNoteContext("");
                     setNoteModalProfile(currentProfile);
                   }}
                   disabled={exitDirection !== null || isSavingAction}
                   className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white text-[#9e1b22] border border-red-200 shadow-lg hover:shadow-xl hover:scale-110 active:scale-90 hover:bg-red-50 transition-all flex items-center justify-center group"
-                  title="Send Note with Like"
+                  title={uiProfile?.verified ? "Send Note with Like" : "Verify selfie to send notes & likes"}
                 >
                   <MessageSquareQuote className="w-6 h-6 stroke-[2.2] group-hover:scale-110 transition-transform" />
                 </button>
@@ -1019,12 +1076,24 @@ export default function PartnerFinderPage() {
                 {/* Like */}
                 <button
                   type="button"
-                  onClick={() => triggerSwipe("right")}
+                  onClick={() => {
+                    if (!uiProfile?.verified) {
+                      setShowSelfieModal(true);
+                      showToast("Selfie verification required! Please verify to send likes 🪷");
+                      return;
+                    }
+                    triggerSwipe("right");
+                  }}
                   disabled={exitDirection !== null || isSavingAction}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-[#9e1b22] to-[#e11d48] text-white shadow-lg sm:shadow-xl shadow-[#9e1b22]/35 hover:shadow-2xl hover:scale-110 active:scale-90 hover:brightness-110 transition-all flex items-center justify-center group"
-                  title="Like"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-[#9e1b22] to-[#e11d48] text-white shadow-lg sm:shadow-xl shadow-[#9e1b22]/35 hover:shadow-2xl hover:scale-110 active:scale-90 hover:brightness-110 transition-all flex items-center justify-center group relative"
+                  title={uiProfile?.verified ? "Like" : "Verify selfie to send likes"}
                 >
                   <Heart className="w-7 h-7 sm:w-8 sm:h-8 fill-white group-hover:scale-110 transition-transform" />
+                  {!uiProfile?.verified && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-400 text-stone-900 border-2 border-white flex items-center justify-center shadow-xs" title="Verification required">
+                      <Camera className="w-3 h-3 stroke-[2.5]" />
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -1412,7 +1481,7 @@ export default function PartnerFinderPage() {
           onClose={() => setShowSelfieModal(false)}
           onVerified={() => {
             void refreshProfile();
-            showToast("Selfie verified! You now have the verified badge 🪷");
+            showToast("Selfie verified! You can now send likes & have the verified badge 🪷");
           }}
         />
 
@@ -1524,6 +1593,11 @@ export default function PartnerFinderPage() {
                           <button
                             type="button"
                             onClick={() => {
+                              if (!uiProfile?.verified) {
+                                setShowSelfieModal(true);
+                                showToast("Selfie verification required! Please verify to send notes & likes 🪷");
+                                return;
+                              }
                               setShowFullProfileModal(false);
                               setNoteContext(`${prompt.question}: ${prompt.answer}`);
                               setNoteModalProfile(currentProfile);
@@ -1632,6 +1706,11 @@ export default function PartnerFinderPage() {
                   <button
                     type="button"
                     onClick={() => {
+                      if (!uiProfile?.verified) {
+                        setShowSelfieModal(true);
+                        showToast("Selfie verification required! Please verify to send notes & likes 🪷");
+                        return;
+                      }
                       setShowFullProfileModal(false);
                       setNoteContext("");
                       setNoteModalProfile(currentProfile);
@@ -1645,6 +1724,11 @@ export default function PartnerFinderPage() {
                   <button
                     type="button"
                     onClick={() => {
+                      if (!uiProfile?.verified) {
+                        setShowSelfieModal(true);
+                        showToast("Selfie verification required! Please verify to send likes 🪷");
+                        return;
+                      }
                       setShowFullProfileModal(false);
                       triggerSwipe("right");
                     }}

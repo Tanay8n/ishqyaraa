@@ -497,7 +497,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-1 font-semibold text-[#9e1b22] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200 transition-all cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Verify with Selfie 🪷
+                    Verify with Selfie 🪷 (Required to Like)
                   </button>
                 )}
               </div>

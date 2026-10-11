@@ -9,6 +9,29 @@ async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
 
 export async function likeUser(targetUid: string): Promise<{ matched: boolean; matchId: string | null; already: boolean }> {
   if (!targetUid) throw new Error("Invalid like target.");
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sign in to like profiles.");
+
+  const isLocalVerified =
+    typeof window !== "undefined" &&
+    window.localStorage.getItem(`ishqyara_verified_${user.id}`) === "true";
+
+  if (!isLocalVerified) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("college_verified")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!profile?.college_verified) {
+      throw new Error("Selfie verification required! Please verify your profile before sending likes.");
+    }
+  }
+
   const result = await rpc<{ matched: boolean; matchId?: string | null; already?: boolean }>("record_interaction", {
     p_action: "like",
     p_target_id: targetUid,
