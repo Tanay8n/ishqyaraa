@@ -106,7 +106,14 @@ export function toUiProfile(
     compatibility: me ? computeCompatibility(me, record) : 70,
     interests: Array.isArray(record.interests) ? record.interests.filter((interest): interest is string => typeof interest === "string") : [],
     pujaPreferences: preferences,
-    prompts: Array.isArray(record.prompts) ? record.prompts.filter((prompt) => prompt && typeof prompt.question === "string" && typeof prompt.answer === "string") : [],
+    prompts: Array.isArray(record.prompts)
+      ? record.prompts
+          .filter((prompt) => prompt && typeof prompt.answer === "string")
+          .map((prompt, index) => ({
+            question: PROMPT_QUESTIONS[index] || prompt.question,
+            answer: prompt.answer,
+          }))
+      : [],
     verified: Boolean(record.collegeVerified),
     distanceKm: 0,
   };
