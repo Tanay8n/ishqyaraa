@@ -123,9 +123,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <span className="hover:text-amber-400 transition-colors cursor-pointer">
+                <a
+                  href="mailto:ishqyaraofficial@gmail.com?subject=IshqYara%20Support%20%26%20Feedback"
+                  className="hover:text-amber-400 transition-colors"
+                >
                   Contact Support
-                </span>
+                </a>
               </li>
             </ul>
           </div>
