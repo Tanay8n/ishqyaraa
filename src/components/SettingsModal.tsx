@@ -453,14 +453,11 @@ export function SettingsModal({
                     />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                      <span>IshqYara</span>
-                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 tracking-wide">
-                        Soft launch v1.0.0
-                      </span>
+                    <h3 className="text-xl font-black tracking-tight">
+                      IshqYara
                     </h3>
                     <p className="text-xs text-rose-100 font-semibold">
-                      Dil se, Ishq Tak.
+                      Soft launch v1.0.0
                     </p>
                   </div>
                 </div>
