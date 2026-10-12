@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import localFont from "next/font/local";
 import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-sans-fallback",
+  variable: "--font-sans",
   weight: ["300", "400", "500", "600", "700", "800"],
-});
-
-const kgPenmanship = localFont({
-  src: "./fonts/KGPerfectPenmanship.ttf",
-  variable: "--font-kg-penmanship",
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -89,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${kgPenmanship.variable} ${jakarta.variable} scroll-smooth`}>
+    <html lang="en" className={`${jakarta.variable} scroll-smooth`}>
       <body className="min-h-screen bg-[#faf7f2] text-stone-900 font-sans antialiased selection:bg-[#9e1b22] selection:text-white">
         <AppProviders>{children}</AppProviders>
       </body>

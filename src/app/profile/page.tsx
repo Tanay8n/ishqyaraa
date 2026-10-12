@@ -527,7 +527,7 @@ export default function ProfilePage() {
                 {profileData?.verified || publicProfile.collegeVerified ? (
                   <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Selfie & College Verified 🪷
+                    Selfie & College Verified
                   </span>
                 ) : (
                   <button
@@ -536,7 +536,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-1 font-semibold text-[#9e1b22] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200 transition-all cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Verify with Selfie 🪷 (Required to Like)
+                    Verify with Selfie (Required to Like)
                   </button>
                 )}
               </div>
