@@ -328,9 +328,9 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
       />
 
       {/* Mobile Floating Capsule Navigation Bar */}
-      {!hideMobileNav && !isSettingsOpen && (
-        <div className="md:hidden fixed bottom-4 sm:bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
-          <nav className="pointer-events-auto w-full max-w-sm bg-[#faf7f2]/95 backdrop-blur-md border border-[#e7dfd5] shadow-[0_12px_36px_rgba(0,0,0,0.12)] rounded-full p-1.5 flex items-center justify-between gap-1 transition-all touch-manipulation z-40">
+      {!hideMobileNav && (
+        <div className="md:hidden fixed bottom-4 sm:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+          <nav className="pointer-events-auto w-full max-w-sm bg-[#faf7f2]/95 backdrop-blur-md border border-[#e7dfd5] shadow-[0_12px_36px_rgba(0,0,0,0.12)] rounded-full p-1.5 flex items-center justify-between gap-1 transition-all touch-manipulation z-50">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
