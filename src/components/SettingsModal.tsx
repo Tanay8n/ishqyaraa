@@ -256,7 +256,7 @@ export function SettingsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3.5 pb-24 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setCurrentView("menu");
@@ -265,7 +265,7 @@ export function SettingsModal({
       }}
     >
       <div
-        className="w-full max-w-xl bg-[#faf7f2] border border-[#e7dfd5] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
+        className="w-full max-w-xl bg-[#faf7f2] border border-[#e7dfd5] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100dvh-7rem)] sm:max-h-[88vh] animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
       >
@@ -298,9 +298,6 @@ export function SettingsModal({
                 {currentView === "terms" && "Terms of Service"}
                 {currentView === "developers" && "About Developers"}
                 {currentView === "logout" && "Logout"}
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
-                  Soft Launch v1.0.0
-                </span>
               </h2>
             </div>
           </div>
