@@ -50,6 +50,16 @@ function LinkedinIcon({ className }: { className?: string }) {
   );
 }
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
 interface DeveloperItem {
   name: string;
   role: string;
@@ -419,7 +429,7 @@ export function SettingsModal({
           {/* ======================================================== */}
           {currentView === "about" && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              {/* Brand Card */}
+              {/* Header Hero Banner */}
               <div className="bg-gradient-to-br from-[#9e1b22] to-[#c22830] rounded-3xl p-6 text-white shadow-lg space-y-3 relative overflow-hidden">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm shrink-0">
@@ -439,69 +449,207 @@ export function SettingsModal({
                 </div>
 
                 <p className="text-xs sm:text-sm text-stone-100 leading-relaxed font-normal pt-1">
-                  Beyond the swipe, where dil finds its vibe. IshqYara is Kolkata&apos;s homegrown modern dating and social discovery platform, designed to create real connections, memorable conversations, and authentic matches.
+                  Beyond the swipe, where dil finds its vibe. IshqYara is our first step into building something meaningful and sharing it with real people.
                 </p>
               </div>
 
-              {/* What makes IshqYara special */}
-              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400">
-                  Why IshqYara?
-                </h4>
+              {/* 1. A LITTLE ABOUT US */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4 text-xs text-stone-700">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#9e1b22]" />
+                    <span>A little about us</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-[#9e1b22] border border-red-200">
+                    Our Story
+                  </span>
+                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
-                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
-                      <span>True Compatibility</span>
-                    </div>
-                    <p className="text-[11px] text-stone-600 leading-relaxed">
-                      Matches based on campuses, interests, life rhythm, and real intentions—not just photo galleries.
-                    </p>
+                <p className="text-xs text-stone-700 leading-relaxed font-normal">
+                  IshqYara is more than just an app for us, it&apos;s our first step into building something meaningful and sharing it with real people.
+                </p>
+                <p className="text-xs text-stone-700 leading-relaxed font-normal">
+                  This is our first experience creating an app of this kind and learning from a real user community. We&apos;re excited to have you here as part of our journey.
+                </p>
+
+                {/* Currently celebrating Puja season */}
+                <div className="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200/80 space-y-1">
+                  <div className="font-bold text-amber-950 text-xs flex items-center gap-1.5">
+                    <span>Currently celebrating the Puja season 🪔</span>
+                  </div>
+                  <p className="text-[11px] text-amber-900 leading-relaxed">
+                    IshqYara is temporarily dressed in a special Puja theme to celebrate the festive spirit. Once Puja ends, we&apos;ll switch back to our regular theme, while continuing to bring you new improvements and experiences.
+                  </p>
+                </div>
+
+                {/* Learning and growing with you */}
+                <div className="p-3.5 rounded-xl bg-rose-50/80 border border-rose-200/80 space-y-2">
+                  <div className="font-bold text-rose-950 text-xs flex items-center gap-1.5">
+                    <span>We&apos;re learning and growing with you 💗</span>
+                  </div>
+                  <p className="text-[11px] text-stone-700 leading-relaxed">
+                    As this is our first launch, some features may not work perfectly, and certain parts of the experience may still need improvement. We&apos;re sorry for any inconvenience and truly appreciate your patience, feedback, and support.
+                  </p>
+                  <p className="text-[11px] text-stone-700 leading-relaxed">
+                    Every bit of feedback helps us make IshqYara better. We&apos;ll keep fixing issues, improving existing features, and working toward a smoother, more enjoyable experience for everyone.
+                  </p>
+                </div>
+
+                {/* Sign-off */}
+                <div className="pt-2 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                  <span className="font-semibold text-stone-700">
+                    Thank you for being part of our beginning. ❤️
+                  </span>
+                  <span className="font-black text-[#9e1b22]">
+                    — Team IshqYara
+                  </span>
+                </div>
+              </div>
+
+              {/* 2. HOW TO INSTALL (WITH IMAGE) */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <span className="text-base">📲</span>
+                    <span>How to install (Android)</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Web App Guide
+                  </span>
+                </div>
+
+                {/* Install Guide Image */}
+                <div className="rounded-2xl overflow-hidden border border-stone-800 bg-[#1c1917] shadow-sm">
+                  <img
+                    src="/install-guide-android.svg"
+                    alt="How to install IshqYara on Android Chrome"
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+
+                {/* 5 Ordered Steps */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                      1
+                    </span>
+                    <span className="text-stone-800">
+                      Open <strong>IshqYara</strong> in <strong>Google Chrome</strong>.
+                    </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
-                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
-                      <Shield className="w-4 h-4 text-emerald-600" />
-                      <span>100% Verified Humans</span>
-                    </div>
-                    <p className="text-[11px] text-stone-600 leading-relaxed">
-                      Liking and chatting require quick live selfie checks. No fake profiles, bots, or impersonators.
-                    </p>
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                      2
+                    </span>
+                    <span className="text-stone-800">
+                      Tap the <strong>three-dot menu (⋮)</strong> and select <strong>Install app</strong>.
+                    </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
-                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
-                      <MapPin className="w-4 h-4 text-[#ea580c]" />
-                      <span>Neighborhood Proximity</span>
-                    </div>
-                    <p className="text-[11px] text-stone-600 leading-relaxed">
-                      Accurate distance calculation across Kolkata areas—from South Kolkata and Ballygunge to Salt Lake and North Kolkata.
-                    </p>
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                      3
+                    </span>
+                    <span className="text-stone-800">
+                      Tap <strong>Install</strong> to confirm.
+                    </span>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
-                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
-                      <MessageSquare className="w-4 h-4 text-sky-600" />
-                      <span>Send Note with Like</span>
-                    </div>
-                    <p className="text-[11px] text-stone-600 leading-relaxed">
-                      Reply directly to interesting bio prompts or leave a personalized note alongside your like.
-                    </p>
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                      4
+                    </span>
+                    <span className="text-stone-800">
+                      Wait for the installation confirmation.
+                    </span>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                      5
+                    </span>
+                    <span className="text-stone-800">
+                      Find the <strong>IshqYara icon</strong> on your home screen.
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Cultural heritage note */}
-              <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200/80 flex items-start sm:items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 text-lg shrink-0">
-                  🪷
+              {/* 3. CONTACT & SUPPORT (REDIRECT TO MAIL) */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#9e1b22]" />
+                    <span>Contact &amp; Support</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    Mail Us
+                  </span>
                 </div>
-                <div className="text-xs text-amber-950">
-                  <div className="font-bold">Born in Kolkata & Bengal</div>
-                  <p className="text-[11px] text-amber-800 leading-relaxed">
-                    Built by local students and engineers who understand the city&apos;s heartbeat, vibrant adda culture, and timeless romance.
-                  </p>
+
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Have feedback, questions, or need help? Reach out directly via email. We read every response and work actively to support you.
+                </p>
+
+                <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <a
+                    href="mailto:ishqyaraofficial@gmail.com?subject=IshqYara%20Support%20%26%20Feedback"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Email: ishqyaraofficial@gmail.com</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLinkedin("ishqyaraofficial@gmail.com", "support-email")}
+                    className="px-3.5 py-3 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    title="Copy email address"
+                  >
+                    {copiedId === "support-email" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700 font-bold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Copy Email</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* 4. FOLLOW US ON INSTAGRAM */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <InstagramIcon className="w-4 h-4 text-[#dc2743]" />
+                    <span>Follow us on Instagram</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-50 to-amber-50 text-rose-700 border border-rose-200">
+                    @ishqyaraofficial
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Follow IshqYara on Instagram for campus stories, updates, announcements, and memories!
+                </p>
+
+                <div className="pt-1">
+                  <a
+                    href="https://www.instagram.com/ishqyaraofficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-white text-xs font-bold transition-all shadow-sm active:scale-95 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:brightness-105"
+                  >
+                    <InstagramIcon className="w-4 h-4" />
+                    <span>Follow @ishqyaraofficial on Instagram</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -520,7 +668,7 @@ export function SettingsModal({
                   </h3>
                 </div>
                 <p className="text-xs text-stone-500 mb-4">
-                  Help us make Sharodiya pandal hopping smoother and more joyful for everyone!
+                  Help us make IshqYara smoother and more joyful for everyone!
                 </p>
 
                 {feedbackSubmitted ? (
@@ -545,7 +693,6 @@ export function SettingsModal({
                       <div className="flex flex-wrap gap-1.5">
                         {[
                           { id: "feature", label: "✨ New Feature" },
-                          { id: "pandal", label: "🪷 Pandal Routes" },
                           { id: "bug", label: "🐛 Bug Report" },
                           { id: "safety", label: "🛡️ Safety" },
                           { id: "general", label: "💬 General" },

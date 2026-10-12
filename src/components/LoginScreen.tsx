@@ -32,7 +32,7 @@ export function LoginScreen() {
           </h1>
           <p className="text-xs font-semibold text-[#9e1b22]">Puja Partner</p>
           <p className="mt-2 text-xs sm:text-sm text-stone-600 leading-relaxed">
-            Find compatible pandal-hopping companions, squad members, and celebrate Durga Puja together.
+            Find compatible pandal hopping companions, squad members, and celebrate Durga Puja together.
           </p>
 
           <button
