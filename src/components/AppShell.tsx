@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Compass,
   Heart,
@@ -81,6 +81,7 @@ interface NavItem {
 
 export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { uiProfile, unreadTotal, matchCount } = useAppUser();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settingsOption, setSettingsOption] = useState<SettingsOption>("menu");
@@ -100,6 +101,28 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
     setIsSettingsOpen(true);
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+      return;
+    }
+
+    if (pathname === href) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    e.preventDefault();
+    router.push(href);
+
+    const targetPath = href.split("?")[0];
+    setTimeout(() => {
+      if (typeof window !== "undefined" && window.location.pathname !== targetPath) {
+        window.location.assign(href);
+      }
+    }, 600);
+  };
+
   const navItems: NavItem[] = [
     { label: "Find", href: "/", icon: Compass },
     { label: "Matches", href: "/matches", icon: Heart, count: matchCount },
@@ -110,7 +133,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
   const mobileNavItems: NavItem[] = [
     { label: "Find", href: "/", icon: Compass },
     { label: "Matches", href: "/matches", icon: Heart, count: matchCount },
-    { label: "Chat", href: "/messages", icon: MessageCircle, count: unreadTotal },
+    { label: "Messages", href: "/messages", icon: MessageCircle, count: unreadTotal },
     { label: "Profile", href: "/profile", icon: User },
   ];
 
@@ -120,7 +143,11 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
       <aside className="hidden md:flex md:w-64 lg:w-72 flex-col justify-between border-r border-[#e7dfd5] bg-[#faf7f2] sticky top-0 h-screen p-5 z-40">
         <div className="space-y-6">
           {/* Logo & Sharodiya Badge */}
-          <Link href="/" className="flex items-center gap-3 px-2 group">
+          <Link
+            href="/"
+            onClick={(e) => handleNavClick(e, "/")}
+            className="flex items-center gap-3 px-2 group cursor-pointer"
+          >
             <Image
               src="/logo.png"
               alt="IshqYara Logo"
@@ -164,7 +191,8 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group ${
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group cursor-pointer select-none touch-manipulation ${
                     isActive
                       ? "bg-[#9e1b22] text-white shadow-sm shadow-[#9e1b22]/30"
                       : "text-stone-700 hover:bg-stone-200/60 hover:text-stone-900"
@@ -185,7 +213,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
                         {item.badge}
                       </span>
                     )}
-                    {item.count && (
+                    {typeof item.count === "number" && item.count > 0 ? (
                       <span
                         className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                           isActive
@@ -195,7 +223,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
                       >
                         {item.count}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </Link>
               );
@@ -207,7 +235,8 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
         <div className="pt-4 border-t border-[#e7dfd5] space-y-3">
           <Link
             href="/profile"
-            className="flex items-center gap-3 p-2 rounded-xl hover:bg-stone-200/50 transition-colors group"
+            onClick={(e) => handleNavClick(e, "/profile")}
+            className="flex items-center gap-3 p-2 rounded-xl hover:bg-stone-200/50 transition-colors group cursor-pointer"
           >
             <div className="relative">
               <img
@@ -252,7 +281,11 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
         {/* Mobile Top Header (Hidden in full-bleed mobile views like active chat) */}
         {!hideMobileNav && (
           <div className="md:hidden sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-b border-[#e7dfd5] px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
+            <Link
+              href="/"
+              onClick={(e) => handleNavClick(e, "/")}
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <Image
                 src="/logo.png"
                 alt="IshqYara Logo"
@@ -268,11 +301,11 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
             </Link>
 
             <div className="flex items-center gap-2">
-              <NotificationBellButton className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors relative" />
+              <NotificationBellButton className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors relative cursor-pointer" />
               <button
                 type="button"
                 onClick={() => openSettings()}
-                className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors"
+                className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
                 aria-label="Open settings"
               >
                 <Settings className="h-4 w-4" />
@@ -296,8 +329,8 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
 
       {/* Mobile Floating Capsule Navigation Bar */}
       {!hideMobileNav && (
-        <div className="md:hidden fixed bottom-4 sm:bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
-          <nav className="pointer-events-auto w-full max-w-sm bg-[#faf7f2]/95 backdrop-blur-md border border-[#e7dfd5] shadow-[0_12px_36px_rgba(0,0,0,0.12)] rounded-full p-1.5 flex items-center justify-between gap-1 transition-all">
+        <div className="md:hidden fixed bottom-4 sm:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+          <nav className="pointer-events-auto w-full max-w-sm bg-[#faf7f2]/95 backdrop-blur-md border border-[#e7dfd5] shadow-[0_12px_36px_rgba(0,0,0,0.12)] rounded-full p-1.5 flex items-center justify-between gap-1 transition-all touch-manipulation z-50">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -307,7 +340,8 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex-1 flex flex-col items-center justify-center py-2 px-2.5 rounded-full transition-all duration-200 relative group ${
+                onClick={(e) => handleNavClick(e, item.href)}
+                className={`flex-1 flex flex-col items-center justify-center py-2 px-2.5 rounded-full transition-all duration-200 relative group cursor-pointer select-none touch-manipulation active:scale-95 ${
                   isActive
                     ? "bg-[#fbebee] text-[#9e1b22] shadow-xs"
                     : "text-stone-600 hover:text-stone-900 hover:bg-stone-200/50"
@@ -339,11 +373,11 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
                   )}
 
                   {/* Notification count badge matching previous crimson palette */}
-                  {item.count && (
+                  {typeof item.count === "number" && item.count > 0 ? (
                     <span className="absolute -top-1.5 -right-2.5 px-1.5 min-w-4 h-4 bg-[#9e1b22] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs ring-2 ring-[#faf7f2]">
                       {item.count}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
                 <span
