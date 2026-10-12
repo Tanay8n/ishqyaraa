@@ -118,6 +118,12 @@ export default function PartnerFinderPage() {
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [showBlockModal, setShowBlockModal] = useState(false);
 
+  // Rejected / Passed Profiles Modal State
+  const [showRejectedModal, setShowRejectedModal] = useState(false);
+  const [rejectedProfiles, setRejectedProfiles] = useState<Profile[]>([]);
+  const [isLoadingRejected, setIsLoadingRejected] = useState(false);
+  const [passedCount, setPassedCount] = useState<number>(0);
+
   const startPosRef = useRef({ x: 0, y: 0 });
   const dragOffsetRef = useRef<DragOffset>({ x: 0, y: 0 });
   const isPointerDownRef = useRef(false);
@@ -154,7 +160,8 @@ export default function PartnerFinderPage() {
       Boolean(noteModalProfile) ||
       showReportModal ||
       showBlockModal ||
-      showSelfieModal;
+      showSelfieModal ||
+      showRejectedModal;
 
     if (!hasOpenModal) return;
     const originalOverflow = document.body.style.overflow;
@@ -473,6 +480,117 @@ export default function PartnerFinderPage() {
     }
   };
 
+  // Check count of passed profiles when deck is empty
+  const checkPassedCount = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/passes");
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.passedIds)) {
+        setPassedCount(data.passedIds.length);
+      }
+    } catch {
+      // Ignore count error
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (profiles.length === 0) {
+      void checkPassedCount();
+    }
+  }, [profiles.length, checkPassedCount]);
+
+  const handleOpenRejectedModal = async () => {
+    setShowRejectedModal(true);
+    setIsLoadingRejected(true);
+    try {
+      const res = await fetch("/api/passes");
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.passedIds) && data.passedIds.length > 0) {
+        setPassedCount(data.passedIds.length);
+        const loaded = await Promise.all(
+          data.passedIds.map(async (id: string) => {
+            try {
+              return await loadPublicProfile(id, publicProfile);
+            } catch {
+              return null;
+            }
+          })
+        );
+        setRejectedProfiles(loaded.filter((p): p is Profile => p !== null));
+      } else {
+        setRejectedProfiles([]);
+        setPassedCount(0);
+      }
+    } catch {
+      showToast("Could not load rejected profiles.");
+    } finally {
+      setIsLoadingRejected(false);
+    }
+  };
+
+  const handleResetAllPasses = async () => {
+    try {
+      const res = await fetch("/api/passes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset_all" }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.message || "Could not reset passes");
+
+      setShowRejectedModal(false);
+      setRejectedProfiles([]);
+      setPassedCount(0);
+      showToast("All passed profiles restored to your deck! 🪷");
+
+      if (user && publicProfile?.profileComplete) {
+        setIsLoadingProfiles(true);
+        loadDiscoveryDeck(publicProfile)
+          .then((deck) => setProfiles(deck))
+          .catch((err) =>
+            setProfileError(err instanceof Error ? err.message : "Could not load discovery profiles.")
+          )
+          .finally(() => setIsLoadingProfiles(false));
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Could not reset passes.");
+    }
+  };
+
+  const handleLikeFromRejected = async (p: Profile) => {
+    try {
+      const result = await likeUser(p.id);
+      setRejectedProfiles((curr) => curr.filter((item) => item.id !== p.id));
+      setPassedCount((c) => Math.max(0, c - 1));
+
+      if (result.matched) {
+        triggerConfetti();
+        setMatchedProfile(p);
+      } else {
+        showToast(`Sent like to ${p.name}! ❤️`);
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Could not send like.");
+    }
+  };
+
+  const handleRestoreOneToDeck = async (p: Profile) => {
+    try {
+      await fetch("/api/passes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "remove_one", targetId: p.id }),
+      });
+      setRejectedProfiles((curr) => curr.filter((item) => item.id !== p.id));
+      setPassedCount((c) => Math.max(0, c - 1));
+      setProfiles((curr) => [p, ...curr.filter((item) => item.id !== p.id)]);
+      showToast(`${p.name} restored to your swipe deck! 🎴`);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Could not restore profile.");
+    }
+  };
+
   // Swipe gesture handlers
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (isAnimatingRef.current) return;
@@ -735,7 +853,7 @@ export default function PartnerFinderPage() {
                 ? "Try broadening your Kolkata zone or intention filter to see more students."
                 : "There are no eligible profiles to show right now. Check back when more students join."}
             </p>
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
               {activeFilterCount > 0 && (
                 <button
                   type="button"
@@ -744,27 +862,53 @@ export default function PartnerFinderPage() {
                     setSelectedIntent("all");
                     setSelectedGender("all");
                   }}
-                  className="px-5 py-2 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
+                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
                 >
                   Clear All Filters
                 </button>
               )}
               {profiles.length === 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!user || !publicProfile?.profileComplete) return;
-                    setIsLoadingProfiles(true);
-                    loadDiscoveryDeck(publicProfile)
-                      .then((deck) => setProfiles(deck))
-                      .catch((err) => setProfileError(err instanceof Error ? err.message : "Could not load discovery profiles."))
-                      .finally(() => setIsLoadingProfiles(false));
-                  }}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Refresh Deck
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void handleOpenRejectedModal()}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#9e1b22] hover:bg-[#83161c] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Show Rejected Profiles {passedCount > 0 ? `(${passedCount})` : ""}</span>
+                  </button>
+
+                  {passedCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => void handleResetAllPasses()}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-amber-50 border border-amber-200 hover:bg-amber-100 text-amber-900 text-xs font-bold transition-all active:scale-95"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Reload All to Deck</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!user || !publicProfile?.profileComplete) return;
+                      setIsLoadingProfiles(true);
+                      loadDiscoveryDeck(publicProfile)
+                        .then((deck) => setProfiles(deck))
+                        .catch((err) =>
+                          setProfileError(
+                            err instanceof Error ? err.message : "Could not load discovery profiles."
+                          )
+                        )
+                        .finally(() => setIsLoadingProfiles(false));
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Refresh</span>
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -1865,6 +2009,128 @@ export default function PartnerFinderPage() {
                 >
                   Keep Swiping
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Showing Rejected / Passed Profiles */}
+        {showRejectedModal && (
+          <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-[32px] border border-stone-200 max-w-2xl w-full max-h-[88vh] overflow-hidden shadow-2xl flex flex-col relative animate-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between bg-[#faf7f2]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-rose-100 flex items-center justify-center text-[#9e1b22]">
+                    <RotateCcw className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-stone-900">
+                      Rejected Profiles ({rejectedProfiles.length})
+                    </h3>
+                    <p className="text-[11px] text-stone-500">
+                      Profiles you previously passed on. Give them a second chance!
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {rejectedProfiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => void handleResetAllPasses()}
+                      className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-all"
+                    >
+                      Reload All to Deck
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowRejectedModal(false)}
+                    className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Body: Grid of passed profiles */}
+              <div className="p-6 overflow-y-auto flex-1">
+                {isLoadingRejected ? (
+                  <div className="py-16 text-center text-sm text-stone-500 flex flex-col items-center gap-3">
+                    <div className="w-6 h-6 border-2 border-[#9e1b22] border-t-transparent rounded-full animate-spin" />
+                    <span>Loading rejected profiles…</span>
+                  </div>
+                ) : rejectedProfiles.length === 0 ? (
+                  <div className="py-16 text-center space-y-2">
+                    <div className="text-3xl">🪷</div>
+                    <h4 className="text-sm font-bold text-stone-800">No rejected profiles</h4>
+                    <p className="text-xs text-stone-500">
+                      You haven&apos;t passed on any profiles yet or they have all been restored.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {rejectedProfiles.map((p) => (
+                      <div
+                        key={p.id}
+                        className="rounded-2xl border border-stone-200 bg-stone-50 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col"
+                      >
+                        <div className="relative aspect-[4/3] w-full bg-stone-900 overflow-hidden">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
+                            {p.intention}
+                          </div>
+                          <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/60 backdrop-blur-md text-amber-300 border border-amber-400/40">
+                            {p.compatibility}%
+                          </div>
+                        </div>
+
+                        <div className="p-3.5 space-y-2 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-sm font-black text-stone-900">
+                                {p.name}, {p.age}
+                              </h4>
+                              {p.verified && (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-sky-500" />
+                              )}
+                            </div>
+                            <p className="text-[11px] text-stone-500 truncate">{p.college || p.area}</p>
+                            {p.bio && (
+                              <p className="text-[11px] text-stone-600 line-clamp-1 italic mt-0.5">
+                                &ldquo;{p.bio}&rdquo;
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-1 border-t border-stone-200/60">
+                            <button
+                              type="button"
+                              onClick={() => void handleRestoreOneToDeck(p)}
+                              className="flex-1 py-2 px-2.5 rounded-xl bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+                              title="Put back in swipe deck"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+                              <span>Put in Deck</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void handleLikeFromRejected(p)}
+                              className="flex-1 py-2 px-2.5 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:brightness-105 text-white text-xs font-bold flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all"
+                            >
+                              <Heart className="w-3.5 h-3.5 fill-white" />
+                              <span>Like ❤️</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
