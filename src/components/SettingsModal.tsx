@@ -241,7 +241,7 @@ export function SettingsModal({
     {
       id: "developers" as SettingsOption,
       label: "About Developers",
-      description: "LinkedIn profiles of developers",
+      description: "LinkedIn profile of developers",
       icon: LinkedinIcon,
       color: "bg-indigo-50 text-[#0a66c2] border-indigo-200",
     },
