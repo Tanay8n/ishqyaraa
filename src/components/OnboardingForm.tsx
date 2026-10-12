@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 import { resolvePhotoURLs, uploadProfilePhoto } from "@/lib/photos";
+import { ImageCropModal, type AspectRatioOption } from "@/components/ImageCropModal";
 import { authAvatarUrl, authDisplayName } from "@/lib/supabase/user";
 import {
   DEFAULT_PUJA,
@@ -100,6 +101,11 @@ export function OnboardingForm() {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  // Photo cropping state
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropSlotIndex, setCropSlotIndex] = useState<number | null>(null);
+  const [cropRatio, setCropRatio] = useState<AspectRatioOption>("4:5");
 
   // Status
   const [error, setError] = useState<string | null>(null);
@@ -240,11 +246,19 @@ export function OnboardingForm() {
     }
   };
 
-  const handlePhotoSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const slotIndex = targetSlotRef.current;
+    event.target.value = "";
+    setCropFile(file);
+    setCropSlotIndex(slotIndex);
+    setCropRatio("4:5");
+  };
+
+  const handleCropComplete = async (croppedFile: File) => {
+    if (cropSlotIndex === null) return;
+    const slotIndex = cropSlotIndex;
     setUploadingSlot(slotIndex);
     setError(null);
 
@@ -252,10 +266,10 @@ export function OnboardingForm() {
       let finalUrl = "";
       if (user) {
         // Upload to Supabase Storage
-        finalUrl = await uploadProfilePhoto(user.id, file);
+        finalUrl = await uploadProfilePhoto(user.id, croppedFile);
       } else {
         // Fallback for local preview / mock dev
-        finalUrl = URL.createObjectURL(file);
+        finalUrl = URL.createObjectURL(croppedFile);
       }
 
       setPhotoURLs((prev) => {
@@ -273,6 +287,8 @@ export function OnboardingForm() {
       setError(err instanceof Error ? err.message : "Could not upload photo. Please try again.");
     } finally {
       setUploadingSlot(null);
+      setCropFile(null);
+      setCropSlotIndex(null);
     }
   };
 
@@ -1263,6 +1279,19 @@ export function OnboardingForm() {
           </div>
         </form>
       </div>
+
+      {/* Image Crop & Framing Modal */}
+      <ImageCropModal
+        isOpen={Boolean(cropFile && cropSlotIndex !== null)}
+        file={cropFile}
+        initialAspectRatio={cropRatio}
+        onCropComplete={handleCropComplete}
+        onCancel={() => {
+          setCropFile(null);
+          setCropSlotIndex(null);
+        }}
+        title="Crop & Frame Profile Photo"
+      />
     </div>
   );
 }

@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Copy,
   Check,
+  CheckCircle2,
   Send,
   Star,
   MapPin,
@@ -122,6 +123,7 @@ export function SettingsModal({
   const [feedbackRating, setFeedbackRating] = useState<number>(5);
   const [feedbackText, setFeedbackText] = useState("");
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [lastFeedbackMailto, setLastFeedbackMailto] = useState("");
 
   // Logout confirmation state
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -138,11 +140,46 @@ export function SettingsModal({
   const handleSubmitFeedback = (e: React.FormEvent) => {
     e.preventDefault();
     if (!feedbackText.trim()) return;
+
+    const categoryLabels: Record<string, string> = {
+      feature: "✨ Feature Request",
+      bug: "🐛 Bug Report",
+      pandal: "🪷 Pandal Suggestion",
+      safety: "🛡️ Safety Concern",
+      general: "💬 General Feedback",
+    };
+    const catLabel = categoryLabels[feedbackCategory] || feedbackCategory;
+    const senderName = publicProfile?.displayName || uiProfile?.name || "IshqYara User";
+    const senderEmail = user?.email || "Not specified";
+
+    const subject = `[IshqYara Feedback] ${catLabel} (${feedbackRating}/5 ★)`;
+    const bodyText = [
+      `Hi Team IshqYara,`,
+      ``,
+      `Category: ${catLabel}`,
+      `Rating: ${feedbackRating} / 5 Stars`,
+      `User: ${senderName} (${senderEmail})`,
+      `Date: ${new Date().toLocaleDateString("en-IN", { dateStyle: "long" })}`,
+      ``,
+      `--- My Feedback / Issue ---`,
+      feedbackText.trim(),
+      ``,
+      `---------------------------`,
+      `Sent from IshqYara Web App (Soft launch v1.0.0)`,
+    ].join("\n");
+
+    const mailtoUrl = `mailto:ishqyaraofficial@gmail.com?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(bodyText)}`;
+
+    setLastFeedbackMailto(mailtoUrl);
     setFeedbackSubmitted(true);
-    setTimeout(() => {
-      setFeedbackSubmitted(false);
-      setFeedbackText("");
-    }, 3200);
+
+    try {
+      window.location.href = mailtoUrl;
+    } catch (err) {
+      console.warn("Mail client open error:", err);
+    }
   };
 
   const handleConfirmLogout = async () => {
@@ -874,16 +911,39 @@ export function SettingsModal({
                 </p>
 
                 {feedbackSubmitted ? (
-                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-xl">
-                      🪷
+                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+                      <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <h4 className="text-base font-bold text-emerald-900">
-                      Feedback was not sent
-                    </h4>
-                    <p className="text-xs text-emerald-700 max-w-sm mx-auto">
-                      Feedback delivery is not configured in this app. Your message stayed in this page and was not submitted.
-                    </p>
+                    <div className="space-y-1">
+                      <h4 className="text-base font-bold text-emerald-950">
+                        Opening Your Email App...
+                      </h4>
+                      <p className="text-xs text-emerald-800 max-w-sm mx-auto leading-relaxed">
+                        Your message has been formatted and directed to <strong className="font-bold underline">ishqyaraofficial@gmail.com</strong>. Click Send in your mail client to deliver it to us!
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+                      <a
+                        href={lastFeedbackMailto}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] text-white text-xs font-bold transition-all shadow-xs"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Open Email App</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFeedbackSubmitted(false);
+                          setFeedbackText("");
+                        }}
+                        className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-emerald-300 text-emerald-900 text-xs font-semibold transition-colors cursor-pointer"
+                      >
+                        Write Another Note
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmitFeedback} className="space-y-3.5">
@@ -969,6 +1029,53 @@ export function SettingsModal({
                     </div>
                   </form>
                 )}
+              </div>
+
+              {/* Direct Email Support Card */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#9e1b22]" />
+                    <span>Direct Email Support</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-[#9e1b22] border border-red-200">
+                    Official Support
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Have feedback, questions, or need help? Reach out directly via email. We read every response and work actively to support you.
+                </p>
+
+                <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <a
+                    href="mailto:ishqyaraofficial@gmail.com?subject=IshqYara%20Support%20%26%20Feedback"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] text-white text-xs font-bold transition-all shadow-xs"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Email: ishqyaraofficial@gmail.com</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLinkedin("ishqyaraofficial@gmail.com", "support-email-supporttab")}
+                    className="px-3.5 py-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    title="Copy email address"
+                  >
+                    {copiedId === "support-email-supporttab" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700 font-bold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Helplines */}

@@ -5,12 +5,10 @@ import { useSearchParams } from "next/navigation";
 import {
   Send,
   MessageCircle,
-  MapPin,
   Sparkles,
   ChevronLeft,
   Search,
   Flame,
-  Navigation,
   Info,
   X,
   GraduationCap,
@@ -118,7 +116,6 @@ function MessagesInner() {
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [messageError, setMessageError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
-  const [showLocationBanner, setShowLocationBanner] = useState(false);
   const [showPartnerProfile, setShowPartnerProfile] = useState(false);
   const [profilePhotoIndex, setProfilePhotoIndex] = useState(0);
 
@@ -285,17 +282,6 @@ function MessagesInner() {
     }
   };
 
-  const handleShareMeetingPoint = () => {
-    void handleSendMessage(`📍 Shared Meeting Point: Gate 2, near Maddox Square lawn • Sharodiya 2026`).then(
-      (sent) => {
-        if (sent) {
-          setShowLocationBanner(true);
-          setTimeout(() => setShowLocationBanner(false), 3000);
-        }
-      }
-    );
-  };
-
   const handleReportUser = async () => {
     if (!reportReason.trim() || !activePartnerId) return;
     try {
@@ -344,7 +330,7 @@ function MessagesInner() {
           </div>
           <h1 className="mt-4 text-xl font-black text-stone-900">Your conversations live here</h1>
           <p className="mt-2 text-sm text-stone-500 max-w-sm mx-auto">
-            Once you have a mutual match on IshqYara, you can chat, share meeting points, and plan your pandal hopping together.
+            Once you have a mutual match on IshqYara, you can chat and plan your pandal hopping together.
           </p>
           {messageError && <p role="alert" className="mt-3 text-sm text-rose-700 font-semibold">{messageError}</p>}
         </div>
@@ -365,6 +351,7 @@ function MessagesInner() {
         </div>
       )}
 
+      {/* Main Container */}
       <div
         className={`bg-white ${
           mobileView === "chat"
@@ -556,16 +543,6 @@ function MessagesInner() {
 
             {/* Quick Action Tools */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0 relative">
-              <button
-                type="button"
-                onClick={handleShareMeetingPoint}
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-stone-700 hover:bg-amber-50 hover:text-amber-900 border border-stone-200 transition-colors flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
-                title="Share Meeting Point at Pandal"
-              >
-                <MapPin className="w-4 h-4 text-[#ea580c]" />
-                <span className="hidden sm:inline">Meet Point</span>
-              </button>
-
               <button
                 type="button"
                 onClick={() => setShowPartnerProfile(true)}

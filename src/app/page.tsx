@@ -267,7 +267,7 @@ export default function PartnerFinderPage() {
       if (permission === "granted") {
         showToast("Push notifications active! 🔔");
         try {
-          new Notification("IshqYara Notifications Active 🪷", {
+          new Notification("IshqYara Notifications Active 🔔", {
             body: "You'll be alerted as soon as you get a match or message during Puja!",
             icon: "/favicon.ico",
           });
