@@ -115,7 +115,7 @@ export default function ProfilePage() {
     setEditGender((pref as any).gender || "Man");
     setEditInterestedIn((pref as any).interestedIn || "Women");
     setEditIntention(publicProfile.intention);
-    setEditLookingFor(publicProfile.lookingFor || [publicProfile.intention]);
+    setEditLookingFor(publicProfile.lookingFor?.length ? publicProfile.lookingFor : [...INTENTION_OPTIONS]);
     setEditInterests(publicProfile.interests || []);
     setEditPujaPreferences(pref);
     setEditPrompt1(profileData.prompts[0]?.answer || publicProfile.prompts[0]?.answer || "");

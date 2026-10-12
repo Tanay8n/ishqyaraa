@@ -362,7 +362,7 @@ export function OnboardingForm() {
         bio: bio.trim(),
         tagline: tagline.trim(),
         intention,
-        lookingFor: [intention],
+        lookingFor: [...INTENTION_OPTIONS],
         interests,
         photoURLs,
         pujaPreferences: {

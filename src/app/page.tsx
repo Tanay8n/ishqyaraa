@@ -735,19 +735,38 @@ export default function PartnerFinderPage() {
                 ? "Try broadening your Kolkata zone or intention filter to see more students."
                 : "There are no eligible profiles to show right now. Check back when more students join."}
             </p>
-            {activeFilterCount > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedZone("all");
-                  setSelectedIntent("all");
-                  setSelectedGender("all");
-                }}
-                className="mt-2 px-5 py-2 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
-              >
-                Clear All Filters
-              </button>
-            )}
+            <div className="flex items-center justify-center gap-2 pt-2">
+              {activeFilterCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedZone("all");
+                    setSelectedIntent("all");
+                    setSelectedGender("all");
+                  }}
+                  className="px-5 py-2 rounded-2xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white text-xs font-bold shadow-md hover:brightness-105"
+                >
+                  Clear All Filters
+                </button>
+              )}
+              {profiles.length === 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!user || !publicProfile?.profileComplete) return;
+                    setIsLoadingProfiles(true);
+                    loadDiscoveryDeck(publicProfile)
+                      .then((deck) => setProfiles(deck))
+                      .catch((err) => setProfileError(err instanceof Error ? err.message : "Could not load discovery profiles."))
+                      .finally(() => setIsLoadingProfiles(false));
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition-colors"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Refresh Deck
+                </button>
+              )}
+            </div>
           </div>
         )}
 
