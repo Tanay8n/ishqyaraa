@@ -165,7 +165,7 @@ export function SelfieVerificationModal({
               <div className="space-y-1">
                 <h4 className="text-xl font-black text-stone-900">Pose Verified! 🪷</h4>
                 <p className="text-xs text-stone-600 max-w-xs mx-auto">
-                  Your profile now displays the official Puja Verified badge. Other students know you&apos;re 100% genuine!
+                  Your profile now displays the official Verified badge. Other students know you&apos;re 100% genuine!
                 </p>
               </div>
             </div>

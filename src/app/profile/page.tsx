@@ -469,7 +469,7 @@ export default function ProfilePage() {
                 {profileData.verified ? (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200 shadow-xs">
                     <CheckCircle2 className="w-4 h-4 text-sky-500 fill-sky-500/20" />
-                    <span>Puja Verified</span>
+                    <span>Verified</span>
                   </span>
                 ) : (
                   <button
@@ -478,7 +478,7 @@ export default function ProfilePage() {
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 shadow-xs transition-all cursor-pointer active:scale-95"
                   >
                     <Shield className="w-3.5 h-3.5 text-amber-600" />
-                    <span>Get Verified Badge 🪷</span>
+                    <span>Get Verified</span>
                   </button>
                 )}
               </div>
