@@ -23,12 +23,14 @@ import {
   FileText,
   Sparkles,
   Heart,
+  Download,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
 export type SettingsOption =
   | "menu"
   | "userInfo"
+  | "install"
   | "about"
   | "support"
   | "privacy"
@@ -169,6 +171,13 @@ export function SettingsModal({
       color: "bg-rose-50 text-[#9e1b22] border-rose-200",
     },
     {
+      id: "install" as SettingsOption,
+      label: "How to Install",
+      description: "Add IshqYara to your Android home screen",
+      icon: Download,
+      color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    },
+    {
       id: "support" as SettingsOption,
       label: "Support and Feedback",
       description: "Share feedback and view safety information",
@@ -243,6 +252,7 @@ export function SettingsModal({
                 {currentView === "menu" && "Settings"}
                 {currentView === "userInfo" && "User Info"}
                 {currentView === "about" && "About IshqYara"}
+                {currentView === "install" && "How to Install"}
                 {currentView === "support" && "Support and Feedback"}
                 {currentView === "privacy" && "Privacy Policy"}
                 {currentView === "terms" && "Terms of Service"}
@@ -449,7 +459,7 @@ export function SettingsModal({
                 </div>
 
                 <p className="text-xs sm:text-sm text-stone-100 leading-relaxed font-normal pt-1">
-                  Beyond the swipe, where dil finds its vibe. IshqYara is our first step into building something meaningful and sharing it with real people.
+                  Beyond the swipe, where dil finds it&apos;s vibe.
                 </p>
               </div>
 
@@ -506,7 +516,90 @@ export function SettingsModal({
                 </div>
               </div>
 
-              {/* 2. HOW TO INSTALL (WITH IMAGE) */}
+              {/* CONTACT & SUPPORT (REDIRECT TO MAIL) */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#9e1b22]" />
+                    <span>Contact &amp; Support</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    Mail Us
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Have feedback, questions, or need help? Reach out directly via email. We read every response and work actively to support you.
+                </p>
+
+                <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                  <a
+                    href="mailto:ishqyaraofficial@gmail.com?subject=IshqYara%20Support%20%26%20Feedback"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Email: ishqyaraofficial@gmail.com</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLinkedin("ishqyaraofficial@gmail.com", "support-email")}
+                    className="px-3.5 py-3 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    title="Copy email address"
+                  >
+                    {copiedId === "support-email" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700 font-bold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Copy Email</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* FOLLOW US ON INSTAGRAM */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                    <InstagramIcon className="w-4 h-4 text-[#dc2743]" />
+                    <span>Follow us on Instagram</span>
+                  </h4>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-50 to-amber-50 text-rose-700 border border-rose-200">
+                    @ishqyaraofficial
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  Follow IshqYara on Instagram for campus stories, updates, announcements, and memories!
+                </p>
+
+                <div className="pt-1">
+                  <a
+                    href="https://www.instagram.com/ishqyaraofficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-white text-xs font-bold transition-all shadow-sm active:scale-95 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:brightness-105"
+                  >
+                    <InstagramIcon className="w-4 h-4" />
+                    <span>Follow @ishqyaraofficial on Instagram</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* HOW TO INSTALL PAGE                                     */}
+          {/* ======================================================== */}
+          {currentView === "install" && (
+            <div className="space-y-4 animate-in fade-in duration-200">
               <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
                   <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
@@ -573,83 +666,6 @@ export function SettingsModal({
                       Find the <strong>IshqYara icon</strong> on your home screen.
                     </span>
                   </div>
-                </div>
-              </div>
-
-              {/* 3. CONTACT & SUPPORT (REDIRECT TO MAIL) */}
-              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
-                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-[#9e1b22]" />
-                    <span>Contact &amp; Support</span>
-                  </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                    Mail Us
-                  </span>
-                </div>
-
-                <p className="text-xs text-stone-600 leading-relaxed">
-                  Have feedback, questions, or need help? Reach out directly via email. We read every response and work actively to support you.
-                </p>
-
-                <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                  <a
-                    href="mailto:ishqyaraofficial@gmail.com?subject=IshqYara%20Support%20%26%20Feedback"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#83161c] hover:to-[#9e1b22] text-white text-xs font-bold transition-all shadow-sm active:scale-95"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span>Email: ishqyaraofficial@gmail.com</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={() => handleCopyLinkedin("ishqyaraofficial@gmail.com", "support-email")}
-                    className="px-3.5 py-3 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-semibold text-stone-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    title="Copy email address"
-                  >
-                    {copiedId === "support-email" ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-700 font-bold">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 text-stone-500" />
-                        <span>Copy Email</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* 4. FOLLOW US ON INSTAGRAM */}
-              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
-                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
-                    <InstagramIcon className="w-4 h-4 text-[#dc2743]" />
-                    <span>Follow us on Instagram</span>
-                  </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-50 to-amber-50 text-rose-700 border border-rose-200">
-                    @ishqyaraofficial
-                  </span>
-                </div>
-
-                <p className="text-xs text-stone-600 leading-relaxed">
-                  Follow IshqYara on Instagram for campus stories, updates, announcements, and memories!
-                </p>
-
-                <div className="pt-1">
-                  <a
-                    href="https://www.instagram.com/ishqyaraofficial"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-white text-xs font-bold transition-all shadow-sm active:scale-95 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] hover:brightness-105"
-                  >
-                    <InstagramIcon className="w-4 h-4" />
-                    <span>Follow @ishqyaraofficial on Instagram</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
                 </div>
               </div>
             </div>
