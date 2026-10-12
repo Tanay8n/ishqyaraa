@@ -451,9 +451,14 @@ function MessagesInner() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-stone-900 truncate">
-                          {profile.name}
-                        </h4>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h4 className="text-sm font-bold text-stone-900 truncate">
+                            {profile.name}
+                          </h4>
+                          {profile.verified && (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20 shrink-0" />
+                          )}
+                        </div>
                         <span className="text-[10px] text-stone-400 font-medium shrink-0 ml-1">
                           {lastMsg ? lastMsg.time : "New"}
                         </span>
@@ -531,6 +536,12 @@ function MessagesInner() {
                     <h3 className="font-bold text-stone-900 text-sm sm:text-base truncate group-hover/partner:text-[#9e1b22] transition-colors">
                       {activePartner.name}, {activePartner.age}
                     </h3>
+                    {activePartner.verified && (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200 shrink-0">
+                        <CheckCircle2 className="w-3 h-3 text-sky-500 fill-sky-500/20" />
+                        <span className="hidden sm:inline">Verified</span>
+                      </span>
+                    )}
                     <span className="hidden sm:inline-flex text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded-full shrink-0">
                       {activePartner.intention}
                     </span>
@@ -776,10 +787,18 @@ function MessagesInner() {
             <div className="p-5 space-y-4 overflow-y-auto">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-black text-stone-900">
-                    {activePartner.name}, {activePartner.age}
-                  </h3>
-                  <p className="text-xs text-[#9e1b22] font-bold">{activePartner.college}</p>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-xl font-black text-stone-900">
+                      {activePartner.name}, {activePartner.age}
+                    </h3>
+                    {activePartner.verified && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20" />
+                        <span>Verified</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#9e1b22] font-bold mt-0.5">{activePartner.college}</p>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-red-50 text-[#9e1b22] text-xs font-bold border border-red-200">
                   {activePartner.intention}

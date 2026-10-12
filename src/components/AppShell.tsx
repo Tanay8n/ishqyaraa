@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Flame,
   Settings,
+  CheckCircle2,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 import { SettingsModal, type SettingsOption } from "./SettingsModal";
@@ -168,9 +169,14 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
             </div>
             <div className="flex-1 min-w-0 text-left">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-900 truncate">
-                  {uiProfile?.name || "Your profile"}
-                </span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-xs font-bold text-stone-900 truncate">
+                    {uiProfile?.name || "Your profile"}
+                  </span>
+                  {uiProfile?.verified && (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20 shrink-0" />
+                  )}
+                </div>
                 <span className="text-[10px] text-[#9e1b22] font-semibold">{uiProfile?.age ?? ""}</span>
               </div>
               <p className="text-[11px] text-stone-500 truncate">
