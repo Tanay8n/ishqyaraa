@@ -394,7 +394,7 @@ function MessagesInner() {
                 </p>
               </div>
               <span className="text-[11px] font-bold text-[#9e1b22] bg-[#fbebee] px-2.5 py-1 rounded-full border border-red-200">
-                শারদীয়া Live
+                Be Respectful
               </span>
             </div>
 

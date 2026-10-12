@@ -211,32 +211,15 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
               />
               <span className="font-bold text-stone-900 text-base">IshqYara</span>
               <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[#fef3c7] text-[#92400e]">
-                শারদীয়া
+                শারদীয়া - Edition
               </span>
             </Link>
 
             <div className="flex items-center gap-2">
-              <Link
-                href="/matches"
-                className="p-2 rounded-full text-stone-600 hover:bg-stone-200/60"
-                aria-label="Matches"
-              >
-                <Heart className="w-4 h-4 text-[#9e1b22]" />
-              </Link>
-              <Link
-                href="/profile"
-                className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-[#9e1b22]"
-              >
-                <img
-                  src={uiProfile?.image || ""}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </Link>
               <button
                 type="button"
                 onClick={() => openSettings()}
-                className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700"
+                className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors"
                 aria-label="Open settings"
               >
                 <Settings className="h-4 w-4" />

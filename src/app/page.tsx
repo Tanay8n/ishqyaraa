@@ -850,8 +850,8 @@ export default function PartnerFinderPage() {
             </h2>
             <p className="text-sm text-stone-500 max-w-sm mx-auto">
               {profiles.length > 0
-                ? "Try broadening your Kolkata zone or intention filter to see more students."
-                : "There are no eligible profiles to show right now. Check back when more students join."}
+                ? "Try broadening your Kolkata zone or intention filter to see more people."
+                : "There are no eligible profiles to show right now. Check back when more people join."}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
               {activeFilterCount > 0 && (

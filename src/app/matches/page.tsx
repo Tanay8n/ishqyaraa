@@ -176,11 +176,9 @@ export default function MatchesPage() {
         <div className="pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200/60">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight flex items-center gap-2">
-              Your Connections <span className="text-2xl">❤️</span>
+              Your Connections
             </h1>
-            <p className="text-stone-500 text-xs mt-1">
-              Review who sent you a like, accept connection requests, and chat with your matches.
-            </p>
+          
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -365,9 +363,6 @@ export default function MatchesPage() {
               <UserCheck className="w-4 h-4 text-emerald-600" />
               <span>Mutual Matches ({matches.length})</span>
             </h2>
-            <p className="text-[11px] text-stone-500 font-medium">
-              You both liked each other! Start chatting anytime.
-            </p>
           </div>
 
           {loadingMatches && (

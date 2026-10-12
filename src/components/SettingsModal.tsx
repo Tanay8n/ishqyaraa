@@ -171,8 +171,8 @@ export function SettingsModal({
     },
     {
       id: "developers" as SettingsOption,
-      label: "About Developers (developers linkdin id)",
-      description: "LinkedIn profiles of the 4 platform creators",
+      label: "About Developers",
+      description: "LinkedIn profiles developers",
       icon: LinkedinIcon,
       color: "bg-indigo-50 text-[#0a66c2] border-indigo-200",
     },
@@ -228,7 +228,7 @@ export function SettingsModal({
                 {currentView === "developers" && "About Developers"}
                 {currentView === "logout" && "Logout"}
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
-                  শারদীয়া
+                  v1.0.0
                 </span>
               </h2>
             </div>
@@ -811,8 +811,8 @@ export function SettingsModal({
         {/* Footer info bar */}
         <div className="px-5 py-3 border-t border-[#e7dfd5] bg-stone-50 flex items-center justify-between text-[11px] text-stone-500">
           <span className="flex items-center gap-1 font-medium">
-            <span>Puja Partner</span>
-            <span className="text-[#9e1b22] font-bold">• Sharodiya 2026</span>
+            <span>IshqYara - Soft Launch</span>
+            <span className="text-[#9e1b22] font-bold">• v1.0.0</span>
           </span>
           {currentView !== "menu" ? (
             <button
