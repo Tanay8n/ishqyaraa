@@ -1,0 +1,144 @@
+<svg width="680" height="380" viewBox="0 0 680 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.12" />
+    </filter>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9e1b22" />
+      <stop offset="100%" stop-color="#c22830" />
+    </linearGradient>
+    <linearGradient id="iosBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#007aff" />
+      <stop offset="100%" stop-color="#0056b3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="680" height="380" rx="20" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" />
+
+  <!-- Platform Badge Header -->
+  <rect x="24" y="18" width="136" height="28" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" />
+  <text x="36" y="37" fill="#1d4ed8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700">🍎 iPhone / Safari</text>
+
+  <text x="174" y="37" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="500">Tap Share &gt; Add to Home Screen &gt; Tap Add</text>
+
+  <!-- SCREEN 1: Safari Bottom Bar & Share Sheet -->
+  <g transform="translate(24, 60)" filter="url(#shadow)">
+    <rect width="290" height="294" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    
+    <!-- Safari Top Address Bar (Step 1) -->
+    <rect x="12" y="12" width="266" height="36" rx="12" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
+    <!-- Lock -->
+    <path d="M26 29v-3a3 3 0 0 1 6 0v3m-7 0h8a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-8a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1z" stroke="#64748b" stroke-width="1.5" fill="none" />
+    <text x="39" y="35" fill="#334155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600">ishqyara.com</text>
+    <rect x="216" y="18" width="54" height="24" rx="6" fill="#e2e8f0" />
+    <text x="243" y="34" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" text-anchor="middle">Step 1</text>
+
+    <!-- Content Area Mockup with Share Sheet Popping Up -->
+    <!-- Share Sheet Container -->
+    <g transform="translate(12, 60)">
+      <rect width="266" height="165" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+      
+      <!-- Sheet Handle -->
+      <rect x="115" y="8" width="36" height="4" rx="2" fill="#cbd5e1" />
+
+      <!-- Action Row: Copy, Add Bookmark, Add to Home Screen -->
+      <g transform="translate(10, 24)">
+        <!-- Generic item -->
+        <rect x="0" y="0" width="246" height="32" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+        <text x="14" y="21" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5">Copy Link</text>
+
+        <!-- HIGHLIGHTED ACTION: Add to Home Screen -->
+        <rect x="0" y="38" width="246" height="46" rx="10" fill="#fef2f2" stroke="#9e1b22" stroke-width="2" />
+        <!-- Plus icon -->
+        <rect x="12" y="47" width="26" height="26" rx="7" fill="#9e1b22" />
+        <path d="M25 54v12m-6-6h12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+        <text x="46" y="66" fill="#9e1b22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="800">Add to Home Screen</text>
+        
+        <!-- Step 3 badge -->
+        <rect x="186" y="52" width="52" height="18" rx="4" fill="#9e1b22" />
+        <text x="212" y="65" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" text-anchor="middle">Step 3</text>
+
+        <!-- Generic item -->
+        <rect x="0" y="90" width="246" height="32" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+        <text x="14" y="111" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5">Add Bookmark</text>
+      </g>
+    </g>
+
+    <!-- Safari Bottom Toolbar -->
+    <g transform="translate(12, 238)">
+      <rect width="266" height="44" rx="10" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1" />
+      
+      <!-- Back & Forward -->
+      <path d="M24 22l6-6m-6 6l6 6" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M54 22l-6-6m6 6l-6 6" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- HIGHLIGHTED SHARE BUTTON (Step 2) -->
+      <rect x="115" y="4" width="36" height="36" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="2" />
+      <!-- iOS Share Icon: Square with Arrow Out of Top -->
+      <path d="M133 13v12m0-12l-4 4m4-4l4 4m-8 6v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5" stroke="#9e1b22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      
+      <!-- Step 2 badge floating above -->
+      <rect x="94" y="-14" width="78" height="16" rx="4" fill="#9e1b22" />
+      <text x="133" y="-2" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="800" text-anchor="middle">Step 2: Share</text>
+
+      <!-- Bookmarks & Tabs -->
+      <path d="M210 15v14m0-14c2-1 6-1 8 0v14c-2-1-6-1-8 0" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" fill="none" />
+      <rect x="238" y="16" width="12" height="12" rx="2" stroke="#94a3b8" stroke-width="1.5" fill="none" />
+    </g>
+  </g>
+
+  <!-- SCREEN 2: Add Confirmation & Home Screen Result -->
+  <g transform="translate(340, 60)" filter="url(#shadow)">
+    <rect width="316" height="294" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+
+    <!-- iOS Add to Home Screen Sheet -->
+    <rect x="18" y="18" width="280" height="145" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+    
+    <!-- Header of Sheet with "Add" button -->
+    <text x="32" y="40" fill="#007aff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600">Cancel</text>
+    <text x="140" y="40" fill="#0f172a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Add to Home Screen</text>
+
+    <!-- HIGHLIGHTED "Add" BUTTON IN TOP-RIGHT -->
+    <rect x="226" y="24" width="58" height="28" rx="7" fill="url(#iosBlueGrad)" stroke="#007aff" stroke-width="1" />
+    <text x="255" y="43" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="800" text-anchor="middle">Add</text>
+
+    <!-- Step 4 Callout Badge -->
+    <rect x="218" y="58" width="74" height="18" rx="4" fill="#007aff" />
+    <text x="255" y="71" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" text-anchor="middle">Step 4: Tap</text>
+
+    <!-- App Details Card inside sheet -->
+    <g transform="translate(32, 82)">
+      <rect width="252" height="66" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+      <!-- App Icon -->
+      <rect x="12" y="12" width="42" height="42" rx="11" fill="url(#brandGrad)" />
+      <path d="M33 26c-2.8-3.2-7-1.8-7 1.8 0 3.2 7 8 7 8s7-4.8 7-8c0-3.6-4.2-5-7-1.8z" fill="#ffffff" />
+      <text x="64" y="32" fill="#0f172a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">IshqYara</text>
+      <text x="64" y="47" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11">https://ishqyara.com</text>
+    </g>
+
+    <!-- Step 5: iOS Springboard Home Screen Result -->
+    <g transform="translate(18, 178)">
+      <rect width="280" height="96" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+      <text x="14" y="22" fill="#15803d" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700">✓ STEP 5: ADDED TO IPHONE HOME SCREEN</text>
+      
+      <!-- Home Screen Apps Row Mockup -->
+      <g transform="translate(24, 32)">
+        <!-- Generic App 1 -->
+        <rect x="0" y="0" width="38" height="38" rx="10" fill="#e2e8f0" />
+        <!-- Generic App 2 -->
+        <rect x="52" y="0" width="38" height="38" rx="10" fill="#e2e8f0" />
+        
+        <!-- IshqYara App (Active on Springboard) -->
+        <rect x="110" y="-4" width="46" height="46" rx="13" fill="url(#brandGrad)" stroke="#ef4444" stroke-width="2" />
+        <path d="M133 13c-3-3.5-7.5-1.5-7.5 2 0 3.5 7.5 9 7.5 9s7.5-5.5 7.5-9c0-3.5-4.5-5.5-7.5-2z" fill="#ffffff" />
+        <text x="133" y="56" fill="#0f172a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" text-anchor="middle">IshqYara</text>
+        <circle cx="152" cy="0" r="7" fill="#10b981" />
+        <path d="M149 0l2 2 4-4" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+
+        <!-- Generic App 3 -->
+        <rect x="180" y="0" width="38" height="38" rx="10" fill="#e2e8f0" />
+      </g>
+    </g>
+  </g>
+</svg>

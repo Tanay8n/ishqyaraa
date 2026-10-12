@@ -24,6 +24,8 @@ import {
   Sparkles,
   Heart,
   Download,
+  Smartphone,
+  Laptop,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
@@ -108,6 +110,7 @@ export function SettingsModal({
 }: SettingsModalProps) {
   const { uiProfile, publicProfile, user, logout } = useAppUser();
   const [currentView, setCurrentView] = useState<SettingsOption>(initialOption);
+  const [installPlatform, setInstallPlatform] = useState<"android" | "ios" | "desktop">("android");
 
   // Copy state for developers' LinkedIn IDs
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -576,7 +579,7 @@ export function SettingsModal({
                 </div>
 
                 <p className="text-xs text-stone-600 leading-relaxed">
-                  Follow IshqYara on Instagram for campus stories, updates, announcements, and memories!
+                  Follow IshqYara on Instagram for updates and announcements!
                 </p>
 
                 <div className="pt-1">
@@ -600,74 +603,254 @@ export function SettingsModal({
           {/* ======================================================== */}
           {currentView === "install" && (
             <div className="space-y-4 animate-in fade-in duration-200">
-              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
-                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
-                    <span className="text-base">📲</span>
-                    <span>How to install (Android)</span>
-                  </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Web App Guide
-                  </span>
-                </div>
+              {/* Platform Switcher Tabs */}
+              <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-stone-100/90 rounded-2xl border border-stone-200/80">
+                <button
+                  type="button"
+                  onClick={() => setInstallPlatform("android")}
+                  className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    installPlatform === "android"
+                      ? "bg-white text-stone-900 shadow-sm border border-stone-200/60"
+                      : "text-stone-600 hover:text-stone-900 hover:bg-white/50"
+                  }`}
+                >
+                  <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Android</span>
+                </button>
 
-                {/* Install Guide Image */}
-                <div className="rounded-2xl overflow-hidden border border-stone-800 bg-[#1c1917] shadow-sm">
-                  <img
-                    src="/install-guide-android.svg"
-                    alt="How to install IshqYara on Android Chrome"
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setInstallPlatform("ios")}
+                  className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    installPlatform === "ios"
+                      ? "bg-white text-stone-900 shadow-sm border border-stone-200/60"
+                      : "text-stone-600 hover:text-stone-900 hover:bg-white/50"
+                  }`}
+                >
+                  <span className="text-xs">🍎</span>
+                  <span>iOS (iPhone)</span>
+                </button>
 
-                {/* 5 Ordered Steps */}
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                      1
-                    </span>
-                    <span className="text-stone-800">
-                      Open <strong>IshqYara</strong> in <strong>Google Chrome</strong>.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                      2
-                    </span>
-                    <span className="text-stone-800">
-                      Tap the <strong>three-dot menu (⋮)</strong> and select <strong>Install app</strong>.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                      3
-                    </span>
-                    <span className="text-stone-800">
-                      Tap <strong>Install</strong> to confirm.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                      4
-                    </span>
-                    <span className="text-stone-800">
-                      Wait for the installation confirmation.
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                      5
-                    </span>
-                    <span className="text-stone-800">
-                      Find the <strong>IshqYara icon</strong> on your home screen.
-                    </span>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setInstallPlatform("desktop")}
+                  className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    installPlatform === "desktop"
+                      ? "bg-white text-stone-900 shadow-sm border border-stone-200/60"
+                      : "text-stone-600 hover:text-stone-900 hover:bg-white/50"
+                  }`}
+                >
+                  <Laptop className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Desktop</span>
+                </button>
               </div>
+
+              {/* ANDROID TAB */}
+              {installPlatform === "android" && (
+                <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                      <span className="text-base">🤖</span>
+                      <span>How to install on Android</span>
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Google Chrome
+                    </span>
+                  </div>
+
+                  {/* Android Install Guide Image */}
+                  <div className="rounded-2xl overflow-hidden border border-stone-200 bg-slate-50 shadow-xs">
+                    <img
+                      src="/install-guide-android.svg"
+                      alt="How to install IshqYara on Android Chrome step-by-step visual preview"
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+
+                  {/* 5 Ordered Steps */}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        1
+                      </span>
+                      <span className="text-stone-800">
+                        Open <strong>ishqyara.com</strong> in <strong>Google Chrome</strong>.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        2
+                      </span>
+                      <span className="text-stone-800">
+                        Tap the <strong>three-dot menu (⋮)</strong> in the top-right corner.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        3
+                      </span>
+                      <span className="text-stone-800">
+                        Select <strong>Install app</strong> (or <em>Add to Home screen</em>).
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#9e1b22] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        4
+                      </span>
+                      <span className="text-stone-800">
+                        Tap <strong>Install</strong> to confirm.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        5
+                      </span>
+                      <span className="text-stone-800">
+                        Wait for the installation confirmation and find the <strong>IshqYara icon</strong> on your home screen.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* IOS (IPHONE/IPAD) TAB */}
+              {installPlatform === "ios" && (
+                <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                      <span className="text-base">🍎</span>
+                      <span>How to install on iOS (iPhone / iPad)</span>
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      Apple Safari
+                    </span>
+                  </div>
+
+                  {/* iOS Install Guide Image */}
+                  <div className="rounded-2xl overflow-hidden border border-stone-200 bg-slate-50 shadow-xs">
+                    <img
+                      src="/install-guide-ios.svg"
+                      alt="How to install IshqYara on iPhone Safari step-by-step visual preview"
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+
+                  {/* 5 Ordered Steps */}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#007aff] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        1
+                      </span>
+                      <span className="text-stone-800">
+                        Open <strong>ishqyara.com</strong> in <strong>Safari</strong>.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#007aff] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        2
+                      </span>
+                      <span className="text-stone-800">
+                        Tap the <strong>Share button</strong> (the box with an upward pointing arrow at the bottom).
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#007aff] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        3
+                      </span>
+                      <span className="text-stone-800">
+                        Scroll down and select <strong>Add to Home Screen</strong>.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#007aff] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        4
+                      </span>
+                      <span className="text-stone-800">
+                        Tap <strong>Add</strong> in the top-right corner.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        5
+                      </span>
+                      <span className="text-stone-800">
+                        Find the <strong>IshqYara icon</strong> on your Home Screen.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* DESKTOP (PC/MAC) TAB */}
+              {installPlatform === "desktop" && (
+                <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-4 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                    <h4 className="font-bold text-stone-900 text-sm flex items-center gap-2">
+                      <span className="text-base">💻</span>
+                      <span>How to install on Desktop (PC &amp; Mac)</span>
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                      Chrome / Edge / Brave
+                    </span>
+                  </div>
+
+                  {/* Desktop Install Guide Image */}
+                  <div className="rounded-2xl overflow-hidden border border-stone-200 bg-slate-50 shadow-xs">
+                    <img
+                      src="/install-guide-desktop.svg"
+                      alt="How to install IshqYara on Desktop Chrome or Edge step-by-step visual preview"
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+
+                  {/* 4 Ordered Steps */}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#7c3aed] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        1
+                      </span>
+                      <span className="text-stone-800">
+                        Open <strong>ishqyara.com</strong> in <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, or <strong>Brave</strong>.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#7c3aed] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        2
+                      </span>
+                      <span className="text-stone-800">
+                        Click the <strong>Install icon</strong> (🖥️ or ⊕) on the right side of the address bar. <em>(Or click browser menu ⋮ &gt; &quot;Install IshqYara&quot;)</em>.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-[#7c3aed] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        3
+                      </span>
+                      <span className="text-stone-800">
+                        Click <strong>Install</strong> in the popup prompt.
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-xs">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                        4
+                      </span>
+                      <span className="text-stone-800">
+                        Launch and enjoy <strong>IshqYara</strong> directly as a standalone app from your Desktop, Taskbar, or App Launcher.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
