@@ -241,7 +241,7 @@ export function SettingsModal({
     {
       id: "developers" as SettingsOption,
       label: "About Developers",
-      description: "LinkedIn profiles developers",
+      description: "LinkedIn profiles of developers",
       icon: LinkedinIcon,
       color: "bg-indigo-50 text-[#0a66c2] border-indigo-200",
     },
@@ -256,7 +256,7 @@ export function SettingsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setCurrentView("menu");
@@ -320,7 +320,7 @@ export function SettingsModal({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-[#faf7f2]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 pb-8 sm:pb-5 bg-[#faf7f2]">
           {/* ======================================================== */}
           {/* MAIN SETTINGS MENU LIST (Shown by default) */}
           {/* ======================================================== */}
