@@ -176,7 +176,7 @@ export function SettingsModal({
     {
       id: "install" as SettingsOption,
       label: "How to Install",
-      description: "Add IshqYara to your Android home screen",
+      description: "Add IshqYara to your home screen",
       icon: Download,
       color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
@@ -445,11 +445,11 @@ export function SettingsModal({
               {/* Header Hero Banner */}
               <div className="bg-gradient-to-br from-[#9e1b22] to-[#c22830] rounded-3xl p-6 text-white shadow-lg space-y-3 relative overflow-hidden">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/25 shadow-sm shrink-0 overflow-hidden p-1.5">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl overflow-hidden shadow-md border-2 border-white/40 shrink-0 bg-stone-900">
                     <img
                       src="/logo.png"
                       alt="IshqYara Logo"
-                      className="w-full h-full object-contain drop-shadow-sm"
+                      className="w-full h-full object-cover block"
                     />
                   </div>
                   <div>
