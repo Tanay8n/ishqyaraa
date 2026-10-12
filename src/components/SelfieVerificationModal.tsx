@@ -143,7 +143,7 @@ export function SelfieVerificationModal({
             </div>
             <div>
               <h3 className="text-base font-black text-stone-900">Selfie Verification</h3>
-              <p className="text-[11px] text-stone-500">Earn the blue verified badge 🪷</p>
+              <p className="text-[11px] text-stone-500">Earn the blue verified badge</p>
             </div>
           </div>
           <button
@@ -163,7 +163,7 @@ export function SelfieVerificationModal({
                 <CheckCircle2 className="w-12 h-12 fill-sky-500/20" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-xl font-black text-stone-900">Pose Verified! 🪷</h4>
+                <h4 className="text-xl font-black text-stone-900">Pose Verified! ✔️</h4>
                 <p className="text-xs text-stone-600 max-w-xs mx-auto">
                   Your profile now displays the official Verified badge. Other students know you&apos;re 100% genuine!
                 </p>

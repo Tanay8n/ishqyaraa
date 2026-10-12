@@ -10,9 +10,9 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const nandia = localFont({
-  src: "./fonts/Nandia.ttf",
-  variable: "--font-nandia",
+const kgPenmanship = localFont({
+  src: "./fonts/KGPerfectPenmanship.ttf",
+  variable: "--font-kg-penmanship",
   display: "swap",
 });
 
@@ -89,7 +89,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${nandia.variable} ${jakarta.variable} scroll-smooth`}>
+    <html lang="en" className={`${kgPenmanship.variable} ${jakarta.variable} scroll-smooth`}>
       <body className="min-h-screen bg-[#faf7f2] text-stone-900 font-sans antialiased selection:bg-[#9e1b22] selection:text-white">
         <AppProviders>{children}</AppProviders>
       </body>
