@@ -262,7 +262,7 @@ export function SettingsModal({
                 {currentView === "developers" && "About Developers"}
                 {currentView === "logout" && "Logout"}
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
-                  v1.0.0
+                  Soft launch v1.0.0
                 </span>
               </h2>
             </div>
@@ -445,14 +445,18 @@ export function SettingsModal({
               {/* Header Hero Banner */}
               <div className="bg-gradient-to-br from-[#9e1b22] to-[#c22830] rounded-3xl p-6 text-white shadow-lg space-y-3 relative overflow-hidden">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm shrink-0">
-                    <Heart className="w-6 h-6 fill-white" />
+                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/25 shadow-sm shrink-0 overflow-hidden p-1.5">
+                    <img
+                      src="/logo.png"
+                      alt="IshqYara Logo"
+                      className="w-full h-full object-contain drop-shadow-sm"
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
                       <span>IshqYara</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/30 uppercase tracking-wider">
-                        v1.0.0
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 tracking-wide">
+                        Soft launch v1.0.0
                       </span>
                     </h3>
                     <p className="text-xs text-rose-100 font-semibold">
