@@ -11,12 +11,35 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://ishqyaraa-tanay8ns-projects.vercel.app"
+    process.env.NEXT_PUBLIC_APP_URL || "https://ishqyara.social"
   ),
-  title: "Puja Partner — Find Your People. Celebrate Together. 🪷",
+  title: {
+    default: "IshqYara — Beyond the Swipe, Where Dil Finds Its Vibe",
+    template: "%s | IshqYara",
+  },
+  applicationName: "IshqYara",
+  appleWebApp: {
+    title: "IshqYara",
+    capable: true,
+    statusBarStyle: "default",
+  },
   description:
-    "The modern social platform for Durga Puja in Kolkata. Find compatible pandal-hopping partners, join verified groups, plan your routes, and celebrate together.",
-  keywords: ["Durga Puja", "Puja Partner", "Kolkata", "Pandal Hopping", "Sharodiya", "Dating", "Friends", "Maddox Square"],
+    "IshqYara is Kolkata's modern dating and social discovery app. Connect with genuine singles, find romantic dates, make lasting friends, and discover real compatibility beyond the swipe.",
+  keywords: [
+    "Dating App",
+    "IshqYara",
+    "Kolkata Dating",
+    "Find Love",
+    "Match and Chat",
+    "College Dating",
+    "Singles in Kolkata",
+    "Dating in Bengal",
+    "Relationships",
+    "Durga Puja Theme",
+  ],
+  authors: [{ name: "IshqYara Team" }],
+  creator: "IshqYara",
+  publisher: "IshqYara",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
@@ -29,17 +52,27 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: "Puja Partner — Find Your People. Celebrate Together. 🪷",
-    description: "Meet compatible people, find Puja buddies, join pandal-hopping groups, and make your Durga Puja unforgettable.",
+    title: "IshqYara — Beyond the Swipe, Where Dil Finds Its Vibe",
+    description:
+      "Kolkata's modern dating and connection app. Match with genuine people, discover true compatibility, and spark real chemistry.",
+    url: "https://ishqyara.social",
+    siteName: "IshqYara",
     type: "website",
     images: [
       {
         url: "/logo.png",
         width: 1024,
         height: 1024,
-        alt: "IshqYara — Puja Partner",
+        alt: "IshqYara — Modern Dating & Social Discovery",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IshqYara — Beyond the Swipe, Where Dil Finds Its Vibe",
+    description:
+      "Kolkata's modern dating and connection app. Match with genuine people, discover true compatibility, and spark real chemistry.",
+    images: ["/logo.png"],
   },
 };
 
