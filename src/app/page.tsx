@@ -1160,7 +1160,7 @@ export default function PartnerFinderPage() {
                     <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-stone-200">
                       <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
                         <MapPin className="w-3.5 h-3.5 text-[#ea580c]" />
-                        {currentProfile.area} • {currentProfile.distanceKm} km away
+                        {currentProfile.area ? `${currentProfile.area} • ` : ""}{currentProfile.distanceKm <= 1 ? "1 km away" : `${currentProfile.distanceKm} km away`}
                       </span>
 
                       <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
@@ -1712,7 +1712,7 @@ export default function PartnerFinderPage() {
                   <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs text-stone-600">
                     <span className="flex items-center gap-1 font-semibold">
                       <MapPin className="w-3.5 h-3.5 text-[#ea580c]" />
-                      {currentProfile.area} • {currentProfile.distanceKm} km away
+                      {currentProfile.area ? `${currentProfile.area} • ` : ""}{currentProfile.distanceKm <= 1 ? "1 km away" : `${currentProfile.distanceKm} km away`}
                     </span>
 
                     <span className="flex items-center gap-1 font-semibold">

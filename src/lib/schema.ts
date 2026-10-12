@@ -86,6 +86,176 @@ export function computeCompatibility(
   return Math.max(50, Math.min(99, Math.round(score)));
 }
 
+export const KOLKATA_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  // Central Kolkata
+  "park street": { lat: 22.5516, lng: 88.3524 },
+  "central kolkata": { lat: 22.5645, lng: 88.3524 },
+  "esplanade": { lat: 22.5645, lng: 88.3524 },
+  "dharmatala": { lat: 22.5645, lng: 88.3524 },
+  "sealdah": { lat: 22.567, lng: 88.3712 },
+  "college street": { lat: 22.5744, lng: 88.3629 },
+  "bowbazar": { lat: 22.5683, lng: 88.3615 },
+  "camac street": { lat: 22.548, lng: 88.352 },
+
+  // South Kolkata
+  "south kolkata": { lat: 22.515, lng: 88.35 },
+  "ballygunge": { lat: 22.528, lng: 88.3656 },
+  "gariahat": { lat: 22.5186, lng: 88.3683 },
+  "maddox square": { lat: 22.525, lng: 88.358 },
+  "bhowanipore": { lat: 22.5297, lng: 88.3446 },
+  "bhawanipur": { lat: 22.5297, lng: 88.3446 },
+  "kalighat": { lat: 22.518, lng: 88.344 },
+  "hazra": { lat: 22.522, lng: 88.345 },
+  "alipore": { lat: 22.5312, lng: 88.3283 },
+  "new alipore": { lat: 22.5115, lng: 88.3275 },
+  "jadavpur": { lat: 22.4988, lng: 88.3718 },
+  "santoshpur": { lat: 22.497, lng: 88.384 },
+  "dhakuria": { lat: 22.5085, lng: 88.3667 },
+  "lake gardens": { lat: 22.505, lng: 88.355 },
+  "tollygunge": { lat: 22.5002, lng: 88.3468 },
+  "kudghat": { lat: 22.485, lng: 88.345 },
+  "ranikuthi": { lat: 22.486, lng: 88.358 },
+  "behala": { lat: 22.4986, lng: 88.3129 },
+  "thakurpukur": { lat: 22.4633, lng: 88.305 },
+  "taratala": { lat: 22.513, lng: 88.315 },
+  "kasba": { lat: 22.5134, lng: 88.397 },
+  "ruby": { lat: 22.514, lng: 88.402 },
+  "anandapur": { lat: 22.518, lng: 88.412 },
+  "garia": { lat: 22.4633, lng: 88.3832 },
+  "patuli": { lat: 22.476, lng: 88.389 },
+  "naktala": { lat: 22.477, lng: 88.367 },
+  "sonarpur": { lat: 22.4411, lng: 88.4005 },
+  "narendrapur": { lat: 22.438, lng: 88.397 },
+
+  // East Kolkata & IT Corridor
+  "salt lake": { lat: 22.5804, lng: 88.4174 },
+  "saltlake": { lat: 22.5804, lng: 88.4174 },
+  "bidhannagar": { lat: 22.5804, lng: 88.4174 },
+  "sector v": { lat: 22.5744, lng: 88.4338 },
+  "sector 5": { lat: 22.5744, lng: 88.4338 },
+  "new town": { lat: 22.5899, lng: 88.4744 },
+  "newtown": { lat: 22.5899, lng: 88.4744 },
+  "rajarhat": { lat: 22.6186, lng: 88.498 },
+  "kankurgachi": { lat: 22.5765, lng: 88.3887 },
+  "phoolbagan": { lat: 22.573, lng: 88.389 },
+  "ultadanga": { lat: 22.5888, lng: 88.3846 },
+  "lake town": { lat: 22.6033, lng: 88.4033 },
+  "bangur": { lat: 22.607, lng: 88.408 },
+
+  // North Kolkata
+  "north kolkata": { lat: 22.5958, lng: 88.3697 },
+  "shyambazar": { lat: 22.6022, lng: 88.3708 },
+  "hatibagan": { lat: 22.5947, lng: 88.3727 },
+  "bagbazar": { lat: 22.6044, lng: 88.3644 },
+  "sovabazar": { lat: 22.5975, lng: 88.3639 },
+  "shobhabazar": { lat: 22.5975, lng: 88.3639 },
+  "kumartuli": { lat: 22.5998, lng: 88.362 },
+  "girish park": { lat: 22.5856, lng: 88.36 },
+  "dum dum": { lat: 22.642, lng: 88.4312 },
+  "nagerbazar": { lat: 22.628, lng: 88.423 },
+  "belgharia": { lat: 22.661, lng: 88.385 },
+  "sodepur": { lat: 22.697, lng: 88.389 },
+  "barrackpore": { lat: 22.7667, lng: 88.3667 },
+  "barasat": { lat: 22.7214, lng: 88.4816 },
+  "madhyamgram": { lat: 22.6983, lng: 88.4552 },
+
+  // West Kolkata / Howrah
+  "howrah": { lat: 22.5958, lng: 88.315 },
+  "shibpur": { lat: 22.565, lng: 88.315 },
+  "santragachi": { lat: 22.582, lng: 88.283 },
+  "salkia": { lat: 22.61, lng: 88.345 },
+
+  // Default Kolkata
+  "kolkata": { lat: 22.5726, lng: 88.3639 },
+};
+
+export const ZONE_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  "south kolkata theme": { lat: 22.515, lng: 88.35 },
+  "north kolkata heritage": { lat: 22.5958, lng: 88.3697 },
+  "salt lake & new town": { lat: 22.585, lng: 88.445 },
+  "suburban megastars": { lat: 22.68, lng: 88.42 },
+  "local area": { lat: 22.56, lng: 88.36 },
+};
+
+export function resolveCoordinates(
+  record?: Pick<PublicProfileRecord, "area" | "pujaPreferences"> | null
+): { lat: number; lng: number } {
+  const defaultCoord = { lat: 22.5726, lng: 88.3639 };
+  if (!record) return defaultCoord;
+
+  const areaStr = (record.area || "").toLowerCase().trim();
+  if (areaStr) {
+    const keys = Object.keys(KOLKATA_COORDINATES).sort((a, b) => b.length - a.length);
+    for (const key of keys) {
+      if (areaStr.includes(key)) {
+        return KOLKATA_COORDINATES[key];
+      }
+    }
+  }
+
+  const zoneStr = (record.pujaPreferences?.favoritePandalZone || "").toLowerCase().trim();
+  if (zoneStr) {
+    for (const [zoneKey, coord] of Object.entries(ZONE_COORDINATES)) {
+      if (zoneStr.includes(zoneKey)) {
+        return coord;
+      }
+    }
+  }
+
+  return defaultCoord;
+}
+
+export function getHaversineDistanceKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export function computeDistanceKm(
+  me: Pick<PublicProfileRecord, "area" | "pujaPreferences"> | null | undefined,
+  them: Pick<PublicProfileRecord, "area" | "pujaPreferences">,
+  seed = ""
+): number {
+  const themCoord = resolveCoordinates(them);
+
+  if (!me) {
+    const central = { lat: 22.5516, lng: 88.3524 }; // Park Street
+    const raw = getHaversineDistanceKm(central.lat, central.lng, themCoord.lat, themCoord.lng);
+    return Math.max(1, Math.round(raw) || 2);
+  }
+
+  const meCoord = resolveCoordinates(me);
+  const rawKm = getHaversineDistanceKm(meCoord.lat, meCoord.lng, themCoord.lat, themCoord.lng);
+
+  // If in the exact same neighborhood / centroid (< 0.8 km):
+  // Never show 0 km! Match real dating apps (minimum 1 km, deterministic jitter 1-2 km)
+  if (rawKm < 0.8) {
+    if (seed) {
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        hash = (hash * 31 + seed.charCodeAt(i)) & 0xffffffff;
+      }
+      return (Math.abs(hash) % 2) + 1; // 1 or 2 km
+    }
+    return 1;
+  }
+
+  return Math.max(1, Math.round(rawKm));
+}
+
 export function toUiProfile(
   uid: string,
   record: PublicProfileRecord,
@@ -120,7 +290,7 @@ export function toUiProfile(
       record.collegeVerified ||
       (typeof window !== "undefined" && window.localStorage.getItem(`ishqyara_verified_${uid}`) === "true")
     ),
-    distanceKm: 0,
+    distanceKm: computeDistanceKm(me, record, uid),
   };
 }
 

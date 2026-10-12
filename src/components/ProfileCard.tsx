@@ -293,7 +293,7 @@ function ProfileCardContent({
             <div className="flex flex-wrap items-center gap-y-1 gap-x-2 text-xs text-stone-200">
               <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
                 <MapPin className="w-3 h-3 text-[#ea580c]" />
-                {profile.area} • {profile.distanceKm} km away
+                {profile.area ? `${profile.area} • ` : ""}{profile.distanceKm <= 1 ? "1 km away" : `${profile.distanceKm} km away`}
               </span>
               <span className="flex items-center gap-1 font-medium bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/10">
                 <GraduationCap className="w-3 h-3 text-stone-300" />
@@ -363,7 +363,7 @@ function ProfileCardContent({
               <div className="flex flex-wrap items-center gap-2 text-stone-300">
                 <span className="flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded-full">
                   <MapPin className="w-3 h-3 text-[#ea580c]" />
-                  {profile.area} • {profile.distanceKm} km
+                  {profile.area ? `${profile.area} • ` : ""}{profile.distanceKm <= 1 ? "1 km away" : `${profile.distanceKm} km`}
                 </span>
                 <span className="flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded-full">
                   <GraduationCap className="w-3 h-3 text-stone-300" />
