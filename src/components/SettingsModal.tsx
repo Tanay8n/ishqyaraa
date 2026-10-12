@@ -674,7 +674,7 @@ export function SettingsModal({
                         1
                       </span>
                       <span className="text-stone-800">
-                        Open <strong>ishqyara.com</strong> in <strong>Google Chrome</strong>.
+                        Open <strong>ishqyara.social</strong> in <strong>Google Chrome</strong>.
                       </span>
                     </div>
 
@@ -746,7 +746,7 @@ export function SettingsModal({
                         1
                       </span>
                       <span className="text-stone-800">
-                        Open <strong>ishqyara.com</strong> in <strong>Safari</strong>.
+                        Open <strong>ishqyara.social</strong> in <strong>Safari</strong>.
                       </span>
                     </div>
 
@@ -818,7 +818,7 @@ export function SettingsModal({
                         1
                       </span>
                       <span className="text-stone-800">
-                        Open <strong>ishqyara.com</strong> in <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, or <strong>Brave</strong>.
+                        Open <strong>ishqyara.social</strong> in <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong>, or <strong>Brave</strong>.
                       </span>
                     </div>
 
