@@ -265,42 +265,40 @@ export function SettingsModal({
       }}
     >
       <div
-        className="w-full max-w-xl bg-[#faf7f2] border border-[#e7dfd5] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] animate-in zoom-in-95 duration-200"
+        className="w-full max-w-xl bg-[#faf7f2] border border-[#e7dfd5] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
       >
         {/* Header Bar */}
-        <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-[#e7dfd5] bg-white flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+        <div className="px-5 py-4 border-b border-[#e7dfd5] bg-white flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
             {currentView !== "menu" ? (
               <button
                 onClick={() => setCurrentView("menu")}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-700 hover:text-[#9e1b22] hover:bg-stone-100 transition-colors mr-1 cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-700 hover:text-[#9e1b22] hover:bg-stone-100 transition-colors mr-1 cursor-pointer"
                 aria-label="Back to Settings"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Settings</span>
               </button>
             ) : (
-              <div className="w-8 h-8 rounded-xl bg-[#fbebee] text-[#9e1b22] flex items-center justify-center border border-[#9e1b22]/20 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#fbebee] text-[#9e1b22] flex items-center justify-center border border-[#9e1b22]/20">
                 <SettingsIcon className="w-4 h-4 animate-[spin_10s_linear_infinite]" />
               </div>
             )}
 
-            <div className="min-w-0">
-              <h2 className="text-sm sm:text-lg font-black text-stone-900 tracking-tight flex items-center gap-2 truncate">
-                <span className="truncate">
-                  {currentView === "menu" && "Settings"}
-                  {currentView === "userInfo" && "User Info"}
-                  {currentView === "about" && "About IshqYara"}
-                  {currentView === "install" && "How to Install"}
-                  {currentView === "support" && "Support & Feedback"}
-                  {currentView === "privacy" && "Privacy Policy"}
-                  {currentView === "terms" && "Terms of Service"}
-                  {currentView === "developers" && "About Developers"}
-                  {currentView === "logout" && "Logout"}
-                </span>
-                <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a] shrink-0">
+            <div>
+              <h2 className="text-base sm:text-lg font-black text-stone-900 tracking-tight flex items-center gap-2">
+                {currentView === "menu" && "Settings"}
+                {currentView === "userInfo" && "User Info"}
+                {currentView === "about" && "About IshqYara"}
+                {currentView === "install" && "How to Install"}
+                {currentView === "support" && "Support and Feedback"}
+                {currentView === "privacy" && "Privacy Policy"}
+                {currentView === "terms" && "Terms of Service"}
+                {currentView === "developers" && "About Developers"}
+                {currentView === "logout" && "Logout"}
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">
                   Soft Launch v1.0.0
                 </span>
               </h2>
@@ -320,7 +318,7 @@ export function SettingsModal({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 pb-8 sm:pb-5 bg-[#faf7f2]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-[#faf7f2]">
           {/* ======================================================== */}
           {/* MAIN SETTINGS MENU LIST (Shown by default) */}
           {/* ======================================================== */}
