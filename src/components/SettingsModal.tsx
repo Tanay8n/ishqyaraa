@@ -21,12 +21,15 @@ import {
   Mail,
   AlertCircle,
   FileText,
+  Sparkles,
+  Heart,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
 export type SettingsOption =
   | "menu"
   | "userInfo"
+  | "about"
   | "support"
   | "privacy"
   | "terms"
@@ -149,6 +152,13 @@ export function SettingsModal({
       color: "bg-blue-50 text-blue-700 border-blue-200",
     },
     {
+      id: "about" as SettingsOption,
+      label: "About IshqYara",
+      description: "Beyond the swipe, where dil finds its vibe",
+      icon: Sparkles,
+      color: "bg-rose-50 text-[#9e1b22] border-rose-200",
+    },
+    {
       id: "support" as SettingsOption,
       label: "Support and Feedback",
       description: "Share feedback and view safety information",
@@ -179,7 +189,7 @@ export function SettingsModal({
     {
       id: "logout" as SettingsOption,
       label: "Logout",
-      description: "Sign out securely from Puja Partner",
+      description: "Sign out securely from your IshqYara account",
       icon: LogOut,
       color: "bg-rose-50 text-rose-700 border-rose-200",
     },
@@ -222,6 +232,7 @@ export function SettingsModal({
               <h2 className="text-base sm:text-lg font-black text-stone-900 tracking-tight flex items-center gap-2">
                 {currentView === "menu" && "Settings"}
                 {currentView === "userInfo" && "User Info"}
+                {currentView === "about" && "About IshqYara"}
                 {currentView === "support" && "Support and Feedback"}
                 {currentView === "privacy" && "Privacy Policy"}
                 {currentView === "terms" && "Terms of Service"}
@@ -398,6 +409,99 @@ export function SettingsModal({
                     <User className="w-3.5 h-3.5" />
                     <span>Go to Profile</span>
                   </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* ABOUT ISHQYARA PAGE                                     */}
+          {/* ======================================================== */}
+          {currentView === "about" && (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              {/* Brand Card */}
+              <div className="bg-gradient-to-br from-[#9e1b22] to-[#c22830] rounded-3xl p-6 text-white shadow-lg space-y-3 relative overflow-hidden">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-sm shrink-0">
+                    <Heart className="w-6 h-6 fill-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
+                      <span>IshqYara</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white border border-white/30 uppercase tracking-wider">
+                        v1.0.0
+                      </span>
+                    </h3>
+                    <p className="text-xs text-rose-100 font-semibold">
+                      Dil se, Ishq Tak.
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-xs sm:text-sm text-stone-100 leading-relaxed font-normal pt-1">
+                  Beyond the swipe, where dil finds its vibe. IshqYara is Kolkata&apos;s homegrown modern dating and social discovery platform, designed to create real connections, memorable conversations, and authentic matches.
+                </p>
+              </div>
+
+              {/* What makes IshqYara special */}
+              <div className="bg-white rounded-2xl p-5 border border-[#e7dfd5] shadow-xs space-y-3.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-400">
+                  Why IshqYara?
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
+                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>True Compatibility</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      Matches based on campuses, interests, life rhythm, and real intentions—not just photo galleries.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
+                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
+                      <Shield className="w-4 h-4 text-emerald-600" />
+                      <span>100% Verified Humans</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      Liking and chatting require quick live selfie checks. No fake profiles, bots, or impersonators.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
+                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
+                      <MapPin className="w-4 h-4 text-[#ea580c]" />
+                      <span>Neighborhood Proximity</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      Accurate distance calculation across Kolkata areas—from South Kolkata and Ballygunge to Salt Lake and North Kolkata.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-[#faf7f2] border border-[#e7dfd5] space-y-1">
+                    <div className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
+                      <MessageSquare className="w-4 h-4 text-sky-600" />
+                      <span>Send Note with Like</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      Reply directly to interesting bio prompts or leave a personalized note alongside your like.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cultural heritage note */}
+              <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-200/80 flex items-start sm:items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 text-lg shrink-0">
+                  🪷
+                </div>
+                <div className="text-xs text-amber-950">
+                  <div className="font-bold">Born in Kolkata & Bengal</div>
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    Built by local students and engineers who understand the city&apos;s heartbeat, vibrant adda culture, and timeless romance.
+                  </p>
                 </div>
               </div>
             </div>
