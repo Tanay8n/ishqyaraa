@@ -720,13 +720,8 @@ export default function PartnerFinderPage() {
 
           {/* Action Header Icons */}
           <div className="flex items-center gap-2">
-            {/* Selfie Verification Badge or Button */}
-            {uiProfile?.verified ? (
-              <span className="flex items-center gap-1.5 text-xs font-bold text-sky-700 bg-sky-50 px-3 py-1.5 rounded-full border border-sky-200 shadow-xs">
-                <CheckCircle2 className="w-4 h-4 text-sky-500 fill-sky-500/20" />
-                <span className="hidden sm:inline">Verified</span>
-              </span>
-            ) : (
+            {/* Selfie Verification Button (only shown when unverified) */}
+            {!uiProfile?.verified && (
               <button
                 type="button"
                 onClick={() => setShowSelfieModal(true)}
