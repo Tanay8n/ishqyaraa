@@ -40,6 +40,7 @@ import {
 } from "@/lib/schema";
 
 import { SelfieVerificationModal } from "@/components/SelfieVerificationModal";
+import { ImageCropModal, type AspectRatioOption } from "@/components/ImageCropModal";
 
 export default function ProfilePage() {
   const { uiProfile: profileData, publicProfile, privateDob, saveProfile, refreshProfile, matchCount, user } = useAppUser();
@@ -76,6 +77,11 @@ export default function ProfilePage() {
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const editSlotFileInputRef = useRef<HTMLInputElement>(null);
   const targetSlotRef = useRef<number>(0);
+
+  // Photo crop modal state
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropTarget, setCropTarget] = useState<"avatar" | { slotIndex: number } | null>(null);
+  const [cropRatio, setCropRatio] = useState<AspectRatioOption>("4:5");
 
   // Location detection in edit modal
   const [locationDetecting, setLocationDetecting] = useState(false);
@@ -128,45 +134,13 @@ export default function ProfilePage() {
   };
 
   // Direct quick-update of avatar from main profile view
-  const handleDirectAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDirectAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user || !publicProfile || !privateDob) return;
     e.target.value = "";
-
-    setIsUpdatingAvatar(true);
-    setAvatarSuccessMsg(null);
-    try {
-      const newUrl = await uploadProfilePhoto(user.id, file);
-      // Put new photo at index 0 (main profile picture)
-      const currentList = publicProfile.photoURLs || [];
-      const updatedPhotos = [newUrl, ...currentList.slice(0, MAX_PHOTOS - 1)];
-
-      const draft: ProfileDraft = {
-        displayName: publicProfile.displayName,
-        dateOfBirth: privateDob,
-        college: publicProfile.college,
-        area: publicProfile.area,
-        bio: publicProfile.bio,
-        tagline: publicProfile.tagline,
-        intention: publicProfile.intention,
-        lookingFor: publicProfile.lookingFor,
-        interests: publicProfile.interests,
-        photoURLs: updatedPhotos,
-        pujaPreferences: publicProfile.pujaPreferences,
-        prompts: [
-          { question: PROMPT_QUESTIONS[0], answer: profileData?.prompts[0]?.answer || "" },
-          { question: PROMPT_QUESTIONS[1], answer: profileData?.prompts[1]?.answer || "" },
-          { question: PROMPT_QUESTIONS[2], answer: profileData?.prompts[2]?.answer || "" },
-        ],
-      };
-      await saveProfile(draft);
-      setAvatarSuccessMsg("Profile picture updated!");
-      setTimeout(() => setAvatarSuccessMsg(null), 3000);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Could not update profile picture");
-    } finally {
-      setIsUpdatingAvatar(false);
-    }
+    setCropFile(file);
+    setCropTarget("avatar");
+    setCropRatio("1:1");
   };
 
   // Trigger file upload for a specific slot in edit modal
@@ -178,27 +152,78 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSlotPhotoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSlotPhotoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     const slotIndex = targetSlotRef.current;
-    setUploadingSlot(slotIndex);
+    e.target.value = "";
+    setCropFile(file);
+    setCropTarget({ slotIndex });
+    setCropRatio("4:5");
+  };
 
-    try {
-      const uploadedUrl = await uploadProfilePhoto(user.id, file);
-      setEditPhotoURLs((prev) => {
-        const next = [...prev];
-        if (slotIndex < next.length) {
-          next[slotIndex] = uploadedUrl;
-        } else {
-          next.push(uploadedUrl);
-        }
-        return next;
-      });
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Could not upload photo");
-    } finally {
-      setUploadingSlot(null);
+  const handleCropComplete = async (croppedFile: File) => {
+    if (!cropTarget || !user) return;
+
+    if (cropTarget === "avatar") {
+      if (!publicProfile || !privateDob) return;
+      setIsUpdatingAvatar(true);
+      setAvatarSuccessMsg(null);
+      try {
+        const newUrl = await uploadProfilePhoto(user.id, croppedFile);
+        // Put new photo at index 0 (main profile picture)
+        const currentList = publicProfile.photoURLs || [];
+        const updatedPhotos = [newUrl, ...currentList.slice(0, MAX_PHOTOS - 1)];
+
+        const draft: ProfileDraft = {
+          displayName: publicProfile.displayName,
+          dateOfBirth: privateDob,
+          college: publicProfile.college,
+          area: publicProfile.area,
+          bio: publicProfile.bio,
+          tagline: publicProfile.tagline,
+          intention: publicProfile.intention,
+          lookingFor: publicProfile.lookingFor,
+          interests: publicProfile.interests,
+          photoURLs: updatedPhotos,
+          pujaPreferences: publicProfile.pujaPreferences,
+          prompts: [
+            { question: PROMPT_QUESTIONS[0], answer: profileData?.prompts[0]?.answer || "" },
+            { question: PROMPT_QUESTIONS[1], answer: profileData?.prompts[1]?.answer || "" },
+            { question: PROMPT_QUESTIONS[2], answer: profileData?.prompts[2]?.answer || "" },
+          ],
+        };
+        await saveProfile(draft);
+        setAvatarSuccessMsg("Profile picture updated!");
+        setTimeout(() => setAvatarSuccessMsg(null), 3000);
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "Could not update profile picture");
+      } finally {
+        setIsUpdatingAvatar(false);
+        setCropFile(null);
+        setCropTarget(null);
+      }
+    } else {
+      const slotIndex = cropTarget.slotIndex;
+      setUploadingSlot(slotIndex);
+      try {
+        const uploadedUrl = await uploadProfilePhoto(user.id, croppedFile);
+        setEditPhotoURLs((prev) => {
+          const next = [...prev];
+          if (slotIndex < next.length) {
+            next[slotIndex] = uploadedUrl;
+          } else {
+            next.push(uploadedUrl);
+          }
+          return next;
+        });
+      } catch (err) {
+        setSaveError(err instanceof Error ? err.message : "Could not upload photo");
+      } finally {
+        setUploadingSlot(null);
+        setCropFile(null);
+        setCropTarget(null);
+      }
     }
   };
 
@@ -502,7 +527,7 @@ export default function ProfilePage() {
                 {profileData?.verified || publicProfile.collegeVerified ? (
                   <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Selfie & College Verified 🪷
+                    Selfie & College Verified
                   </span>
                 ) : (
                   <button
@@ -511,7 +536,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-1 font-semibold text-[#9e1b22] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200 transition-all cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Verify with Selfie 🪷 (Required to Like)
+                    Verify with Selfie (Required to Like)
                   </button>
                 )}
               </div>
@@ -1201,6 +1226,19 @@ export default function ProfilePage() {
           }}
         />
       )}
+
+      {/* Image Crop & Framing Modal */}
+      <ImageCropModal
+        isOpen={Boolean(cropFile && cropTarget)}
+        file={cropFile}
+        initialAspectRatio={cropRatio}
+        onCropComplete={handleCropComplete}
+        onCancel={() => {
+          setCropFile(null);
+          setCropTarget(null);
+        }}
+        title={cropTarget === "avatar" ? "Crop Profile Avatar" : "Crop & Frame Photo"}
+      />
     </AppShell>
   );
 }
