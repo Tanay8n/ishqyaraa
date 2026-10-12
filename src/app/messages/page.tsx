@@ -365,11 +365,10 @@ function MessagesInner() {
         </div>
       )}
 
-      {/* Main Container */}
       <div
         className={`bg-white ${
           mobileView === "chat"
-            ? "h-[calc(100dvh-4rem)] md:h-[calc(100vh-130px)] rounded-none md:rounded-3xl border-0 md:border"
+            ? "h-dvh md:h-[calc(100vh-130px)] rounded-none md:rounded-3xl border-0 md:border"
             : "h-[calc(100dvh-5.5rem)] md:h-[calc(100vh-130px)] rounded-2xl md:rounded-3xl border"
         } border-[#e7dfd5] overflow-hidden shadow-xs flex flex-col lg:flex-row relative`}
       >

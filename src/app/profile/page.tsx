@@ -497,12 +497,12 @@ export default function ProfilePage() {
                   {profileData.college}
                 </span>
                 <span className="flex items-center gap-1 font-semibold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full">
-                  Seeing: {(publicProfile.pujaPreferences as any)?.interestedIn || "Women"}
+                  Interested In : {(publicProfile.pujaPreferences as any)?.interestedIn || "Women"}
                 </span>
                 {profileData?.verified || publicProfile.collegeVerified ? (
                   <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Selfie & College Verified 🪷
+                    Selfie & College Verified
                   </span>
                 ) : (
                   <button
@@ -511,7 +511,7 @@ export default function ProfilePage() {
                     className="flex items-center gap-1 font-semibold text-[#9e1b22] bg-red-50 hover:bg-red-100 px-2.5 py-0.5 rounded-full border border-red-200 transition-all cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5" />
-                    Verify with Selfie 🪷 (Required to Like)
+                    Verify with Selfie (Required to Like)
                   </button>
                 )}
               </div>
@@ -707,7 +707,7 @@ export default function ProfilePage() {
               <div className="py-8 text-center space-y-3">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto animate-bounce" />
                 <h3 className="text-xl font-bold text-stone-900">
-                  Profile Updated! 🪷
+                  Profile Updated!
                 </h3>
                 <p className="text-xs text-stone-500">
                   Your updated preferences, photos, and prompts are now saved.
@@ -1181,7 +1181,7 @@ export default function ProfilePage() {
                         <span>Saving...</span>
                       </>
                     ) : (
-                      <span>Save Changes 🪷</span>
+                      <span>Save Changes</span>
                     )}
                   </button>
                 </div>

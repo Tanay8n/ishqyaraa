@@ -61,12 +61,12 @@ export default function PrivacyPage() {
           <p className="text-sm sm:text-base text-stone-600 leading-relaxed">
             Welcome to <strong className="text-stone-900">IshqYara</strong> (&quot;Puja Partner&quot;), hosted at{" "}
             <a
-              href="https://ishqyaraa-tanay8ns-projects.vercel.app"
+              href="https://ishqyara.social"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-[#9e1b22] underline hover:text-[#7d141a]"
             >
-              https://ishqyaraa-tanay8ns-projects.vercel.app
+              https://ishqyara.social
             </a>
             . This Privacy Policy outlines our transparent practices regarding the collection, use, storage, protection, and sharing of personal information and Google user data when you access or use our companion service.
           </p>
@@ -359,12 +359,12 @@ export default function PrivacyPage() {
               <p>
                 <strong>Application Domain:</strong>{" "}
                 <a
-                  href="https://ishqyaraa-tanay8ns-projects.vercel.app"
+                  href="https://ishqyara.social"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-stone-900 underline"
                 >
-                  https://ishqyaraa-tanay8ns-projects.vercel.app
+                  https://ishqyara.social
                 </a>
               </p>
               <p><strong>Response Time:</strong> Inquiries are addressed within 48 business hours.</p>

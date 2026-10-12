@@ -712,12 +712,8 @@ export default function PartnerFinderPage() {
     <AppShell>
       <div className="space-y-4 max-w-5xl mx-auto">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-1">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#9e1b22]">IshqYara</p>
-            <h1 className="text-xl sm:text-2xl font-black text-stone-900">Find your Puja person 🪷</h1>
-          </div>
 
+        <div className="flex items-center justify-end px-1">
           {/* Action Header Icons */}
           <div className="flex items-center gap-2">
             {/* Selfie Verification Button (only shown when unverified) */}
@@ -765,7 +761,7 @@ export default function PartnerFinderPage() {
               <div>
                 <p className="text-xs font-bold text-stone-900">Verification Required to Like</p>
                 <p className="text-[11px] text-stone-600 line-clamp-1">
-                  Complete a quick selfie to unlock sending likes, notes & matching with Kolkata students 🪷
+                  Complete a quick selfie to unlock sending likes, notes & matching with Kolkata students
                 </p>
               </div>
             </div>
