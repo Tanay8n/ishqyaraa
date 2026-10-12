@@ -343,14 +343,6 @@ function MessagesInner() {
 
   return (
     <AppShell hideMobileNav={mobileView === "chat"}>
-      {/* Toast Notification */}
-      {showLocationBanner && (
-        <div className="fixed top-4 right-4 z-50 bg-emerald-900 text-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 border border-emerald-700 animate-in slide-in-from-top-2 duration-200">
-          <Navigation className="w-4 h-4 text-emerald-300" />
-          <span className="text-xs font-semibold">Pandal meeting point shared! 📍</span>
-        </div>
-      )}
-
       {/* Main Container */}
       <div
         className={`bg-white ${
