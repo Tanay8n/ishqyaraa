@@ -400,7 +400,7 @@ export default function ProfilePage() {
                 <span>Settings</span>
               </button>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 hidden sm:inline-block">
-                শারদীয়া 2026 Profile
+                IshqYara
               </span>
             </div>
           </div>
