@@ -12,10 +12,59 @@ import {
   ChevronRight,
   Flame,
   Settings,
+  Bell,
   CheckCircle2,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 import { SettingsModal, type SettingsOption } from "./SettingsModal";
+
+function NotificationBellButton({ className = "" }: { className?: string }) {
+  const [permission, setPermission] = useState<NotificationPermission>("default");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setPermission(Notification.permission);
+    }
+  }, []);
+
+  const handleToggleNotifications = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      alert("Notifications are not supported in this browser.");
+      return;
+    }
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      if (result === "granted") {
+        try {
+          new Notification("IshqYara Notifications Active 🪷", {
+            body: "You'll be alerted as soon as you get a match or message!",
+            icon: "/favicon.ico",
+          });
+        } catch {}
+      }
+    } catch {}
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleToggleNotifications}
+      className={className}
+      title={
+        permission === "granted"
+          ? "Push notifications active"
+          : "Enable Match & Message Alerts"
+      }
+      aria-label="Toggle notifications"
+    >
+      <Bell className="w-4 h-4" />
+      {permission === "granted" && (
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+      )}
+    </button>
+  );
+}
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -185,13 +234,16 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
             </div>
             <ChevronRight className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
           </Link>
-          <button
-            type="button"
-            onClick={() => openSettings()}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#e7dfd5] bg-white px-3 py-2 text-xs font-semibold text-stone-700 hover:text-[#9e1b22]"
-          >
-            <Settings className="h-4 w-4" /> Settings
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => openSettings()}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-[#e7dfd5] bg-white px-3 py-2 text-xs font-semibold text-stone-700 hover:text-[#9e1b22] hover:bg-stone-50 transition-colors"
+            >
+              <Settings className="h-4 w-4" /> Settings
+            </button>
+            <NotificationBellButton className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:text-[#9e1b22] hover:bg-stone-50 transition-colors relative" />
+          </div>
         </div>
       </aside>
 
@@ -216,6 +268,7 @@ export function AppShell({ children, hideMobileNav = false }: AppShellProps) {
             </Link>
 
             <div className="flex items-center gap-2">
+              <NotificationBellButton className="p-2 rounded-xl border border-[#e7dfd5] bg-white text-stone-700 hover:bg-stone-100 transition-colors relative" />
               <button
                 type="button"
                 onClick={() => openSettings()}

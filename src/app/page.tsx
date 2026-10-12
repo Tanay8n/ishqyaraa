@@ -739,23 +739,6 @@ export default function PartnerFinderPage() {
               </button>
             )}
 
-            {/* Notification Bell */}
-            <button
-              type="button"
-              onClick={requestNotificationPermission}
-              className="w-9 h-9 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-stone-900 flex items-center justify-center relative shadow-xs transition-all active:scale-95"
-              title={
-                notificationPermission === "granted"
-                  ? "Push notifications active"
-                  : "Enable Match Alerts"
-              }
-            >
-              <Bell className="w-4 h-4" />
-              {notificationPermission === "granted" && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-              )}
-            </button>
-
             {/* Filter Drawer Toggle */}
             <button
               type="button"
