@@ -2,17 +2,29 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShieldCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 
-export function LoginScreen() {
+export function LoginScreen({ onBackToWelcome }: { onBackToWelcome?: () => void }) {
   const { signInWithGoogle, signingIn, signInError } = useAppUser();
 
   return (
-    <div className="min-h-screen bg-[#faf7f2] flex flex-col justify-between p-4 sm:p-6">
+    <div className="min-h-screen bg-[#faf7f2] flex flex-col justify-between p-4 sm:p-6 font-sans">
       <div className="w-full max-w-sm mx-auto my-auto py-8">
-        <div className="bg-white rounded-3xl border border-stone-200/90 p-7 sm:p-8 text-center shadow-xl">
-          <div className="w-16 h-16 mx-auto rounded-2xl overflow-hidden shadow-md shadow-[#9e1b22]/20">
+        {onBackToWelcome && (
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={onBackToWelcome}
+              className="rounded-full inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-stone-100 text-stone-800 hover:text-stone-950 border border-stone-200 text-xs font-black transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-[#9e1b22]" />
+              <span>Back to Welcome Page</span>
+            </button>
+          </div>
+        )}
+        <div className="bg-white rounded-[36px] border border-stone-200/90 p-8 sm:p-9 text-center shadow-2xl">
+          <div className="w-16 h-16 mx-auto rounded-3xl overflow-hidden shadow-lg shadow-[#9e1b22]/25 border border-[#9e1b22]/30">
             <Image
               src="/logo.png"
               alt="IshqYara Logo"
@@ -23,15 +35,15 @@ export function LoginScreen() {
             />
           </div>
           <div className="mt-4">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/60">
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#9e1b22] bg-[#fee2e2] px-3 py-1 rounded-full border border-[#9e1b22]/25">
               Dil se, Ishq Tak.
             </span>
           </div>
-          <h1 className="mt-3 text-2xl font-black text-stone-900 tracking-tight">
+          <h1 className="font-display italic mt-3 text-3xl font-black text-stone-950 tracking-tight">
             IshqYara
           </h1>
-          <p className="text-xs font-semibold text-[#9e1b22]">Puja Partner</p>
-          <p className="mt-2 text-xs sm:text-sm text-stone-600 leading-relaxed">
+          <p className="text-xs font-bold text-[#ea580c]">Puja &amp; Social Partner</p>
+          <p className="mt-2.5 text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
             Find compatible pandal hopping companions, squad members, and celebrate Durga Puja together.
           </p>
 
@@ -40,7 +52,7 @@ export function LoginScreen() {
             id="google-signin-btn"
             onClick={signInWithGoogle}
             disabled={signingIn}
-            className="mt-6 w-full min-h-[52px] rounded-2xl bg-white border border-stone-300 shadow-sm hover:shadow-md hover:border-stone-400 active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-sm font-bold text-stone-800 disabled:opacity-60 cursor-pointer"
+            className="rounded-full mt-7 w-full min-h-[52px] bg-white border-2 border-stone-300 shadow-sm hover:shadow-md hover:border-stone-900 active:scale-95 hover:scale-103 transition-all flex items-center justify-center gap-3 text-sm font-black text-stone-900 disabled:opacity-60 cursor-pointer"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M21.35 12.27c0-.72-.06-1.42-.18-2.09H12v3.95h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.25Z"/>
@@ -56,12 +68,12 @@ export function LoginScreen() {
           )}
 
           {/* Prominent in-product consent disclosure */}
-          <div className="mt-5 pt-4 border-t border-stone-100 text-[11px] text-stone-500 leading-normal">
+          <div className="mt-6 pt-4 border-t border-stone-100 text-[11px] text-stone-500 leading-normal font-medium">
             By signing in, you agree to our{" "}
             <Link
               href="/terms"
               id="login-terms-link"
-              className="font-semibold text-stone-800 underline hover:text-[#9e1b22] transition-colors"
+              className="font-bold text-stone-900 underline hover:text-[#9e1b22] transition-colors"
             >
               Terms of Service
             </Link>{" "}
@@ -69,23 +81,18 @@ export function LoginScreen() {
             <Link
               href="/privacy"
               id="login-privacy-link"
-              className="font-semibold text-stone-800 underline hover:text-[#9e1b22] transition-colors"
+              className="font-bold text-stone-900 underline hover:text-[#9e1b22] transition-colors"
             >
               Privacy Policy
             </Link>
             .
           </div>
-
-          {/* <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 py-1.5 px-2.5 rounded-xl border border-emerald-200/60">
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-            <span>Google OAuth 2.0 & Row-Level Data Security</span>
-          </div> */}
         </div>
       </div>
  
       {/* Prominent Footer */}
       <footer className="w-full max-w-sm mx-auto text-center py-4">
-        <nav aria-label="Legal navigation" className="flex items-center justify-center gap-4 text-xs font-semibold text-stone-600">
+        <nav aria-label="Legal navigation" className="flex items-center justify-center gap-4 text-xs font-bold text-stone-600">
           <Link
             href="/privacy"
             id="footer-privacy-link"
@@ -102,7 +109,7 @@ export function LoginScreen() {
             Terms of Service
           </Link>
         </nav>
-        <p className="mt-2 text-[11px] text-stone-400">
+        <p className="mt-2 text-[11px] text-stone-400 font-medium">
           © {new Date().getFullYear()} IshqYara (Puja Partner). All rights reserved.
         </p>
       </footer>

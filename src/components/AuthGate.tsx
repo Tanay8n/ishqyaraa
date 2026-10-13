@@ -5,13 +5,20 @@ import { usePathname } from "next/navigation";
 import { useAppUser } from "@/components/AppUserContext";
 import { LoginScreen } from "@/components/LoginScreen";
 import { OnboardingForm } from "@/components/OnboardingForm";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { status, dataError, matchesLoadError, logout } = useAppUser();
   const pathname = usePathname();
 
-  // Allow public access to legal pages and onboarding regardless of authentication status
-  if (pathname === "/privacy" || pathname === "/terms" || pathname === "/onboarding") {
+  // Allow public access to legal pages, onboarding, and welcome/login regardless of authentication status
+  if (
+    pathname === "/privacy" ||
+    pathname === "/terms" ||
+    pathname === "/onboarding" ||
+    pathname === "/welcome" ||
+    pathname === "/login"
+  ) {
     return <>{children}</>;
   }
 
@@ -27,7 +34,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }
 
   if (status === "signedOut") {
-    return <LoginScreen />;
+    return <WelcomeScreen />;
   }
 
   if (status === "dataError") {
