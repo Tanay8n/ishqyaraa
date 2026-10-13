@@ -278,13 +278,13 @@ export function WelcomeScreen() {
 
           {/* Pill Buttons */}
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <button
+            {/* <button
               type="button"
               onClick={() => setShowLoginModal(true)}
               className="rounded-full px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-stone-900 bg-white hover:bg-stone-100 transition-all border border-stone-300 hover:border-stone-900 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
             >
               Log in
-            </button>
+            </button> */}
 
             <button
               type="button"
