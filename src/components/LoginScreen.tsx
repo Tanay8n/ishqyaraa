@@ -44,7 +44,7 @@ export function LoginScreen({ onBackToWelcome }: { onBackToWelcome?: () => void 
           </h1>
           <p className="text-xs font-bold text-[#ea580c]">Puja &amp; Social Partner</p>
           <p className="mt-2.5 text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
-            Find compatible pandal hopping companions, squad members, and celebrate Durga Puja together.
+            Find compatible pandal hopping partner and celebrate Durga Puja together.
           </p>
 
           <button

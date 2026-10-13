@@ -292,7 +292,7 @@ export function WelcomeScreen() {
               onClick={() => setShowLoginModal(true)}
               className="rounded-full px-5 sm:px-6 py-2.5 bg-gradient-to-r from-[#9e1b22] via-[#b82028] to-[#c22830] text-white text-xs sm:text-sm font-bold tinder-btn-glow hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-[#9e1b22]/20"
             >
-              <span>Get Started</span>
+              <span>Log in</span>
               <ChevronRight className="w-4 h-4" />
             </button>
 
@@ -386,8 +386,8 @@ export function WelcomeScreen() {
               onClick={() => setShowLoginModal(true)}
               className="rounded-full min-h-[56px] px-8 sm:px-10 bg-gradient-to-r from-[#9e1b22] via-[#b82028] to-[#c22830] text-white font-black text-base tinder-btn-glow hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg shadow-[#9e1b22]/25"
             >
-              <Sparkles className="w-5 h-5 text-amber-200" />
-              <span>Create Account</span>
+              {/* <Sparkles className="w-5 h-5 text-amber-200" /> */}
+              <span>Get Started</span>
               <ArrowRight className="w-5 h-5" />
             </button>
 
@@ -655,7 +655,7 @@ export function WelcomeScreen() {
                       </div>
                       <div className="flex items-center gap-1 pointer-events-auto">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
-                          Puja Buddy 🪷
+                          Dating
                         </span>
                         <div className="w-6 h-6 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 flex items-center justify-center">
                           <MoreVertical className="w-3 h-3" />
@@ -712,7 +712,7 @@ export function WelcomeScreen() {
                         </div>
 
                         <p className="text-[11px] text-stone-200 font-medium leading-snug line-clamp-2">
-                          &ldquo;Midnight phuchka at Hedua &amp; Dhunuchi naach at Bagbazar 🪷&rdquo;
+                          &ldquo;Midnight phuchka at Hedua &amp; Dhunuchi naach at Bagbazar &rdquo;
                         </p>
 
                         <div className="flex flex-wrap gap-1 pt-0.5">
@@ -723,7 +723,7 @@ export function WelcomeScreen() {
                             Phuchka &amp; Cha
                           </span>
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-amber-500/25 backdrop-blur-xs text-amber-200 border border-amber-400/30">
-                            🪷 Sovabazar
+                            Sovabazar
                           </span>
                         </div>
                       </div>
@@ -1551,9 +1551,9 @@ export function WelcomeScreen() {
               Welcome to IshqYara
             </h3>
             <p className="text-xs font-bold text-[#ea580c]">Puja &amp; Social Partner</p>
-            <p className="mt-2 text-xs text-stone-600 leading-relaxed font-medium">
+            {/* <p className="mt-2 text-xs text-stone-600 leading-relaxed font-medium">
               Sign in with your Google account to discover genuine Kolkata singles, pandal hopping buddies, and exciting addas.
-            </p>
+            </p> */}
 
             {/* Google Sign In Button (Pill shaped) */}
             <button
