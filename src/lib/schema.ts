@@ -262,7 +262,10 @@ export function toUiProfile(
   record: PublicProfileRecord,
   me?: PublicProfileRecord | null
 ): Profile {
-  const photos = Array.isArray(record.photoURLs) ? record.photoURLs.filter((photo): photo is string => typeof photo === "string" && photo.startsWith("https://")) : [];
+  const rawPhotos = Array.isArray(record.photoURLs) ? record.photoURLs.filter((photo): photo is string => typeof photo === "string" && photo.startsWith("https://")) : [];
+  const photos = rawPhotos.map((url) =>
+    url.includes("googleusercontent.com") ? url.replace(/=s\d+(-c)?$/, "=s1080-c") : url
+  );
   const preferences = { ...DEFAULT_PUJA, ...(record.pujaPreferences || {}) };
   return {
     id: uid,

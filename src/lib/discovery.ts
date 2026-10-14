@@ -27,16 +27,6 @@ export async function loadDiscoveryDeck(me: PublicProfileRecord): Promise<Profil
       if (uid === user.id || !record.profileComplete || record.age < 18) return false;
       if (!record.displayName.trim() || !record.college.trim() || !record.photoURLs.length) return false;
 
-      // Gender preference matching (Unidirectional)
-      // If a user selects "Men", they see all male profiles; "Women" -> female profiles; "Everyone" -> all profiles.
-      const myInterestedIn = (me.pujaPreferences as any)?.interestedIn || "Everyone";
-      const otherGender = (record.pujaPreferences as any)?.gender || "Man";
-
-      if (myInterestedIn && myInterestedIn !== "Everyone") {
-        if (myInterestedIn === "Men" && otherGender !== "Man") return false;
-        if (myInterestedIn === "Women" && otherGender !== "Woman") return false;
-      }
-
       return !liked.has(uid) && !passed.has(uid) && !excluded.has(uid);
     });
 

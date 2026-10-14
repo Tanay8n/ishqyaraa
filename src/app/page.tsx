@@ -207,6 +207,21 @@ export default function PartnerFinderPage() {
     }
   }, []);
 
+  // Initialize filter preference from user's profile on initial load
+  const hasInitializedGenderPref = useRef(false);
+  useEffect(() => {
+    if (hasInitializedGenderPref.current || !publicProfile) return;
+    const pref = (publicProfile.pujaPreferences as any)?.interestedIn;
+    if (pref) {
+      hasInitializedGenderPref.current = true;
+      if (pref === "Everyone") {
+        setSelectedGender("all");
+      } else {
+        setSelectedGender(pref);
+      }
+    }
+  }, [publicProfile]);
+
   // Filter computation
   const filteredProfiles = useMemo(() => {
     return profiles.filter((p) => {
@@ -218,10 +233,11 @@ export default function PartnerFinderPage() {
         if (p.intention !== selectedIntent) return false;
       }
       if (selectedGender !== "all" && selectedGender !== "Everyone") {
-        const profileGender = (p as any).gender || (p.pujaPreferences as any)?.gender;
-        if (profileGender) {
-          if (selectedGender === "Men" && profileGender !== "Man") return false;
-          if (selectedGender === "Women" && profileGender !== "Woman") return false;
+        const profileGender = String((p as any).gender || (p.pujaPreferences as any)?.gender || "").toLowerCase().trim();
+        if (selectedGender === "Men" || selectedGender.toLowerCase() === "man") {
+          if (profileGender !== "man" && profileGender !== "men") return false;
+        } else if (selectedGender === "Women" || selectedGender.toLowerCase() === "woman") {
+          if (profileGender !== "woman" && profileGender !== "women") return false;
         }
       }
       return true;

@@ -25,17 +25,26 @@ export async function uploadProfilePhoto(uid: string, file: File): Promise<strin
   return `${PROFILE_PHOTO_BUCKET}/${path}`;
 }
 
+export function upgradePhotoResolution(url: string): string {
+  if (!url || typeof url !== "string") return url;
+  if (url.includes("googleusercontent.com")) {
+    return url.replace(/=s\d+(-c)?$/, "=s1080-c");
+  }
+  return url;
+}
+
 export async function resolvePhotoURLs(photoURLs: string[]): Promise<string[]> {
   const supabasePaths = photoURLs.map((value) => value.startsWith(`${PROFILE_PHOTO_BUCKET}/`) ? value.slice(PROFILE_PHOTO_BUCKET.length + 1) : null);
   const paths = supabasePaths.filter((value): value is string => value !== null);
-  if (!paths.length) return photoURLs;
+  if (!paths.length) return photoURLs.map(upgradePhotoResolution);
 
   const { data, error } = await createClient().storage.from(PROFILE_PHOTO_BUCKET).createSignedUrls(paths, SIGNED_URL_SECONDS);
   if (error || !data) throw new Error(error?.message || "Could not load profile photos.");
   const signed = new Map(data.flatMap((item) => item.path && item.signedUrl ? [[item.path, item.signedUrl] as const] : []));
   return photoURLs.map((value, index) => {
     const path = supabasePaths[index];
-    return path ? signed.get(path) || "" : value;
+    const resolved = path ? signed.get(path) || "" : value;
+    return upgradePhotoResolution(resolved);
   });
 }
 

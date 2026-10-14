@@ -9,7 +9,15 @@ export function authDisplayName(user: User | null | undefined) {
 
 export function authAvatarUrl(user: User | null | undefined) {
   const metadata = user?.user_metadata;
-  return typeof metadata?.avatar_url === "string"
-    ? metadata.avatar_url
-    : typeof metadata?.picture === "string" ? metadata.picture : "";
+  const raw =
+    typeof metadata?.avatar_url === "string"
+      ? metadata.avatar_url
+      : typeof metadata?.picture === "string"
+      ? metadata.picture
+      : "";
+  if (!raw) return "";
+  if (raw.includes("googleusercontent.com")) {
+    return raw.replace(/=s\d+(-c)?$/, "=s1080-c");
+  }
+  return raw;
 }

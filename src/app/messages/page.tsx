@@ -47,11 +47,29 @@ const ICEBREAKER_SUGGESTIONS = [
 const QUICK_EMOJIS = ["🪷", "❤️", "🔥", "😂", "☕", "🥟", "✨", "🙏"];
 
 /* Double tick / Blue double tick component */
-function MessageStatusTicks({ status = "read" }: { status?: "sent" | "delivered" | "read" }) {
-  if (status === "sent") {
+function MessageStatusTicks({
+  status = "delivered",
+  variant = "bubble",
+}: {
+  status?: "sent" | "delivered" | "read";
+  variant?: "bubble" | "list";
+}) {
+  const isRead = status === "read";
+  const isSent = status === "sent";
+
+  const colorClass =
+    variant === "list"
+      ? isRead
+        ? "text-sky-600"
+        : "text-stone-400"
+      : isRead
+      ? "text-cyan-300"
+      : "text-white/70";
+
+  if (isSent) {
     return (
       <svg
-        className="w-3.5 h-3.5 inline-block text-white/70"
+        className={`w-3.5 h-3.5 inline-block ${colorClass}`}
         viewBox="0 0 16 16"
         fill="none"
         stroke="currentColor"
@@ -64,12 +82,9 @@ function MessageStatusTicks({ status = "read" }: { status?: "sent" | "delivered"
     );
   }
 
-  const isRead = status === "read";
   return (
     <span
-      className={`inline-flex items-center -space-x-1.5 ${
-        isRead ? "text-cyan-300" : "text-white/70"
-      }`}
+      className={`inline-flex items-center -space-x-1.5 ${colorClass}`}
       title={isRead ? "Read" : "Delivered"}
     >
       <svg
@@ -180,25 +195,19 @@ function MessagesInner() {
       try {
         const rows = await loadConversationMessages(activeMatchId, user.id);
         if (active) {
-          // Compute read/seen status for ticks
-          // If the other partner has sent a message after ours, or last_read is updated, marks as read (blue double tick)
-          const lastThemIndex = rows.map((r) => r.sender).lastIndexOf("them");
-          const enriched = rows.map((msg, index) => {
-            if (msg.sender === "them") return msg;
-            // If partner sent a message at or after this message, partner has definitely read it!
-            const isRead = lastThemIndex >= index || index < rows.length - 1;
-            return {
-              ...msg,
-              status: isRead ? ("read" as const) : ("delivered" as const),
-            };
-          });
-          setMessages((current) => ({ ...current, [activePartnerId]: enriched }));
+          setMessages((current) => ({ ...current, [activePartnerId]: rows }));
         }
       } catch (error) {
         if (active) setMessageError(error instanceof Error ? error.message : "Could not load messages.");
       }
     };
     void refresh();
+
+    const handleFocus = () => {
+      void refresh();
+    };
+    window.addEventListener("focus", handleFocus);
+
     const channel = supabase
       .channel(`conversation-${activeMatchId}`)
       .on(
@@ -208,9 +217,20 @@ function MessagesInner() {
           void refresh();
         }
       )
+      .on(
+        "broadcast",
+        { event: "read" },
+        (payload) => {
+          if (payload?.payload?.conversationId === activeMatchId && payload?.payload?.readerId !== user.id) {
+            void refresh();
+          }
+        }
+      )
       .subscribe();
+
     return () => {
       active = false;
+      window.removeEventListener("focus", handleFocus);
       void supabase.removeChannel(channel);
     };
   }, [activeMatchId, activePartnerId, user]);
@@ -218,7 +238,9 @@ function MessagesInner() {
   // Mark conversation as read
   useEffect(() => {
     const matchId = selectedConversation?.matchId;
-    if (matchId && user && mobileView === "chat") {
+    if (!matchId || !user) return;
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+    if (mobileView === "chat" || isDesktop) {
       markConversationRead(matchId).catch((error) =>
         setMessageError(error instanceof Error ? error.message : "Could not update unread status.")
       );
@@ -448,7 +470,7 @@ function MessagesInner() {
                         </p>
                         {lastMsg && lastMsg.sender === "me" && (
                           <span className="shrink-0">
-                            <MessageStatusTicks status={lastMsg.status || "read"} />
+                            <MessageStatusTicks status={lastMsg.status || "delivered"} variant="list" />
                           </span>
                         )}
                       </div>
@@ -632,7 +654,7 @@ function MessagesInner() {
                       <span>{msg.time}</span>
                       {/* Double Ticks / Blue double ticks for sender */}
                       {isMe && !isLocationMsg && (
-                        <MessageStatusTicks status={msg.status || "read"} />
+                        <MessageStatusTicks status={msg.status || "delivered"} variant="bubble" />
                       )}
                     </div>
                   </div>

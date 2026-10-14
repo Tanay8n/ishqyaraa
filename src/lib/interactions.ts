@@ -124,6 +124,22 @@ export async function sendMessage(conversationId: string, text: string) {
 export async function markConversationRead(conversationId: string) {
   if (!conversationId) throw new Error("Invalid conversation.");
   await rpc("mark_conversation_read", { p_conversation_id: conversationId });
+
+  // Broadcast read status to any active participant in this chat
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const channel = supabase.channel(`conversation-${conversationId}`);
+      void channel.send({
+        type: "broadcast",
+        event: "read",
+        payload: { conversationId, readerId: user.id, readAt: Date.now() },
+      });
+    }
+  } catch {
+    // Non-blocking best-effort broadcast
+  }
 }
 
 export async function blockUser(targetUid: string) {
