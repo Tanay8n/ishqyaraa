@@ -2,7 +2,8 @@ import type { Profile } from "@/lib/data";
 
 export const MAX_MESSAGE_LENGTH = 2000;
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-export const MAX_PHOTOS = 6;
+export const MAX_PHOTOS = 4;
+export const MIN_PHOTOS = 1;
 export const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export type Intention = Profile["intention"];

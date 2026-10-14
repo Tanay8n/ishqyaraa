@@ -34,6 +34,7 @@ import {
   INTENTION_OPTIONS,
   INTEREST_SUGGESTIONS,
   MAX_PHOTOS,
+  MIN_PHOTOS,
   PROMPT_QUESTIONS,
   type Intention,
   type PujaPreferences,
@@ -238,6 +239,10 @@ export default function ProfilePage() {
   };
 
   const handleRemoveSlotPhoto = (index: number) => {
+    if (editPhotoURLs.length <= 1) {
+      setSaveError("At least 1 photo is mandatory for your profile.");
+      return;
+    }
     setEditPhotoURLs((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -325,8 +330,12 @@ export default function ProfilePage() {
       setSaveError("Choose at least one connection preference.");
       return;
     }
-    if (!editPhotoURLs.length) {
-      setSaveError("Please keep at least one profile photo.");
+    if (editPhotoURLs.length < 1) {
+      setSaveError("At least 1 photo is mandatory. Please keep at least one profile photo.");
+      return;
+    }
+    if (editPhotoURLs.length > MAX_PHOTOS) {
+      setSaveError(`You can only add up to ${MAX_PHOTOS} photos.`);
       return;
     }
 
@@ -719,17 +728,47 @@ export default function ProfilePage() {
 
       {/* Edit Profile Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-7 space-y-5 border border-stone-200 shadow-2xl relative max-h-[90dvh] overflow-y-auto">
-            <button
-              onClick={() => setEditModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3.5 pb-24 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setEditModalOpen(false);
+            }
+          }}
+        >
+          <div
+            className="w-full max-w-2xl bg-[#faf7f2] border border-[#e7dfd5] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[calc(100dvh-7rem)] sm:max-h-[88vh] animate-in zoom-in-95 duration-200"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header Bar */}
+            <div className="px-5 py-4 border-b border-[#e7dfd5] bg-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#fbebee] text-[#9e1b22] flex items-center justify-center border border-[#9e1b22]/20">
+                  <Edit3 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-black text-stone-900 tracking-tight">
+                    Edit Your Profile
+                  </h2>
+                  <p className="text-[11px] text-stone-500 font-medium">
+                    Update photos, Sharodiya prompts, and companion vibes
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setEditModalOpen(false)}
+                className="p-2 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             {saveSuccess ? (
-              <div className="py-8 text-center space-y-3">
+              <div className="py-12 px-6 text-center space-y-3 flex-1 overflow-y-auto bg-[#faf7f2]">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto animate-bounce" />
                 <h3 className="text-xl font-bold text-stone-900">
                   Profile Updated!
@@ -739,38 +778,30 @@ export default function ProfilePage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSaveProfile} className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-black text-stone-900">
-                    Edit Your Profile
-                  </h2>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Update your photos, Sharodiya prompts, and companion vibes.
-                  </p>
-                </div>
+              <form onSubmit={handleSaveProfile} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[#faf7f2]">
+                  {saveError && (
+                    <p role="alert" className="rounded-xl bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700 font-semibold border border-rose-200">
+                      {saveError}
+                    </p>
+                  )}
 
-                {saveError && (
-                  <p role="alert" className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 font-semibold">
-                    {saveError}
-                  </p>
-                )}
+                  {/* 1. PHOTO MANAGEMENT */}
+                  <div className="space-y-2 pb-4 border-b border-stone-200/80">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
+                        Profile Photos ({editPhotoURLs.length} / {MAX_PHOTOS})
+                      </label>
+                      <span className="text-[11px] text-stone-500 font-medium">
+                        1 photo is mandatory • Up to {MAX_PHOTOS} photos
+                      </span>
+                    </div>
 
-                {/* 1. PHOTO MANAGEMENT (Tinder 6-Grid Style) */}
-                <div className="space-y-2 pb-4 border-b border-stone-100">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
-                      Profile Photos ({editPhotoURLs.length} / {MAX_PHOTOS})
-                    </label>
-                    <span className="text-[11px] text-stone-500">
-                      1st photo is your main profile picture
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-                    {Array.from({ length: MAX_PHOTOS }).map((_, index) => {
-                      const hasPhoto = index < editPhotoURLs.length;
-                      const previewUrl = editPhotoPreviews[index] || editPhotoURLs[index];
-                      const isUploading = uploadingSlot === index;
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                      {Array.from({ length: MAX_PHOTOS }).map((_, index) => {
+                        const hasPhoto = index < editPhotoURLs.length;
+                        const previewUrl = editPhotoPreviews[index] || editPhotoURLs[index];
+                        const isUploading = uploadingSlot === index;
 
                       if (hasPhoto) {
                         return (
@@ -798,12 +829,13 @@ export default function ProfilePage() {
                             <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
                               <button
                                 type="button"
-                                title="Remove photo"
+                                title={editPhotoURLs.length <= 1 ? "At least 1 photo is mandatory" : "Remove photo"}
+                                disabled={editPhotoURLs.length <= 1}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleRemoveSlotPhoto(index);
                                 }}
-                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                               >
                                 <X className="w-3 h-3 stroke-[2.5]" />
                               </button>
@@ -854,9 +886,10 @@ export default function ProfilePage() {
                                 ) : <span />}
                                 <button
                                   type="button"
-                                  title="Remove"
+                                  title={editPhotoURLs.length <= 1 ? "At least 1 photo is mandatory" : "Remove"}
+                                  disabled={editPhotoURLs.length <= 1}
                                   onClick={() => handleRemoveSlotPhoto(index)}
-                                  className="p-1 rounded-full bg-white text-rose-600 hover:bg-rose-50 cursor-pointer"
+                                  className="p-1 rounded-full bg-white text-rose-600 hover:bg-rose-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </button>
@@ -1186,19 +1219,21 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="pt-2 flex justify-end gap-3">
+              {/* Sticky Action Footer */}
+                <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-t border-[#e7dfd5] bg-white flex items-center justify-end gap-3 shrink-0">
                   <button
                     type="button"
                     onClick={() => setEditModalOpen(false)}
-                    className="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-50 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving || uploadingSlot !== null}
-                    className="px-6 py-2.5 rounded-xl text-white font-bold text-xs bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#88171d] hover:to-[#ac2128] shadow-md shadow-[#9e1b22]/20 disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                    className="px-6 py-2.5 rounded-xl text-white font-bold text-xs bg-gradient-to-r from-[#9e1b22] to-[#c22830] hover:from-[#88171d] hover:to-[#ac2128] shadow-md shadow-[#9e1b22]/20 disabled:opacity-50 transition-all cursor-pointer flex items-center gap-2"
                   >
                     {isSaving ? (
                       <>

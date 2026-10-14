@@ -305,6 +305,10 @@ export function OnboardingForm() {
 
   // Remove photo from a slot
   const handleRemovePhoto = (index: number) => {
+    if (photoURLs.length <= 1) {
+      setError("At least 1 photo is mandatory for your profile.");
+      return;
+    }
     setPhotoURLs((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -364,7 +368,11 @@ export function OnboardingForm() {
       return;
     }
     if (photoURLs.length === 0) {
-      setError("Please upload at least 1 photo for your profile.");
+      setError("Please upload at least 1 photo (1 photo is mandatory).");
+      return;
+    }
+    if (photoURLs.length > MAX_PHOTOS) {
+      setError(`You can only add up to ${MAX_PHOTOS} photos.`);
       return;
     }
 
@@ -1022,8 +1030,8 @@ export function OnboardingForm() {
                   </span>
                 </div>
 
-                {/* 6-Slot Photo Grid */}
-                <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                {/* 4-Slot Photo Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                   {Array.from({ length: MAX_PHOTOS }).map((_, index) => {
                     const hasPhoto = index < photoURLs.length;
                     const previewUrl = photoPreviews[index] || photoURLs[index];
@@ -1063,12 +1071,13 @@ export function OnboardingForm() {
                           <div className="absolute top-1.5 right-1.5 z-20 flex items-center gap-1">
                             <button
                               type="button"
-                              title="Remove photo"
+                              title={photoURLs.length <= 1 ? "At least 1 photo is mandatory" : "Remove photo"}
+                              disabled={photoURLs.length <= 1}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleRemovePhoto(index);
                               }}
-                              className="w-6 h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
+                              className="w-6 h-6 rounded-full bg-white/95 hover:bg-rose-50 text-rose-600 shadow-md border border-stone-200 flex items-center justify-center transition-all active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                             >
                               <X className="w-3.5 h-3.5 stroke-[2.5]" />
                             </button>
@@ -1119,9 +1128,10 @@ export function OnboardingForm() {
                               ) : <span />}
                               <button
                                 type="button"
-                                title="Remove photo"
+                                title={photoURLs.length <= 1 ? "At least 1 photo is mandatory" : "Remove photo"}
+                                disabled={photoURLs.length <= 1}
                                 onClick={() => handleRemovePhoto(index)}
-                                className="p-1 rounded-full bg-white text-rose-600 hover:bg-rose-50 shadow-xs cursor-pointer"
+                                className="p-1 rounded-full bg-white text-rose-600 hover:bg-rose-50 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>

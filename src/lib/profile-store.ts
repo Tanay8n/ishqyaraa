@@ -24,7 +24,8 @@ export function validateDraft(draft: ProfileDraft): string | null {
   if (!draft.college.trim()) return "Please add your college or university.";
   if (!draft.area.trim()) return "Please add your neighborhood / area.";
   if (!draft.intention) return "Please choose what you are looking for.";
-  if (!draft.photoURLs.length) return "Please add at least one photo so other students can recognise you.";
+  if (!draft.photoURLs.length) return "Please add at least one photo (1 photo is mandatory).";
+  if (draft.photoURLs.length > 4) return "You can only add up to 4 photos.";
   return null;
 }
 

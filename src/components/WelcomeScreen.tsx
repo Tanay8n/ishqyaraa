@@ -704,7 +704,7 @@ export function WelcomeScreen() {
                         <div className="flex items-center gap-2 text-[10px] text-stone-200">
                           <span className="flex items-center gap-0.5 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/10">
                             <MapPin className="w-3 h-3 text-[#ea580c]" />
-                            North Kolkata 🏛️ • 2 km
+                            North Kolkata 🏛️
                           </span>
                           <span className="bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/10">
                             Presidency Univ.
