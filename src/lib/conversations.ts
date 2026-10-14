@@ -2,6 +2,19 @@ import { createClient } from "@/lib/supabase/client";
 import { loadPublicProfile } from "@/lib/discovery";
 import type { PublicProfileRecord } from "@/lib/schema";
 import type { Profile } from "@/lib/data";
+import {
+  formatConversationTime,
+  formatMessageTime,
+  formatChatDateHeader,
+  isDifferentChatDay,
+} from "./time";
+
+export {
+  formatConversationTime,
+  formatMessageTime,
+  formatChatDateHeader,
+  isDifferentChatDay,
+};
 
 export type AppConversation = {
   matchId: string;
@@ -67,13 +80,6 @@ export function enrichMessageStatuses(
 
   return result;
 }
-
-export {
-  formatConversationTime,
-  formatMessageTime,
-  formatChatDateHeader,
-  isDifferentChatDay,
-} from "./time";
 
 export async function loadMyConversations(
   userId: string,
