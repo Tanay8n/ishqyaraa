@@ -7,6 +7,19 @@ async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
   return data as T;
 }
 
+async function callInteractionApi(action: "like" | "pass" | "rewind", targetId?: string | null) {
+  const res = await fetch("/api/interactions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, targetId }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) {
+    throw new Error(data.error || "The request could not be completed.");
+  }
+  return data;
+}
+
 export async function likeUser(targetUid: string): Promise<{ matched: boolean; matchId: string | null; already: boolean }> {
   if (!targetUid) throw new Error("Invalid like target.");
 
@@ -32,24 +45,70 @@ export async function likeUser(targetUid: string): Promise<{ matched: boolean; m
     }
   }
 
-  const result = await rpc<{ matched: boolean; matchId?: string | null; already?: boolean }>("record_interaction", {
-    p_action: "like",
-    p_target_id: targetUid,
-  });
-  return { matched: Boolean(result.matched), matchId: result.matchId || null, already: Boolean(result.already) };
+  try {
+    const result = await rpc<{ matched: boolean; matchId?: string | null; already?: boolean }>("record_interaction", {
+      p_action: "like",
+      p_target_id: targetUid,
+    });
+    return { matched: Boolean(result.matched), matchId: result.matchId || null, already: Boolean(result.already) };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (
+      msg.toLowerCase().includes("preference") ||
+      msg.includes("42501") ||
+      msg.includes("match both users")
+    ) {
+      const fallback = await callInteractionApi("like", targetUid);
+      return {
+        matched: Boolean(fallback.matched),
+        matchId: fallback.matchId || null,
+        already: Boolean(fallback.already),
+      };
+    }
+    throw err;
+  }
 }
 
 export async function passUser(targetUid: string) {
   if (!targetUid) throw new Error("Invalid pass target.");
-  await rpc("record_interaction", { p_action: "pass", p_target_id: targetUid });
+  try {
+    await rpc("record_interaction", { p_action: "pass", p_target_id: targetUid });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (
+      msg.toLowerCase().includes("preference") ||
+      msg.includes("42501") ||
+      msg.includes("match both users")
+    ) {
+      await callInteractionApi("pass", targetUid);
+      return;
+    }
+    throw err;
+  }
 }
 
 export async function rewindLastAction(): Promise<{ restoredUid: string | null; blockedBecauseMatch: boolean }> {
-  const result = await rpc<{ restoredUid: string | null; blockedBecauseMatch: boolean }>("record_interaction", {
-    p_action: "rewind",
-    p_target_id: null,
-  });
-  return { restoredUid: result.restoredUid || null, blockedBecauseMatch: Boolean(result.blockedBecauseMatch) };
+  try {
+    const result = await rpc<{ restoredUid: string | null; blockedBecauseMatch: boolean }>("record_interaction", {
+      p_action: "rewind",
+      p_target_id: null,
+    });
+    return { restoredUid: result.restoredUid || null, blockedBecauseMatch: Boolean(result.blockedBecauseMatch) };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (
+      msg.toLowerCase().includes("preference") ||
+      msg.includes("42501") ||
+      msg.includes("match both users")
+    ) {
+      const fallback = await callInteractionApi("rewind", null);
+      return {
+        restoredUid: fallback.restoredUid || null,
+        blockedBecauseMatch: Boolean(fallback.blockedBecauseMatch),
+      };
+    }
+    throw err;
+  }
 }
 
 export async function sendMessage(conversationId: string, text: string) {
