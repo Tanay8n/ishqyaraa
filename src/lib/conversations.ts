@@ -3,7 +3,16 @@ import { loadPublicProfile } from "@/lib/discovery";
 import type { PublicProfileRecord } from "@/lib/schema";
 import type { Profile } from "@/lib/data";
 
-export type AppConversation = { matchId: string; otherUid: string; profile: Profile };
+export type AppConversation = {
+  matchId: string;
+  otherUid: string;
+  profile: Profile;
+  lastMessage?: string | null;
+  lastMessageAt?: string | null;
+  lastSenderId?: string | null;
+  unreadCount?: number;
+  createdAt?: string | null;
+};
 export type AppMessage = {
   id: string;
   sender: "me" | "them";
@@ -59,24 +68,107 @@ export function enrichMessageStatuses(
   return result;
 }
 
-export async function loadMyConversations(userId: string, me: PublicProfileRecord | null) {
-  const { data, error } = await createClient().from("conversation_members")
-    .select("conversation_id, conversations!inner(id, match_id, matches!inner(id,user_low,user_high,status))")
+export function formatConversationTime(timestamp?: string | number | null): string {
+  if (!timestamp) return "New";
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return "New";
+
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isYesterday) {
+    return "Yesterday";
+  }
+
+  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays < 7) {
+    return date.toLocaleDateString([], { weekday: "short" });
+  }
+
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+export async function loadMyConversations(
+  userId: string,
+  me: PublicProfileRecord | null
+): Promise<AppConversation[]> {
+  const { data, error } = await createClient()
+    .from("conversation_members")
+    .select(
+      "conversation_id, unread_count, last_read_at, conversations!inner(id, match_id, last_message, last_message_at, last_sender_id, created_at, matches!inner(id, user_low, user_high, status, created_at))"
+    )
     .eq("user_id", userId);
   if (error) throw new Error(error.message || "Could not load conversations.");
 
   const rows = (data || []) as unknown as {
     conversation_id: string;
-    conversations: { id: string; matches: { user_low: string; user_high: string; status: string } };
+    unread_count?: number;
+    last_read_at?: string | null;
+    conversations: {
+      id: string;
+      match_id: string;
+      last_message?: string | null;
+      last_message_at?: string | null;
+      last_sender_id?: string | null;
+      created_at?: string | null;
+      matches: {
+        id: string;
+        user_low: string;
+        user_high: string;
+        status: string;
+        created_at?: string | null;
+      };
+    };
   }[];
   const open = rows.filter((row) => row.conversations?.matches?.status === "active");
-  const conversations = await Promise.all(open.map(async (row) => {
-    const match = row.conversations.matches;
-    const otherUid = match.user_low === userId ? match.user_high : match.user_low;
-    const profile = await loadPublicProfile(otherUid, me);
-    return profile ? { matchId: row.conversations.id, otherUid, profile } : null;
-  }));
-  return conversations.filter((item): item is AppConversation => item !== null);
+  const conversations = await Promise.all(
+    open.map(async (row) => {
+      const match = row.conversations.matches;
+      const otherUid = match.user_low === userId ? match.user_high : match.user_low;
+      const profile = await loadPublicProfile(otherUid, me);
+      if (!profile) return null;
+      return {
+        matchId: row.conversations.id,
+        otherUid,
+        profile,
+        lastMessage: row.conversations.last_message || null,
+        lastMessageAt: row.conversations.last_message_at || null,
+        lastSenderId: row.conversations.last_sender_id || null,
+        unreadCount: typeof row.unread_count === "number" ? row.unread_count : 0,
+        createdAt: row.conversations.created_at || match.created_at || null,
+      };
+    })
+  );
+
+  const valid: AppConversation[] = [];
+  for (const item of conversations) {
+    if (item) {
+      valid.push(item);
+    }
+  }
+
+  // Sort with most recently active chat (latest message, or match creation) on top
+  valid.sort((a, b) => {
+    const timeA = a.lastMessageAt ? Date.parse(a.lastMessageAt) : (a.createdAt ? Date.parse(a.createdAt) : 0);
+    const timeB = b.lastMessageAt ? Date.parse(b.lastMessageAt) : (b.createdAt ? Date.parse(b.createdAt) : 0);
+    return timeB - timeA;
+  });
+
+  return valid;
 }
 
 export async function loadConversationMessages(conversationId: string, userId: string): Promise<AppMessage[]> {

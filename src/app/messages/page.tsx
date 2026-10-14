@@ -24,7 +24,12 @@ import {
 import { AppShell } from "@/components/AppShell";
 import { createClient } from "@/lib/supabase/client";
 import { useAppUser } from "@/components/AppUserContext";
-import { loadConversationMessages, loadMyConversations, type AppConversation } from "@/lib/conversations";
+import {
+  loadConversationMessages,
+  loadMyConversations,
+  formatConversationTime,
+  type AppConversation,
+} from "@/lib/conversations";
 import { blockUser, markConversationRead, recordReport, sendMessage } from "@/lib/interactions";
 
 interface ChatMessage {
@@ -169,6 +174,13 @@ function MessagesInner() {
           void refresh();
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        () => {
+          void refresh();
+        }
+      )
       .subscribe();
     return () => {
       active = false;
@@ -244,6 +256,9 @@ function MessagesInner() {
       markConversationRead(matchId).catch((error) =>
         setMessageError(error instanceof Error ? error.message : "Could not update unread status.")
       );
+      setConversations((prev) =>
+        prev.map((c) => (c.matchId === matchId ? { ...c, unreadCount: 0 } : c))
+      );
     }
   }, [selectedConversation?.matchId, user, mobileView]);
 
@@ -287,6 +302,26 @@ function MessagesInner() {
       [activePartnerId]: [...(prev[activePartnerId] || []), optimisticMsg],
     }));
     setInputText("");
+
+    // Optimistically update conversation and re-sort so this chat moves to the top immediately
+    setConversations((prev) => {
+      const updated = prev.map((c) => {
+        if (c.matchId === selectedConversation.matchId) {
+          return {
+            ...c,
+            lastMessage: text,
+            lastMessageAt: new Date().toISOString(),
+            lastSenderId: user.id,
+          };
+        }
+        return c;
+      });
+      return [...updated].sort((a, b) => {
+        const timeA = a.lastMessageAt ? Date.parse(a.lastMessageAt) : (a.createdAt ? Date.parse(a.createdAt) : 0);
+        const timeB = b.lastMessageAt ? Date.parse(b.lastMessageAt) : (b.createdAt ? Date.parse(b.createdAt) : 0);
+        return timeB - timeA;
+      });
+    });
 
     try {
       await sendMessage(selectedConversation.matchId, text);
@@ -422,8 +457,26 @@ function MessagesInner() {
                 const profile = conversation.profile;
                 const isSelected = conversation.otherUid === activePartnerId;
                 const chatHistory = messages[conversation.otherUid] || [];
-                const lastMsg =
+                const lastMsgFromChat =
                   chatHistory.length > 0 ? chatHistory[chatHistory.length - 1] : null;
+
+                const displayText =
+                  lastMsgFromChat?.text ??
+                  conversation.lastMessage ??
+                  profile.bio ??
+                  "Say hi to your match! 🪷";
+
+                const displayTime =
+                  lastMsgFromChat?.time ??
+                  formatConversationTime(conversation.lastMessageAt) ??
+                  "New";
+
+                const isSenderMe =
+                  lastMsgFromChat
+                    ? lastMsgFromChat.sender === "me"
+                    : conversation.lastSenderId === user?.id;
+
+                const unreadCount = isSelected ? 0 : conversation.unreadCount || 0;
 
                 return (
                   <button
@@ -452,27 +505,47 @@ function MessagesInner() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <h4 className="text-sm font-bold text-stone-900 truncate">
+                          <h4
+                            className={`text-sm truncate ${
+                              unreadCount > 0 ? "font-black text-stone-950" : "font-bold text-stone-900"
+                            }`}
+                          >
                             {profile.name}
                           </h4>
                           {profile.verified && (
                             <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20 shrink-0" />
                           )}
                         </div>
-                        <span className="text-[10px] text-stone-400 font-medium shrink-0 ml-1">
-                          {lastMsg ? lastMsg.time : "New"}
+                        <span
+                          className={`text-[10px] shrink-0 ml-1 ${
+                            unreadCount > 0 ? "text-[#9e1b22] font-bold" : "text-stone-400 font-medium"
+                          }`}
+                        >
+                          {displayTime}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between gap-1 mt-0.5">
-                        <p className="text-xs text-stone-500 truncate">
-                          {lastMsg ? lastMsg.text : profile.bio || "Say hi to your match! 🪷"}
+                      <div className="flex items-center justify-between gap-1.5 mt-0.5">
+                        <p
+                          className={`text-xs truncate ${
+                            unreadCount > 0 ? "text-stone-900 font-semibold" : "text-stone-500"
+                          }`}
+                        >
+                          {displayText}
                         </p>
-                        {lastMsg && lastMsg.sender === "me" && (
-                          <span className="shrink-0">
-                            <MessageStatusTicks status={lastMsg.status || "delivered"} variant="list" />
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {isSenderMe && (
+                            <MessageStatusTicks
+                              status={lastMsgFromChat?.status || "delivered"}
+                              variant="list"
+                            />
+                          )}
+                          {unreadCount > 0 && (
+                            <span className="px-1.5 py-0.2 min-w-4 text-center text-[10px] font-bold text-white bg-[#9e1b22] rounded-full shadow-2xs">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-2 mt-1.5">
