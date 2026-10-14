@@ -74,13 +74,17 @@ export async function GET(request: Request) {
       partnerId,
       partnerLastReadAt,
       partnerUnreadCount,
-      messages: (msgRows || []).map((row) => ({
-        id: row.id,
-        sender: row.sender_id === user.id ? "me" : "them",
-        text: row.body,
-        time: new Date(row.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
-        createdAt: Date.parse(row.created_at),
-      })),
+      messages: (msgRows || []).map((row) => {
+        const parsedMs = Date.parse(row.created_at);
+        const createdAt = isNaN(parsedMs) ? Date.now() : parsedMs;
+        return {
+          id: row.id,
+          sender: row.sender_id === user.id ? "me" : "them",
+          text: row.body,
+          time: new Date(createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }),
+          createdAt,
+        };
+      }),
     });
   } catch (error) {
     return NextResponse.json(

@@ -68,39 +68,12 @@ export function enrichMessageStatuses(
   return result;
 }
 
-export function formatConversationTime(timestamp?: string | number | null): string {
-  if (!timestamp) return "New";
-  const date = new Date(timestamp);
-  if (isNaN(date.getTime())) return "New";
-
-  const now = new Date();
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
-
-  if (isToday) {
-    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  }
-
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  const isYesterday =
-    date.getDate() === yesterday.getDate() &&
-    date.getMonth() === yesterday.getMonth() &&
-    date.getFullYear() === yesterday.getFullYear();
-
-  if (isYesterday) {
-    return "Yesterday";
-  }
-
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  if (diffDays < 7) {
-    return date.toLocaleDateString([], { weekday: "short" });
-  }
-
-  return date.toLocaleDateString([], { month: "short", day: "numeric" });
-}
+export {
+  formatConversationTime,
+  formatMessageTime,
+  formatChatDateHeader,
+  isDifferentChatDay,
+} from "./time";
 
 export async function loadMyConversations(
   userId: string,
@@ -179,11 +152,15 @@ export async function loadConversationMessages(conversationId: string, userId: s
     if (res.ok) {
       const json = await res.json();
       if (json.ok && Array.isArray(json.messages)) {
-        return enrichMessageStatuses(
+        const enriched = enrichMessageStatuses(
           json.messages,
           json.partnerLastReadAt ? Date.parse(json.partnerLastReadAt) : null,
           json.partnerUnreadCount ?? 0
         );
+        return enriched.map((m) => ({
+          ...m,
+          time: formatMessageTime(m.createdAt) || m.time,
+        }));
       }
     }
   } catch {
@@ -197,7 +174,7 @@ export async function loadConversationMessages(conversationId: string, userId: s
     id: row.id,
     sender: row.sender_id === userId ? "me" : "them",
     text: row.body,
-    time: new Date(row.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+    time: formatMessageTime(row.created_at),
     createdAt: Date.parse(row.created_at),
   }));
   return enrichMessageStatuses(mapped, null, 0);

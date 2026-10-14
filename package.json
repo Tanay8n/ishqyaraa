@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:unit": "node --experimental-strip-types --test tests/schema.test.mjs tests/supabase-profile.test.mjs",
+    "test:unit": "node --experimental-strip-types --test tests/schema.test.mjs tests/supabase-profile.test.mjs tests/conversations-time.test.mjs",
     "test:rules": "firebase emulators:exec --only database --project demo-ishqyaraa-rules \"node --test tests/database.rules.test.mjs\""
   },
   "dependencies": {

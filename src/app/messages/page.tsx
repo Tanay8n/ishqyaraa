@@ -28,6 +28,9 @@ import {
   loadConversationMessages,
   loadMyConversations,
   formatConversationTime,
+  formatMessageTime,
+  formatChatDateHeader,
+  isDifferentChatDay,
   type AppConversation,
 } from "@/lib/conversations";
 import { blockUser, markConversationRead, recordReport, sendMessage } from "@/lib/interactions";
@@ -288,13 +291,14 @@ function MessagesInner() {
     setMessageError(null);
 
     // Optimistic UI insert with single tick
-    const tempId = `temp-${Date.now()}`;
+    const now = Date.now();
+    const tempId = `temp-${now}`;
     const optimisticMsg: ChatMessage = {
       id: tempId,
       sender: "me",
       text,
-      time: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
-      createdAt: Date.now(),
+      time: formatMessageTime(now),
+      createdAt: now,
       status: "sent",
     };
     setMessages((prev) => ({
@@ -466,10 +470,14 @@ function MessagesInner() {
                   profile.bio ??
                   "Say hi to your match! 🪷";
 
-                const displayTime =
-                  lastMsgFromChat?.time ??
-                  formatConversationTime(conversation.lastMessageAt) ??
-                  "New";
+                const hasMessage = Boolean(lastMsgFromChat || conversation.lastMessage);
+                const displayTime = hasMessage
+                  ? formatConversationTime(
+                      lastMsgFromChat?.createdAt ??
+                      conversation.lastMessageAt ??
+                      conversation.createdAt
+                    )
+                  : "New";
 
                 const isSenderMe =
                   lastMsgFromChat
@@ -696,42 +704,52 @@ function MessagesInner() {
             </div>
 
             {/* Messages List */}
-            {activeChat.map((msg) => {
+            {activeChat.map((msg, index) => {
+              const prevMsg = index > 0 ? activeChat[index - 1] : null;
               const isMe = msg.sender === "me";
               const isLocationMsg = msg.text.startsWith("📍 Shared Meeting Point:");
+              const showDateDivider = isDifferentChatDay(msg.createdAt, prevMsg?.createdAt);
 
               return (
-                <div
-                  key={msg.id}
-                  className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in-50 duration-150`}
-                >
+                <React.Fragment key={msg.id}>
+                  {showDateDivider && (
+                    <div className="flex justify-center my-2">
+                      <span className="text-[11px] font-semibold text-stone-500 bg-white/90 border border-stone-200/80 shadow-2xs px-3 py-1 rounded-full backdrop-blur-xs">
+                        {formatChatDateHeader(msg.createdAt)}
+                      </span>
+                    </div>
+                  )}
                   <div
-                    className={`max-w-[85%] sm:max-w-md rounded-2xl p-3 sm:p-3.5 text-xs sm:text-sm shadow-xs ${
-                      isLocationMsg
-                        ? "bg-amber-100/90 text-amber-950 border border-amber-300 font-medium rounded-br-xs"
-                        : isMe
-                        ? "bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white rounded-br-xs"
-                        : "bg-white text-stone-800 border border-stone-200/90 rounded-bl-xs"
-                    }`}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in-50 duration-150`}
                   >
-                    <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                     <div
-                      className={`text-[10px] mt-1.5 flex items-center justify-end gap-1.5 ${
-                        isMe
-                          ? isLocationMsg
-                            ? "text-amber-800"
-                            : "text-white/80"
-                          : "text-stone-400"
+                      className={`max-w-[85%] sm:max-w-md rounded-2xl p-3 sm:p-3.5 text-xs sm:text-sm shadow-xs ${
+                        isLocationMsg
+                          ? "bg-amber-100/90 text-amber-950 border border-amber-300 font-medium rounded-br-xs"
+                          : isMe
+                          ? "bg-gradient-to-r from-[#9e1b22] to-[#c22830] text-white rounded-br-xs"
+                          : "bg-white text-stone-800 border border-stone-200/90 rounded-bl-xs"
                       }`}
                     >
-                      <span>{msg.time}</span>
-                      {/* Double Ticks / Blue double ticks for sender */}
-                      {isMe && !isLocationMsg && (
-                        <MessageStatusTicks status={msg.status || "delivered"} variant="bubble" />
-                      )}
+                      <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                      <div
+                        className={`text-[10px] mt-1.5 flex items-center justify-end gap-1.5 ${
+                          isMe
+                            ? isLocationMsg
+                              ? "text-amber-800"
+                              : "text-white/80"
+                            : "text-stone-400"
+                        }`}
+                      >
+                        <span>{formatMessageTime(msg.createdAt) || msg.time}</span>
+                        {/* Double Ticks / Blue double ticks for sender */}
+                        {isMe && !isLocationMsg && (
+                          <MessageStatusTicks status={msg.status || "delivered"} variant="bubble" />
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </React.Fragment>
               );
             })}
           </div>
