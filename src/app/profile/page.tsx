@@ -522,9 +522,9 @@ export default function ProfilePage() {
               </p>
 
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-[#fbebee] text-[#9e1b22] border border-[#9e1b22]/20 shadow-xs">
+                {/* <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-[#fbebee] text-[#9e1b22] border border-[#9e1b22]/20 shadow-xs">
                   ✨ Vibe: {publicProfile.intention}
-                </span>
+                </span> */}
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-stone-700 bg-stone-100 border border-stone-200">
                   Gender: {(publicProfile.pujaPreferences as any)?.gender || profileData.gender || "Man"}
                 </span>

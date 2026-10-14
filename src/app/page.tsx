@@ -906,6 +906,7 @@ export default function PartnerFinderPage() {
                     }px)`,
                     opacity: 0.7 + dragProgress * 0.3,
                     transition: isDragging ? "none" : "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                    willChange: "transform, opacity",
                   }}
                   className="absolute inset-0 h-[490px] xs:h-[530px] sm:h-[590px] md:h-[630px] max-h-[calc(100dvh-200px)] min-h-[450px] rounded-[32px] overflow-hidden shadow-lg border border-stone-200/80 bg-stone-900 pointer-events-none z-0"
                 >
@@ -940,6 +941,7 @@ export default function PartnerFinderPage() {
                     : "transform 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.3s ease",
                   opacity: exitDirection ? 0 : 1,
                   touchAction: "pan-y",
+                  willChange: "transform, opacity",
                 }}
                 className={`relative z-10 w-full h-[490px] xs:h-[530px] sm:h-[590px] md:h-[630px] max-h-[calc(100dvh-200px)] min-h-[450px] rounded-[32px] overflow-hidden shadow-[0_24px_50px_-10px_rgba(0,0,0,0.35)] bg-stone-900 border border-white/20 ${
                   isDragging
