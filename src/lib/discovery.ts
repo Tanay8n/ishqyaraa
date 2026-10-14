@@ -27,22 +27,14 @@ export async function loadDiscoveryDeck(me: PublicProfileRecord): Promise<Profil
       if (uid === user.id || !record.profileComplete || record.age < 18) return false;
       if (!record.displayName.trim() || !record.college.trim() || !record.photoURLs.length) return false;
 
-      // Gender & InterestedIn matching (Tinder-style bidirectional preference)
-      const myGender = (me.pujaPreferences as any)?.gender;
+      // Gender preference matching (Unidirectional)
+      // If a user selects "Men", they see all male profiles; "Women" -> female profiles; "Everyone" -> all profiles.
       const myInterestedIn = (me.pujaPreferences as any)?.interestedIn || "Everyone";
-      const otherGender = (record.pujaPreferences as any)?.gender;
-      const otherInterestedIn = (record.pujaPreferences as any)?.interestedIn || "Everyone";
+      const otherGender = (record.pujaPreferences as any)?.gender || "Man";
 
-      // 1. My preference matches their gender
-      if (myInterestedIn && myInterestedIn !== "Everyone" && otherGender) {
+      if (myInterestedIn && myInterestedIn !== "Everyone") {
         if (myInterestedIn === "Men" && otherGender !== "Man") return false;
         if (myInterestedIn === "Women" && otherGender !== "Woman") return false;
-      }
-
-      // 2. Their preference matches my gender (bidirectional)
-      if (otherInterestedIn && otherInterestedIn !== "Everyone" && myGender) {
-        if (otherInterestedIn === "Men" && myGender !== "Man") return false;
-        if (otherInterestedIn === "Women" && myGender !== "Woman") return false;
       }
 
       return !liked.has(uid) && !passed.has(uid) && !excluded.has(uid);
