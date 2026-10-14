@@ -282,19 +282,15 @@ export default function PartnerFinderPage() {
 
   const handleLike = useCallback(
     async (profile: Profile) => {
-      if (!user || actionLockRef.current) return;
+      if (!user) return;
       if (!uiProfile?.verified) {
         setShowSelfieModal(true);
         showToast("Selfie verification required! Please verify to send likes 🪷");
         return;
       }
-      actionLockRef.current = true;
       setIsSavingAction(true);
       try {
         const result = await likeUser(profile.id);
-        setProfiles((current) => current.filter((candidate) => candidate.id !== profile.id));
-        setDeckIndex(0);
-        setPhotoIndex(0);
         setShowSafetyMenu(false);
         if (result.matched) {
           triggerConfetti();
@@ -316,8 +312,9 @@ export default function PartnerFinderPage() {
         }
       } catch (error) {
         showToast(error instanceof Error ? error.message : "Could not save your like.");
+        // If like failed, restore back to deck
+        setProfiles((current) => (current.some((c) => c.id === profile.id) ? current : [profile, ...current]));
       } finally {
-        actionLockRef.current = false;
         setIsSavingAction(false);
       }
     },
@@ -326,20 +323,15 @@ export default function PartnerFinderPage() {
 
   const handlePass = useCallback(
     async (profile: Profile) => {
-      if (!user || actionLockRef.current) return;
-      actionLockRef.current = true;
+      if (!user) return;
       setIsSavingAction(true);
       try {
         await passUser(profile.id);
-        setProfiles((current) => current.filter((candidate) => candidate.id !== profile.id));
-        setDeckIndex(0);
-        setPhotoIndex(0);
         setShowSafetyMenu(false);
         showToast(`Passed on ${profile.name}`);
       } catch (error) {
         showToast(error instanceof Error ? error.message : "Could not save your pass.");
       } finally {
-        actionLockRef.current = false;
         setIsSavingAction(false);
       }
     },
@@ -382,17 +374,25 @@ export default function PartnerFinderPage() {
       setExitDirection(direction);
       setShowSafetyMenu(false);
 
+      const targetProfile = currentProfile;
+
       swipeTimeoutRef.current = setTimeout(() => {
-        if (direction === "right") {
-          void handleLike(currentProfile);
-        } else {
-          void handlePass(currentProfile);
-        }
+        // Remove swiped card optimistically and cleanly at end of exit animation
+        setProfiles((current) => current.filter((candidate) => candidate.id !== targetProfile.id));
+        setDeckIndex(0);
+        setPhotoIndex(0);
         setExitDirection(null);
         setDragOffset({ x: 0, y: 0 });
         dragOffsetRef.current = { x: 0, y: 0 };
         isAnimatingRef.current = false;
         swipeTimeoutRef.current = null;
+
+        // Perform backend interaction in background
+        if (direction === "right") {
+          void handleLike(targetProfile);
+        } else {
+          void handlePass(targetProfile);
+        }
       }, 300);
     },
     [currentProfile, handleLike, handlePass, uiProfile?.verified, showToast]
@@ -629,11 +629,11 @@ export default function PartnerFinderPage() {
       isDraggingRef.current = false;
       setIsDragging(false);
 
-      if (Math.abs(finalX) > 110) {
+      if (Math.abs(finalX) > 65) {
         triggerSwipe(finalX > 0 ? "right" : "left");
         return;
       }
-      if (Math.abs(finalX) > 50 && Math.abs(finalX) > Math.abs(finalY) * 1.5) {
+      if (Math.abs(finalX) > 40 && Math.abs(finalX) > Math.abs(finalY)) {
         triggerSwipe(finalX > 0 ? "right" : "left");
         return;
       }
@@ -929,6 +929,7 @@ export default function PartnerFinderPage() {
 
               {/* Active Tinder Card */}
               <div
+                key={currentProfile.id}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
