@@ -585,11 +585,6 @@ begin
     raise exception 'This profile is unavailable.' using errcode='42501';
   end if;
 
-  if not (v_target.intention = any(v_me.looking_for))
-     or not (v_me.intention = any(v_target.looking_for)) then
-    raise exception 'This profile does not match both users'' connection preferences.' using errcode='42501';
-  end if;
-
   if p_action = 'pass' then
     if exists (
       select 1

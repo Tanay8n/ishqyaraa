@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,12 +14,18 @@ import {
   Settings,
   Bell,
   CheckCircle2,
+  X,
+  Sparkles,
 } from "lucide-react";
 import { useAppUser } from "@/components/AppUserContext";
 import { SettingsModal, type SettingsOption } from "./SettingsModal";
 
 function NotificationBellButton({ className = "" }: { className?: string }) {
   const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [isOpen, setIsOpen] = useState(false);
+  const [pushStatusMsg, setPushStatusMsg] = useState<string | null>(null);
+  const { unreadTotal, matchCount } = useAppUser();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -27,42 +33,168 @@ function NotificationBellButton({ className = "" }: { className?: string }) {
     }
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
   const handleToggleNotifications = async () => {
     if (typeof window === "undefined" || !("Notification" in window)) {
-      alert("Notifications are not supported in this browser.");
+      setPushStatusMsg("Notifications are not supported in this browser.");
       return;
     }
     try {
       const result = await Notification.requestPermission();
       setPermission(result);
       if (result === "granted") {
+        setPushStatusMsg("Push notifications active! 🪷");
         try {
           new Notification("IshqYara Notifications Active 🪷", {
-            body: "You'll be alerted as soon as you get a match or message!",
+            body: "You will be alerted as soon as you get a match or message!",
             icon: "/favicon.ico",
           });
         } catch {}
+      } else {
+        setPushStatusMsg("Notification permission was denied or dismissed.");
       }
-    } catch {}
+    } catch {
+      setPushStatusMsg("Could not request notification permission.");
+    }
   };
 
+  const totalAlerts = unreadTotal + matchCount;
+
   return (
-    <button
-      type="button"
-      onClick={handleToggleNotifications}
-      className={className}
-      title={
-        permission === "granted"
-          ? "Push notifications active"
-          : "Enable Match & Message Alerts"
-      }
-      aria-label="Toggle notifications"
-    >
-      <Bell className="w-4 h-4" />
-      {permission === "granted" && (
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+    <div className="relative inline-block" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className={className}
+        title="View Notifications"
+        aria-label="View notifications"
+      >
+        <Bell className="w-4 h-4" />
+        {totalAlerts > 0 ? (
+          <span className="absolute -top-1 -right-1 px-1.5 min-w-4 h-4 bg-[#9e1b22] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white">
+            {totalAlerts}
+          </span>
+        ) : permission === "granted" ? (
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+        ) : null}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-76 sm:w-80 bg-white border border-[#e7dfd5] rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-[#e7dfd5] bg-[#faf7f2] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[#fbebee] text-[#9e1b22] flex items-center justify-center border border-[#9e1b22]/20">
+                <Bell className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-stone-900">Notifications</h4>
+                <p className="text-[10px] text-stone-500">Activity & Alerts</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Links & Quick Alerts */}
+          <div className="divide-y divide-stone-100">
+            <Link
+              href="/messages"
+              onClick={() => setIsOpen(false)}
+              className="p-3.5 flex items-center justify-between gap-3 hover:bg-stone-50 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-rose-50 text-[#9e1b22] flex items-center justify-center shrink-0">
+                  <MessageCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-stone-800 group-hover:text-[#9e1b22] transition-colors">
+                    Messages & Chats
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    {unreadTotal > 0 ? `${unreadTotal} new unread message${unreadTotal > 1 ? "s" : ""}` : "All messages caught up"}
+                  </p>
+                </div>
+              </div>
+              {unreadTotal > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-[#9e1b22] text-white text-[10px] font-bold">
+                  {unreadTotal}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/matches"
+              onClick={() => setIsOpen(false)}
+              className="p-3.5 flex items-center justify-between gap-3 hover:bg-stone-50 transition-colors group cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <Heart className="w-4 h-4 fill-current" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-stone-800 group-hover:text-amber-700 transition-colors">
+                    Matches & Requests
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    {matchCount > 0 ? `${matchCount} active match${matchCount > 1 ? "es" : ""}` : "Check incoming requests"}
+                  </p>
+                </div>
+              </div>
+              {matchCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-bold">
+                  {matchCount}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Web Push Notification Status */}
+          <div className="p-3 bg-[#faf7f2] border-t border-[#e7dfd5] space-y-1.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-stone-700">
+                <span>Push Alerts</span>
+                {permission === "granted" ? (
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                    Active ✓
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-semibold text-stone-500 bg-stone-100 px-1.5 py-0.2 rounded">
+                    Not Enabled
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleToggleNotifications}
+                className="text-[10px] font-bold text-[#9e1b22] hover:underline cursor-pointer"
+              >
+                {permission === "granted" ? "Test Alert 🔔" : "Enable Alerts"}
+              </button>
+            </div>
+            {pushStatusMsg && (
+              <p className="text-[10px] text-[#9e1b22] font-semibold">{pushStatusMsg}</p>
+            )}
+          </div>
+        </div>
       )}
-    </button>
+    </div>
   );
 }
 

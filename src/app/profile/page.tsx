@@ -521,6 +521,18 @@ export default function ProfilePage() {
                 &ldquo;{publicProfile.tagline}&rdquo;
               </p>
 
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-[#fbebee] text-[#9e1b22] border border-[#9e1b22]/20 shadow-xs">
+                  ✨ Vibe: {publicProfile.intention}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-stone-700 bg-stone-100 border border-stone-200">
+                  Gender: {(publicProfile.pujaPreferences as any)?.gender || profileData.gender || "Man"}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-stone-700 bg-stone-100 border border-stone-200">
+                  Interested In: {(publicProfile.pujaPreferences as any)?.interestedIn || "Women"}
+                </span>
+              </div>
+
               <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-stone-600 pt-1">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-amber-600" />
@@ -529,9 +541,6 @@ export default function ProfilePage() {
                 <span className="flex items-center gap-1">
                   <GraduationCap className="w-3.5 h-3.5 text-stone-500" />
                   {profileData.college}
-                </span>
-                <span className="flex items-center gap-1 font-semibold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-full">
-                  Interested In : {(publicProfile.pujaPreferences as any)?.interestedIn || "Women"}
                 </span>
                 {profileData?.verified || publicProfile.collegeVerified ? (
                   <span className="flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -596,7 +605,7 @@ export default function ProfilePage() {
                 <span>Manage Photos</span>
               </button>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {profileData.photos.map((photo, i) => (
                 <div
                   key={i}
